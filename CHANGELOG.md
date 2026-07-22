@@ -2,59 +2,45 @@
 
 ## Unreleased
 
-- Fixed the sidebar not actually reflecting recently-viewed order:
-  the server was always recording views and reordering correctly, but
-  the frontend re-rendered the list from a stale array after opening
-  a note instead of re-fetching, so the reorder never showed up until
-  something else happened to trigger a full reload.
-- Added a pin button (top-right of the sidebar) that keeps the
-  sidebar open regardless of clicking the editor, typing, or
-  selecting a note — previously it always auto-collapsed on any of
-  those.
-- "New note" no longer prompts for a title in a dialog — it creates
-  an "Untitled" note immediately (deduping against existing titles)
-  and opens it with the title field focused and selected, so you
-  rename it in place instead.
-- Delete no longer uses a browser `confirm()` dialog — clicking it
-  turns the button into an inline red "Confirm" button (matching the
-  pattern used in chkt) that reverts after 4 seconds or a click
-  elsewhere if you don't follow through.
+- Added a caveat to the demo caption clarifying it's a demo of a few
+  core features, not the complete app — things like search and
+  import/export only exist in the real thing.
+- Fixed a bug introduced by the previous change: the "+" button's
+  click handler looked up its element by ID, but the element only had
+  a class attribute, no ID. That threw at page-load time and silently
+  killed the rest of the script — including the final call that
+  populates the sidebar — so no sample notes rendered at all.
+- Updated to match the real app's current state: stronger border/code
+  contrast (matching the real app's fix for the same issue), delete
+  now uses an inline two-step confirm button instead of a browser
+  dialog, and the "+" button actually creates a new note now (opens
+  it with the title focused and selected, matching the real app's
+  reworked new-note flow) instead of doing nothing.
+- Added a feature row for the zero-CDN-dependency editor rewrite.
+- Fixed note title and content in the demo appearing center-justified
+  (inherited from the hero section's centered layout) instead of
+  left-justified, matching how markdown/notes actually render.
+- Fixed the demo's Code and Checkbox-list toolbar buttons inserting
+  visible placeholder text when nothing was selected, instead of
+  leaving the cursor ready to type. Also fixed the footnote button
+  using `innerHTML +=` to append its definition stub, which
+  unnecessarily reparses the whole editor's content.
+- Added a favicon (embedded, no extra file).
+- Hero is now a single stacked column (text, then demo, then caption)
+  instead of two-column, matching the requested layout.
+- Demo card now has the full toolbar (heading levels, GitHub-style
+  callouts, tables, footnotes, links/images/attachments) and a working
+  Delete button with confirmation, ported directly from the real app —
+  not a simplified stand-in.
 
 ## 1.0.0 — 2026-07-22
 
 Initial release.
 
-- Notes stored as plain `.md` files, filename = title — no database.
-  Attachments (images, uploads, generic files) stored alongside them
-  under `files/`, referenced by ordinary markdown links.
-- Storage split into two directories: `NOTES_DIR` for notes and
-  attachments (the actual vault), `NOTES_DATA_DIR` for app-only state
-  (currently just the recently-viewed list) — kept separate so nothing
-  that isn't your data ever lives inside your vault.
-- Full GitHub Flavored Markdown toolbar: headings, bold/italic/
-  strikethrough/inline code, all three list types with indent/outdent,
-  blockquotes, fenced code blocks, tables, horizontal rules, footnotes,
-  and GitHub-style callouts (`> [!NOTE]` etc.) — rendered with the same
-  colored-box treatment GitHub.com uses.
-- WYSIWYG editor with a one-click Writer/Markdown toggle and undo/redo.
-  A small hand-written markdown ⇄ HTML converter, not a third-party
-  editor library loaded from a CDN — nothing external to
-  version-mismatch or break.
-- In-memory inverted-index full-text search, rebuilt from disk at
-  startup.
-- Sidebar shows the last 10 *viewed* notes first (most-recent-open at
-  top, not last-edited), falling back to last-modified order for
-  everything else. Collapsible/overlay sidebar on narrow screens, with
-  instant name-filtering and full-content search on Enter.
-- Export to a dated zip; import that same zip (or a loose `.md` file)
-  back in, deduplicating on title collision rather than overwriting.
-- Installable PWA — manifest, icons, and a service worker that caches
-  only the static shell, never note content.
-- Single username/password auth: Argon2id hashing, server-side session
-  tokens, per-IP login rate limiting.
-- Self-hosted Inter typeface — no Google Fonts CDN, no external font
-  request of any kind.
-- Multi-stage Dockerfile (non-root user, OS packages patched at build
-  time, healthcheck), docker-compose example, and a GitHub Actions
-  workflow publishing to GHCR with a weekly rebuild for security
-  patches.
+- One-page landing site: hero with a working embedded Writer/Markdown
+  demo, "why" section, feature grid, Docker Compose get-started guide,
+  footer links.
+- Self-hosted Inter typeface and embedded logo — no external font or
+  image requests at all.
+- Monochrome window-control icons in the demo card (not macOS-style
+  colored traffic lights).
