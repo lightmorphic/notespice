@@ -218,6 +218,21 @@ body {
     display: block; position: absolute; inset: 0;
     background: rgba(0, 0, 0, 0.35); z-index: 15;
   }
+  /* The single-row toolbar (menu, title, undo/redo, mode toggle,
+     delete) doesn't fit on a narrow screen — undo/redo/mode-toggle/
+     delete were getting squeezed off to the side rather than actually
+     disappearing, but effectively unreachable. Wrap into two rows
+     instead, with that action group on its own row above the title. */
+  .editor-toolbar {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .toolbar-right {
+    order: -1;
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+  }
 }
 
 .menu-toggle-btn {
