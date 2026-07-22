@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.1 — 2026-07-22
+
+- Fixed undo/redo, the Writer/Markdown toggle, and delete being
+  unreachable on narrow/mobile screens — the toolbar is one row that
+  doesn't fit that content plus the title on screens this width, so
+  those controls were getting squeezed off rather than actually
+  disappearing. Now wraps into two rows on narrow screens, with that
+  action group on its own row above the title.
+
 ## 1.1.0 — 2026-07-22
 
 - Fixed the sidebar not actually reflecting recently-viewed order:
