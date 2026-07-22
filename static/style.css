@@ -249,6 +249,23 @@ body {
 .sidebar-brand img {
   border-radius: 5px;
 }
+.pin-btn {
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.pin-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+.pin-btn:hover { background: var(--border); color: var(--text); }
+.pin-btn.active { color: var(--accent); }
+.pin-btn.active svg { fill: var(--accent); }
 
 .sidebar-header {
   display: flex;
@@ -428,6 +445,16 @@ body {
 .icon-btn:hover { background: var(--border); }
 .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
 .icon-btn.danger:hover { background: color-mix(in srgb, var(--danger) 15%, transparent); color: var(--danger); }
+.icon-btn.danger.confirming {
+  width: auto;
+  padding: 0 10px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.icon-btn.danger.confirming:hover { background: var(--danger); color: #fff; }
 
 .format-bar {
   display: flex;
