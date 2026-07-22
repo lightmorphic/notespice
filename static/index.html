@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notespice</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#c45a20" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Notespice" />
+  <link rel="stylesheet" href="/style.css" />
+  <!-- Inter is self-hosted under /fonts (see style.css @font-face) —
+       no Google Fonts CDN, no request to Google at all. -->
+</head>
+<body>
+  <!-- Login screen -->
+  <div id="login-screen" class="screen" hidden>
+    <form id="login-form" class="login-card">
+      <div class="brand-lockup">
+        <img src="/icons/icon-192.png" alt="" width="32" height="32" />
+        <h1>Notespice</h1>
+      </div>
+      <label>
+        Username
+        <input type="text" id="login-username" autocomplete="username" required />
+      </label>
+      <label>
+        Password
+        <input type="password" id="login-password" autocomplete="current-password" required />
+      </label>
+      <button type="submit">Log in</button>
+      <p id="login-error" class="error" hidden></p>
+    </form>
+  </div>
+
+  <!-- Main app -->
+  <div id="app-screen" class="screen" hidden>
+    <div id="sidebar-backdrop"></div>
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="/icons/icon-192.png" alt="" width="20" height="20" />
+        <span>Notespice</span>
+      </div>
+      <div class="sidebar-header">
+        <input type="search" id="search-box" placeholder="Filter names… Enter to search all notes" />
+        <button id="new-note-btn" title="New note">+</button>
+      </div>
+      <ul id="note-list"></ul>
+      <div class="sidebar-footer-actions">
+        <button id="export-btn" class="sidebar-text-btn">Export all</button>
+        <button id="import-btn" class="sidebar-text-btn">Import</button>
+        <input type="file" id="import-file-input" accept=".md,.zip" style="display:none" />
+      </div>
+      <button id="logout-btn" class="logout-btn">Log out</button>
+    </aside>
+
+    <main class="editor-pane">
+      <div id="empty-state" class="empty-state" hidden>
+        <p style="margin:0;">No notes yet — create one to get started.</p>
+      </div>
+      <div id="search-results" hidden></div>
+
+      <div id="editor" class="editor" hidden>
+        <div class="editor-toolbar">
+          <button id="menu-toggle-btn" class="menu-toggle-btn" title="Toggle sidebar" aria-label="Toggle sidebar">
+            <svg viewBox="0 0 20 20" stroke-width="1.7" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+          </button>
+          <input type="text" id="title-input" placeholder="Untitled note" />
+          <div class="toolbar-right">
+            <button id="undo-btn" class="icon-btn" title="Undo" aria-label="Undo">
+              <svg viewBox="0 0 20 20" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5 2 9l4 4M2 9h9a5 5 0 0 1 0 10h-1"/></svg>
+            </button>
+            <button id="redo-btn" class="icon-btn" title="Redo" aria-label="Redo">
+              <svg viewBox="0 0 20 20" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5l4 4-4 4M18 9H9a5 5 0 0 0 0 10h1"/></svg>
+            </button>
+            <div class="mode-toggle">
+              <button id="mode-wysiwyg" class="mode-btn active">Writer</button>
+              <span class="mode-sep">/</span>
+              <button id="mode-raw" class="mode-btn">Markdown</button>
+            </div>
+            <span id="save-indicator" class="save-indicator"></span>
+            <button id="delete-btn" class="icon-btn danger" title="Delete note" aria-label="Delete note">
+              <svg viewBox="0 0 20 20" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V6M6 6l.7 9.3a1.5 1.5 0 0 0 1.5 1.4h3.6a1.5 1.5 0 0 0 1.5-1.4L14 6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="format-bar" class="format-bar"></div>
+        <div id="wysiwyg-editor" class="wysiwyg-container" contenteditable="true"></div>
+        <textarea id="raw-textarea" class="raw-textarea" hidden></textarea>
+      </div>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
