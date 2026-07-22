@@ -251,18 +251,18 @@ body {
 }
 .pin-btn {
   margin-left: auto;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   background: transparent;
   color: var(--text-muted);
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
-.pin-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+.pin-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
 .pin-btn:hover { background: var(--border); color: var(--text); }
 .pin-btn.active { color: var(--accent); }
 .pin-btn.active svg { fill: var(--accent); }
@@ -533,6 +533,7 @@ body {
   white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: anywhere;
+  line-height: 2;
 }
 .wysiwyg-container pre code {
   background: none;
