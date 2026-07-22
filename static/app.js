@@ -128,7 +128,7 @@ el("import-file-input").addEventListener("change", async (e) => {
 });
 
 // ---------- collapsible sidebar ----------
-let sidebarPinned = false;
+let sidebarPinned = true;
 
 function isNarrow() {
   return window.innerWidth <= 700;
