@@ -128,6 +128,8 @@ el("import-file-input").addEventListener("change", async (e) => {
 });
 
 // ---------- collapsible sidebar ----------
+let sidebarPinned = false;
+
 function isNarrow() {
   return window.innerWidth <= 700;
 }
@@ -141,8 +143,17 @@ el("menu-toggle-btn").addEventListener("click", (e) => {
   const sidebar = document.querySelector(".sidebar");
   setSidebarOpen(sidebar.classList.contains("collapsed"));
 });
+el("pin-btn").addEventListener("click", () => {
+  sidebarPinned = !sidebarPinned;
+  el("pin-btn").classList.toggle("active", sidebarPinned);
+  el("pin-btn").setAttribute("aria-pressed", String(sidebarPinned));
+  if (sidebarPinned) setSidebarOpen(true);
+});
+// Clicking anywhere in the right-hand pane (not just typing) also
+// gets the sidebar out of the way — unless pinned, in which case it
+// stays open regardless.
 document.querySelector(".editor-pane").addEventListener("click", () => {
-  setSidebarOpen(false);
+  if (!sidebarPinned) setSidebarOpen(false);
 });
 setSidebarOpen(!isNarrow());
 
@@ -167,7 +178,7 @@ function renderNoteList(notes) {
     if (note.title === currentTitle) li.classList.add("active");
     li.addEventListener("click", () => {
       openNote(note.title);
-      if (isNarrow()) setSidebarOpen(false);
+      if (isNarrow() && !sidebarPinned) setSidebarOpen(false);
     });
     list.appendChild(li);
   }
@@ -201,7 +212,7 @@ async function showSearchResults(query) {
     item.addEventListener("click", () => {
       results.hidden = true;
       openNote(title);
-      if (isNarrow()) setSidebarOpen(false);
+      if (isNarrow() && !sidebarPinned) setSidebarOpen(false);
     });
     results.appendChild(item);
   }
@@ -513,8 +524,16 @@ function htmlToMd(container) {
 
 // ---------- editor ----------
 el("new-note-btn").addEventListener("click", async () => {
-  const title = prompt("Title for the new note:");
-  if (!title) return;
+  let title = "Untitled";
+  let n = 1;
+  // Dedupe against existing titles rather than relying on the
+  // server's own collision handling, which is built for import (a
+  // "(1)", "(2)" suffix), not for finding the next free "Untitled N".
+  const existingTitles = new Set(allNotes.map((note) => note.title));
+  while (existingTitles.has(title)) {
+    n++;
+    title = "Untitled " + n;
+  }
   try {
     await apiJson("/notes", {
       method: "POST",
@@ -522,6 +541,9 @@ el("new-note-btn").addEventListener("click", async () => {
     });
     await loadNotes();
     await openNote(title);
+    if (isNarrow()) setSidebarOpen(false);
+    el("title-input").focus();
+    el("title-input").select();
   } catch (e) {
     alert(e.message);
   }
@@ -538,7 +560,14 @@ async function openNote(title) {
   el("title-input").value = note.title;
   el("raw-textarea").value = note.content;
   el("wysiwyg-editor").innerHTML = mdToHtml(note.content);
+  resetDeleteButton();
 
+  // Opening a note just moved it to the front of the server's
+  // recently-viewed order — re-fetch so the sidebar reflects that
+  // immediately, rather than re-rendering the array from before this
+  // note was opened (which is why the list previously looked like it
+  // wasn't actually tracking what was last viewed).
+  allNotes = await apiJson("/notes");
   renderNoteList(allNotes);
 }
 
@@ -629,7 +658,7 @@ function insertChecklistItem(labelText) {
 }
 
 function onEditingInput() {
-  setSidebarOpen(false);
+  if (!sidebarPinned) setSidebarOpen(false);
   scheduleSave();
 }
 el("raw-textarea").addEventListener("input", onEditingInput);
@@ -890,9 +919,35 @@ async function saveNote() {
   }
 }
 
-el("delete-btn").addEventListener("click", async () => {
+const DELETE_ICON = el("delete-btn").innerHTML;
+let deleteConfirming = false;
+let deleteConfirmTimeout = null;
+
+function resetDeleteButton() {
+  deleteConfirming = false;
+  clearTimeout(deleteConfirmTimeout);
+  el("delete-btn").innerHTML = DELETE_ICON;
+  el("delete-btn").classList.remove("confirming");
+}
+
+document.addEventListener("click", (e) => {
+  if (deleteConfirming && !el("delete-btn").contains(e.target)) resetDeleteButton();
+});
+
+el("delete-btn").addEventListener("click", async (e) => {
   if (!currentTitle) return;
-  if (!confirm(`Delete "${currentTitle}"? This can't be undone.`)) return;
+
+  if (!deleteConfirming) {
+    e.stopPropagation();
+    deleteConfirming = true;
+    el("delete-btn").textContent = "Confirm";
+    el("delete-btn").classList.add("confirming");
+    clearTimeout(deleteConfirmTimeout);
+    deleteConfirmTimeout = setTimeout(resetDeleteButton, 4000);
+    return;
+  }
+
+  resetDeleteButton();
   await apiJson(`/notes/${encodeURIComponent(currentTitle)}`, { method: "DELETE" });
   currentTitle = null;
   originalTitle = null;

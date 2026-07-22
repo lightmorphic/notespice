@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+- Fixed the sidebar not actually reflecting recently-viewed order:
+  the server was always recording views and reordering correctly, but
+  the frontend re-rendered the list from a stale array after opening
+  a note instead of re-fetching, so the reorder never showed up until
+  something else happened to trigger a full reload.
+- Added a pin button (top-right of the sidebar) that keeps the
+  sidebar open regardless of clicking the editor, typing, or
+  selecting a note — previously it always auto-collapsed on any of
+  those.
+- "New note" no longer prompts for a title in a dialog — it creates
+  an "Untitled" note immediately (deduping against existing titles)
+  and opens it with the title field focused and selected, so you
+  rename it in place instead.
+- Delete no longer uses a browser `confirm()` dialog — clicking it
+  turns the button into an inline red "Confirm" button (matching the
+  pattern used in chkt) that reverts after 4 seconds or a click
+  elsewhere if you don't follow through.
+
 ## 1.0.0 — 2026-07-22
 
 Initial release.
