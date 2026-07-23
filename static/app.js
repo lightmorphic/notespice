@@ -637,7 +637,25 @@ function htmlToMd(container) {
         flushLoose();
         if (parts.length) out.push(parts.join("\n\n"));
       } else {
-        out.push(inlineOnly(node));
+        // Preserve leading <br>s in a paragraph as explicit <br>
+        // lines — otherwise inlineOnly's leading-whitespace strip
+        // erases them. Without this, the 3+ consecutive Enter
+        // pattern ("a\n\n<br>\nb") loses its extra <br> line when
+        // switching modes back and forth: mdToHtml turns it into
+        // <p><br>b</p>, then htmlToMd sees just <p>...</p> and can't
+        // tell the paragraph originally started with a break.
+        let leadingBrs = 0;
+        let child = node.firstChild;
+        while (child && child.nodeType === 1 && child.tagName.toLowerCase() === "br") {
+          leadingBrs++;
+          child = child.nextSibling;
+        }
+        const inline = inlineOnly(node);
+        if (leadingBrs > 0 && inline) {
+          out.push("<br>\n".repeat(leadingBrs) + inline);
+        } else {
+          out.push(inline);
+        }
       }
     }
   });
@@ -809,8 +827,50 @@ el("wysiwyg-editor").addEventListener("keydown", (e) => {
     if (sel.rangeCount) {
       const range = sel.getRangeAt(0);
       range.deleteContents();
+
+      // If the cursor is inside an inline formatting element
+      // (<strong>, <em>, <code>, etc.) and sits at the very end (or
+      // start) of it, insert the <br> outside that element rather
+      // than inside it. Inserting inside produces broken markdown
+      // like `**a\n**\nb` — the closing marker gets orphaned onto
+      // its own line, which no renderer treats as valid emphasis.
+      const inlineTags = new Set(["strong", "b", "em", "i", "del", "s", "strike", "code", "a", "sup", "span"]);
+      const editor = el("wysiwyg-editor");
+      let inlineAncestor = null;
+      let walk = range.startContainer;
+      while (walk && walk !== editor) {
+        if (walk.nodeType === 1 && inlineTags.has(walk.tagName.toLowerCase())) {
+          inlineAncestor = walk;
+        }
+        walk = walk.parentNode;
+      }
+
       const br = document.createElement("br");
-      range.insertNode(br);
+      let insertedOutside = false;
+      if (inlineAncestor) {
+        // Content-based check: is there any actual text between the
+        // cursor and the end (or start) of the inline element?
+        // compareBoundaryPoints returns "not equal" for (textNode, len)
+        // vs (parent, childIndex+1) even though they point to the same
+        // visual spot, so we can't use it directly.
+        const afterRange = document.createRange();
+        afterRange.setStart(range.endContainer, range.endOffset);
+        afterRange.setEnd(inlineAncestor, inlineAncestor.childNodes.length);
+        const atEnd = afterRange.toString().replace(/\u200B/g, "") === "";
+        const beforeRange = document.createRange();
+        beforeRange.setStart(inlineAncestor, 0);
+        beforeRange.setEnd(range.startContainer, range.startOffset);
+        const atStart = beforeRange.toString().replace(/\u200B/g, "") === "";
+        if (atEnd) {
+          inlineAncestor.after(br);
+          insertedOutside = true;
+        } else if (atStart) {
+          inlineAncestor.before(br);
+          insertedOutside = true;
+        }
+      }
+      if (!insertedOutside) range.insertNode(br);
+
       // A <br> with nothing after it (the common case — pressing
       // Enter at the end of what you're typing) doesn't render a new
       // visible line by itself in most browsers; nothing appears to
