@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.3.1 — 2026-07-23
+
+- Fixed a serious data-loss bug: typing multiple lines in Writer mode
+  (e.g. three lines separated by single Enter presses) could produce
+  completely blank content when switching to Markdown mode, and stay
+  blank switching back. Root cause: Enter was handled via
+  `execCommand("insertLineBreak")`, whose exact resulting DOM
+  structure is browser-dependent in ways this environment has no way
+  to verify (no real browser available, and jsdom doesn't implement
+  `execCommand` at all). Replaced with the same manual Range-based
+  insertion already used and verified elsewhere in this file — traced
+  through the exact type/Enter/type/Enter/type sequence step by step,
+  confirmed it now produces a clean, predictable structure, and
+  confirmed that structure serializes correctly rather than blank.
+- Fixed soft breaks (a single Enter/Shift+Enter, or a bare newline in
+  markdown typed directly) rendering as one run-on line instead of a
+  visible line break — e.g. three lines typed directly in Markdown
+  mode collapsed into one line in Writer mode. GitHub's own GFM
+  renderer treats a soft break as an actual visible line break (a
+  well-known deviation from strict CommonMark, where it's ambiguous
+  and often collapses to a space); matched that with `white-space:
+  pre-line` on paragraph content, rather than the browser's default
+  whitespace-collapsing behavior.
+
 ## 1.3.0 — 2026-07-23
 
 Security and code-quality audit.

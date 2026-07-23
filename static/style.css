@@ -580,7 +580,7 @@ body {
 .wysiwyg-container h4,
 .wysiwyg-container h5,
 .wysiwyg-container h6 { font-size: 15px; margin: 0.5em 0 0.3em; color: var(--text-muted); }
-.wysiwyg-container p { margin: 0.6em 0; }
+.wysiwyg-container p { margin: 0.6em 0; white-space: pre-line; }
 .wysiwyg-container ul,
 .wysiwyg-container ol { padding-left: 24px; margin: 0.5em 0; }
 .wysiwyg-container ul.task-list { list-style: none; padding-left: 4px; }
