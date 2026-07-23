@@ -1,5 +1,42 @@
 # Changelog
 
+## 1.3.7 — 2026-07-23
+
+- Built and ran a comprehensive round-trip test suite covering every
+  GFM feature this app supports (empty content, single lines, soft
+  breaks, paragraph breaks, explicit `<br>` lines, all six heading
+  levels, bold, italic, strikethrough, inline code, all combinations
+  of inline formatting, links, images, unordered lists, ordered lists,
+  nested lists, task lists, blockquotes, code blocks with and without
+  language, tables, horizontal rules, GitHub-style callouts,
+  footnotes, and every combination of these), plus an 11-scenario
+  user-workflow test simulating the exact "build in Writer, switch
+  to Markdown, switch back" sequence for each pattern. 68 scenarios
+  total, all passing. Each verifies not just that the round trip is
+  correct, but that repeating it is idempotent — switching modes back
+  and forth does not drift.
+- One real bug caught by that testing and fixed: the 3-or-more-Enter
+  pattern (which serializes to a paragraph break plus an explicit
+  `<br>` line) lost that extra `<br>` line when switching Markdown ->
+  Writer -> Markdown a second time. Root cause: when a paragraph in
+  the DOM started with a `<br>`, the serializer's leading-whitespace
+  strip was erasing what should have been an explicit `<br>` line
+  marker. Now counts and preserves leading `<br>`s per paragraph.
+
+## 1.3.6 — 2026-07-23
+
+- Fixed Enter at the end of an inline formatting element (bold,
+  italic, code, etc.) producing broken markdown: the `<br>` was
+  inserted *inside* the element, so the closing marker got orphaned
+  onto its own line — `**a**` typed then Enter pressed at the end of
+  `a` serialized as `**a\n**\nb` instead of `**a**\nb`. Now detects
+  when the cursor is at the very end (or very start) of an inline
+  element and inserts the `<br>` outside that element. Verified
+  against the exact reported scenario; full existing test suite
+  still passes.
+- Increased the visible line spacing in the Writer editor by about
+  50% (line-height 1.8 instead of the browser default ~1.2).
+
 ## 1.3.5 — 2026-07-23
 
 - Finally fixed the disappearing-content bug after four rounds of
