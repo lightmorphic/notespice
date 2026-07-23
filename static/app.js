@@ -546,9 +546,33 @@ function serializeList(listEl, depth) {
 
 function htmlToMd(container) {
   const out = [];
+  let looseBuffer = document.createElement("div");
+  const flushLoose = () => {
+    if (looseBuffer.childNodes.length) {
+      const text = inlineNodeToMd(looseBuffer);
+      const trimmed = text.replace(/^\s+|\s+$/g, "");
+      if (trimmed) out.push(trimmed);
+      looseBuffer = document.createElement("div");
+    }
+  };
   container.childNodes.forEach((node) => {
+    if (node.nodeType === 3) {
+      // Bare text node at the top level — a user typing straight into
+      // the editor div produces exactly this. Gather into an implicit
+      // paragraph rather than silently dropping it.
+      looseBuffer.appendChild(node.cloneNode(true));
+      return;
+    }
     if (node.nodeType !== 1) return;
     const tag = node.tagName.toLowerCase();
+    // Inline elements at the top level also belong in the implicit
+    // paragraph, same reasoning.
+    if (["br", "strong", "b", "em", "i", "del", "s", "strike", "code", "a", "img", "sup", "span"].includes(tag)) {
+      looseBuffer.appendChild(node.cloneNode(true));
+      return;
+    }
+    // A real block element ends any implicit paragraph in progress.
+    flushLoose();
     if (/^h[1-6]$/.test(tag)) out.push("#".repeat(+tag[1]) + " " + inlineOnly(node));
     else if (tag === "blockquote") out.push("> " + node.textContent);
     else if (tag === "div" && node.classList.contains("md-alert")) {
@@ -617,7 +641,8 @@ function htmlToMd(container) {
       }
     }
   });
-  return out.join("\n\n");
+  flushLoose();
+  return out.filter((s) => s).join("\n\n");
 }
 
 // ---------- editor ----------
@@ -831,7 +856,30 @@ el("wysiwyg-editor").addEventListener("keydown", (e) => {
 el("wysiwyg-editor").addEventListener("paste", (e) => {
   e.preventDefault();
   const text = (e.clipboardData || window.clipboardData).getData("text/plain");
-  document.execCommand("insertText", false, text);
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  const lines = text.split("\n");
+  let lastNode = null;
+  lines.forEach((line, i) => {
+    if (i > 0) {
+      const br = document.createElement("br");
+      range.insertNode(br);
+      range.setStartAfter(br);
+      lastNode = br;
+    }
+    if (line) {
+      const textNode = document.createTextNode(line);
+      range.insertNode(textNode);
+      range.setStartAfter(textNode);
+      lastNode = textNode;
+    }
+  });
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  onEditingInput();
 });
 // Native drag-and-drop has the same problem — dropped content can
 // carry a browser's own rich HTML/URLs straight into the DOM. Direct
