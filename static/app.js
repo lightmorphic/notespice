@@ -685,7 +685,7 @@ async function uploadFile(file) {
 }
 
 function currentMarkdown() {
-  if (mode === "wysiwyg") return htmlToMd(el("wysiwyg-editor"));
+  if (mode === "wysiwyg") return htmlToMd(el("wysiwyg-editor")).replace(/\u200B/g, "");
   return el("raw-textarea").value;
 }
 
@@ -786,7 +786,23 @@ el("wysiwyg-editor").addEventListener("keydown", (e) => {
       range.deleteContents();
       const br = document.createElement("br");
       range.insertNode(br);
-      range.setStartAfter(br);
+      // A <br> with nothing after it (the common case — pressing
+      // Enter at the end of what you're typing) doesn't render a new
+      // visible line by itself in most browsers; nothing appears to
+      // happen until something follows it. Without this, the natural
+      // reaction is to press Enter again, which inserts a *second*
+      // real <br> — turning what should be one simple line break into
+      // a paragraph break by the run-length logic below. A zero-width
+      // space is a real character, not a <br>, so it gives the
+      // browser something to render a line for without being counted
+      // as a second break when saved.
+      if (!br.nextSibling) {
+        const filler = document.createTextNode("\u200B");
+        br.after(filler);
+        range.setStart(filler, 0);
+      } else {
+        range.setStartAfter(br);
+      }
       range.collapse(true);
       sel.removeAllRanges();
       sel.addRange(range);
