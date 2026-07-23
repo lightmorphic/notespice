@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.3.5 — 2026-07-23
+
+- Finally fixed the disappearing-content bug after four rounds of
+  wrong theories. The actual root cause, identified from a browser
+  DevTools screenshot of the real DOM: when typing straight into the
+  editor `<div>`, the content ended up as bare text nodes and `<br>`s
+  as direct children of that div — no wrapping `<p>` at all. The
+  markdown serializer's top-level walk had `if (node.nodeType !== 1)
+  return`, so every bare text node ("a", "b", "c") at the top level
+  was silently dropped, leaving nothing to serialize. That's the
+  blank content. Fixed by gathering consecutive bare text and inline
+  elements at the top level into an implicit paragraph, flushing it
+  whenever a real block element is encountered. Verified against the
+  exact DOM from the screenshot and against the full existing GFM
+  test suite. Genuinely could not have found this without the DOM
+  inspection — the previous four rounds were all reasoning about
+  what the DOM *should* be, not what it actually was.
+
+## 1.3.4 — 2026-07-23
+
+- Fixed pasting multi-line text producing inconsistent, worsening
+  corruption on each mode switch (extra blank lines that changed each
+  time, and eventually lost content). Same root cause as the Enter-key
+  bug fixed in the previous two entries: paste was still using
+  `execCommand("insertText")` with a multi-line string, the same
+  category of browser-dependent behavior that's unverifiable in this
+  environment. Replaced with the same manual, tested Range-based
+  insertion used for Enter — split the pasted text on newlines and
+  insert a real `<br>` between each line directly, rather than
+  delegating a multi-line string to execCommand and hoping for a
+  predictable result.
+
 ## 1.3.3 — 2026-07-23
 
 - Found the actual bug behind "needs a double Enter to reach the next
