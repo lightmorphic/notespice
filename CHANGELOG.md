@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.8 — 2026-07-23
+
+- Matched the Writer editor's line spacing to Markdown mode's
+  (line-height 1.6, was 2) so switching between the two views doesn't
+  change the visible line gap.
+
 ## 1.3.7 — 2026-07-23
 
 - Built and ran a comprehensive round-trip test suite covering every
