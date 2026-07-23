@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.3.2 — 2026-07-23
+
+- Found the actual root cause of the previous entry's data-loss bug
+  still happening after that fix: a `<br>` with nothing after it (the
+  normal case — pressing Enter at the end of what you're typing)
+  doesn't render a visible new line by itself in most browsers, so the
+  first Enter appeared to do nothing. The natural reaction — pressing
+  Enter again — inserted a *second* real `<br>`, which the run-length
+  logic correctly reads as a paragraph break rather than a second
+  simple line break, producing structure the person never intended.
+  Fixed by inserting a zero-width-space filler character (not a
+  second real `<br>`) so the browser has something to render a line
+  for, without it counting as an extra break when saved. Stripped
+  before saving in the normal case where typing continues right after
+  (verified: the filler gets naturally consumed), and explicitly
+  stripped as a fallback if a person stops typing right after
+  pressing Enter and the filler is still sitting there dangling.
+- Honest limitation, given two rounds of this: I still don't have a
+  real browser available to verify visual rendering directly — only
+  the resulting DOM structure and serialization, which I can and do
+  test rigorously (traced through the exact reported keystroke
+  sequence step by step both times). If this still isn't right, the
+  next useful thing to report is exactly what the DOM looks like via
+  the browser inspector after the sequence that breaks, since that's
+  the one thing I can't currently see for myself.
+
 ## 1.3.1 — 2026-07-23
 
 - Fixed a serious data-loss bug: typing multiple lines in Writer mode
