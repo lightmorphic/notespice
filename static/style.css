@@ -231,7 +231,7 @@ body {
     order: -1;
     width: 100%;
     margin-left: 0;
-    justify-content: flex-end;
+    justify-content: space-between;
   }
 }
 
@@ -411,6 +411,14 @@ body {
   flex-shrink: 0;
 }
 
+/* Undo and redo travel together as a single visual unit so the mobile
+   toolbar spreads four groups evenly, not five buttons. */
+.undo-redo-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .mode-toggle {
   display: flex;
   align-items: center;
@@ -479,6 +487,12 @@ body {
   border-bottom: 1px solid var(--border);
   align-items: center;
 }
+/* .format-bar's `display: flex` has the same specificity as the browser's
+   built-in `[hidden] { display: none }`, so it wins the tie and the bar
+   never actually hides when JS sets `hidden`. The attribute selector below
+   raises specificity so hiding works — same fix already used for
+   #login-screen/#app-screen above. */
+.format-bar[hidden] { display: none; }
 .format-bar button {
   border: 1px solid transparent;
   background: transparent;

@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.3.9 — 2026-07-23
+
+- Fixed the formatting toolbar staying visible in Markdown mode. The JS
+  already set the bar's `hidden` attribute on every mode switch, but
+  `.format-bar { display: flex }` and the browser's built-in
+  `[hidden] { display: none }` have identical specificity, so the
+  author rule won the tie and the bar never hid. Added
+  `.format-bar[hidden] { display: none }` (attribute selector raises
+  specificity) — the same fix already used for the login/app screens.
+- Spread the mobile editor toolbar evenly across its four groups. Undo
+  and redo are now wrapped in a `.undo-redo-group` so they stay a pair,
+  and the mobile toolbar row uses `justify-content: space-between`
+  (was `flex-end`) so Undo/Redo, the Writer/Markdown toggle, the save
+  indicator, and Delete distribute across the full width.
+
 ## 1.3.8 — 2026-07-23
 
 - Matched the Writer editor's line spacing to Markdown mode's
