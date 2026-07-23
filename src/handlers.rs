@@ -268,7 +268,7 @@ pub async fn search_notes(
     }
     let results = state
         .search
-        .search(&params.q, |_| true)
+        .search(&params.q)
         .into_iter()
         .take(50)
         .map(|(title, score)| SearchResult { title, score })
@@ -471,6 +471,16 @@ pub async fn import_notes(
     let mut imported_notes = 0usize;
     let mut imported_files = 0usize;
 
+    // Zip bombs: a maliciously crafted archive can be a few KB
+    // compressed but decompress to gigabytes. The request body limit
+    // only caps the *compressed* upload size, which does nothing
+    // against this — the cap has to be enforced on the decompressed
+    // read itself, not trusted from the zip's own declared size
+    // (which can be forged in a crafted file).
+    const MAX_ENTRY_SIZE: u64 = 20 * 1024 * 1024; // matches the single-file upload limit
+    const MAX_TOTAL_IMPORT_SIZE: u64 = 200 * 1024 * 1024; // generous for a real vault, not for an attack
+    let mut total_decompressed: u64 = 0;
+
     // Sniff the actual zip magic number rather than trusting the
     // filename/extension, since that's what determines whether this
     // can be parsed as an archive at all.
@@ -492,8 +502,22 @@ pub async fn import_notes(
             }
             let name = entry.name().to_string();
             let mut content = Vec::new();
-            if entry.read_to_end(&mut content).is_err() {
+            // Read at most MAX_ENTRY_SIZE + 1 bytes: if that's exactly
+            // what we get back, the entry is over the limit (rather
+            // than coincidentally exactly at it), so skip it.
+            let mut bounded = (&mut entry).take(MAX_ENTRY_SIZE + 1);
+            if bounded.read_to_end(&mut content).is_err() {
                 continue;
+            }
+            if content.len() as u64 > MAX_ENTRY_SIZE {
+                continue;
+            }
+            total_decompressed += content.len() as u64;
+            if total_decompressed > MAX_TOTAL_IMPORT_SIZE {
+                return err(
+                    StatusCode::BAD_REQUEST,
+                    "import archive is too large once decompressed",
+                );
             }
 
             if let Some(rest) = name.strip_prefix("files/") {
