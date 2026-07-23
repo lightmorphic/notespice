@@ -8,12 +8,17 @@
 //! if it's ever wrong, just restart and it rebuilds from the files,
 //! which remain the only source of truth.
 
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
 pub struct SearchIndex {
-    // token -> title -> occurrence count
-    inner: RwLock<HashMap<String, HashMap<String, usize>>>,
+    // token -> title -> occurrence count. BTreeMap (not HashMap) for
+    // the outer index specifically so prefix search — the common case,
+    // since partial words like "fold" should match "folding" — can use
+    // a sorted range query instead of scanning every unique token in
+    // the index on every search.
+    inner: RwLock<BTreeMap<String, HashMap<String, usize>>>,
 }
 
 fn tokenize(text: &str) -> Vec<String> {
@@ -26,14 +31,14 @@ fn tokenize(text: &str) -> Vec<String> {
 impl SearchIndex {
     pub fn new() -> Self {
         Self {
-            inner: RwLock::new(HashMap::new()),
+            inner: RwLock::new(BTreeMap::new()),
         }
     }
 
     /// Rebuild the whole index from scratch by re-reading the given notes.
     /// Called once at startup.
     pub fn rebuild<'a>(&self, notes: impl Iterator<Item = (&'a str, &'a str)>) {
-        let mut index: HashMap<String, HashMap<String, usize>> = HashMap::new();
+        let mut index: BTreeMap<String, HashMap<String, usize>> = BTreeMap::new();
         for (title, content) in notes {
             index_one(&mut index, title, content);
         }
@@ -67,7 +72,7 @@ impl SearchIndex {
     /// Rank notes by summed term frequency across all query tokens that
     /// appear in the note, with an extra weight for tokens that also
     /// appear in the title (titles matter more than body hits).
-    pub fn search(&self, query: &str, title_lookup: impl Fn(&str) -> bool) -> Vec<(String, usize)> {
+    pub fn search(&self, query: &str) -> Vec<(String, usize)> {
         let query_tokens = tokenize(query);
         if query_tokens.is_empty() {
             return Vec::new();
@@ -78,11 +83,16 @@ impl SearchIndex {
         for token in &query_tokens {
             // Exact token matches, plus simple prefix matches so partial
             // words ("fold" matching "folding") still surface results.
-            for (indexed_token, postings) in index.iter() {
-                if indexed_token == token || indexed_token.starts_with(token.as_str()) {
-                    for (title, count) in postings {
-                        *scores.entry(title.clone()).or_insert(0) += count;
-                    }
+            // BTreeMap keeps tokens in sorted order, so everything
+            // starting with `token` sits in one contiguous range —
+            // walk from there and stop the moment we're past it,
+            // rather than checking every token in the whole index.
+            for (indexed_token, postings) in index.range(token.clone()..) {
+                if !indexed_token.starts_with(token.as_str()) {
+                    break;
+                }
+                for (title, count) in postings {
+                    *scores.entry(title.clone()).or_insert(0) += count;
                 }
             }
         }
@@ -97,7 +107,6 @@ impl SearchIndex {
             if hits > 0 {
                 *score += hits * 50;
             }
-            let _ = title_lookup; // reserved for future use (e.g. filters)
         }
 
         let mut results: Vec<(String, usize)> = scores.into_iter().collect();
@@ -106,8 +115,13 @@ impl SearchIndex {
     }
 }
 
-fn index_one(index: &mut HashMap<String, HashMap<String, usize>>, title: &str, content: &str) {
-    for token in tokenize(content) {
+fn index_one(index: &mut BTreeMap<String, HashMap<String, usize>>, title: &str, content: &str) {
+    // Index the title's own words too, not just the content — otherwise
+    // a note whose only distinctive word is in its title (not the body)
+    // is unfindable, since the separate title-match boost below only
+    // re-ranks notes that already matched via content; it was never an
+    // independent source of matches on its own.
+    for token in tokenize(title).into_iter().chain(tokenize(content)) {
         *index
             .entry(token)
             .or_default()
