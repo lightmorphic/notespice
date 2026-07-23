@@ -796,9 +796,15 @@ el("wysiwyg-editor").addEventListener("keydown", (e) => {
       // space is a real character, not a <br>, so it gives the
       // browser something to render a line for without being counted
       // as a second break when saved.
-      if (!br.nextSibling) {
-        const filler = document.createTextNode("\u200B");
-        br.after(filler);
+      const next = br.nextSibling;
+      const nextIsEmpty = next && next.nodeType === 3 && next.textContent === "";
+      if (!next || nextIsEmpty) {
+        // Reuse the empty text node if there is one (from splitting
+        // existing text at the cursor) rather than leaving it dangling
+        // and creating a second node next to it.
+        const filler = nextIsEmpty ? next : document.createTextNode("");
+        filler.textContent = "\u200B";
+        if (!next) br.after(filler);
         range.setStart(filler, 0);
       } else {
         range.setStartAfter(br);

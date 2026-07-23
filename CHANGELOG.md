@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.3.3 — 2026-07-23
+
+- Found the actual bug behind "needs a double Enter to reach the next
+  line" — the previous entry's filler-character fix only checked
+  whether the inserted `<br>` had *no* next sibling. Proved with a
+  direct test that this check was wrong for the single most common
+  case: pressing Enter with existing text before the cursor. Inserting
+  a node into an existing text node splits it, leaving an *empty*
+  text node as the `<br>`'s next sibling — not `null`, so the previous
+  check incorrectly skipped the filler every time there was already
+  text on the line, which is effectively always. An empty trailing
+  text node contributes nothing visually, same as no sibling at all,
+  so the browser still had nothing to render a line for. Now treats
+  an empty text-node sibling the same as no sibling, and reuses it
+  for the filler rather than creating a redundant extra node.
+
 ## 1.3.2 — 2026-07-23
 
 - Found the actual root cause of the previous entry's data-loss bug
