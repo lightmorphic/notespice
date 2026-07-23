@@ -772,7 +772,25 @@ el("wysiwyg-editor").addEventListener("input", onEditingInput);
 el("wysiwyg-editor").addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
-    document.execCommand("insertLineBreak");
+    // Manual Range-based insertion, not execCommand("insertLineBreak")
+    // — execCommand's exact DOM behavior varies by browser in ways
+    // this environment has no way to verify (no real browser, and
+    // jsdom doesn't implement execCommand at all), and it's the most
+    // likely cause of a real data-loss bug: an unpredictable resulting
+    // structure the markdown parser doesn't walk correctly. This
+    // mirrors wrapSelectionInline's approach below, which is directly
+    // testable and already verified.
+    const sel = window.getSelection();
+    if (sel.rangeCount) {
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      const br = document.createElement("br");
+      range.insertNode(br);
+      range.setStartAfter(br);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
   }
   // Browsers auto-wire Ctrl+U to underline for any contenteditable,
   // with no code of ours calling for it — underline has no GFM
