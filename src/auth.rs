@@ -69,6 +69,15 @@ impl Auth {
 
     fn record_failed_attempt(&self, client_key: &str) {
         let mut attempts = self.login_attempts.write().unwrap();
+        // Bound memory growth: an attacker with access to many source
+        // addresses (trivial with IPv6's address space) could otherwise
+        // accumulate unbounded entries here, since an entry only gets
+        // touched again if that same exact IP comes back. Sweeping on
+        // every failed attempt keeps this self-limiting even under
+        // sustained attack, at the cost of an O(n) scan proportional to
+        // exactly the entries this same growth would otherwise leave
+        // behind forever.
+        attempts.retain(|_, (_, first_attempt)| first_attempt.elapsed() < LOGIN_ATTEMPT_WINDOW);
         let entry = attempts
             .entry(client_key.to_string())
             .or_insert((0, Instant::now()));
@@ -115,10 +124,13 @@ impl Auth {
         let mut bytes = [0u8; 32];
         OsRng.fill_bytes(&mut bytes);
         let token = base64::Engine::encode(&base64::engine::general_purpose::URL_SAFE_NO_PAD, bytes);
-        self.sessions
-            .write()
-            .unwrap()
-            .insert(token.clone(), Instant::now());
+        let mut sessions = self.sessions.write().unwrap();
+        // Same bounded-growth reasoning as record_failed_attempt: an
+        // expired session otherwise sits in memory forever unless
+        // validate_session happens to be called again with that exact
+        // token. Sweeping here keeps this self-limiting.
+        sessions.retain(|_, created| created.elapsed() < SESSION_LIFETIME);
+        sessions.insert(token.clone(), Instant::now());
         token
     }
 
