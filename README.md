@@ -1,5 +1,3 @@
-> ⚠️ **Status: Work in Progress — not ready for production use.**
-
 ![Notespice logo](docs/logo.png)
 
 # Notespice
