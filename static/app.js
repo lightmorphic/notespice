@@ -16,6 +16,12 @@ let allNotes = [];            // last full note list, for restoring after a clea
 
 const el = (id) => document.getElementById(id);
 
+// Without this, browsers are inconsistent about what Enter produces
+// in a contenteditable (Chrome defaults to <div>, and the exact
+// nesting can vary by cursor position) — forcing a real <p> per Enter
+// keeps the DOM shape predictable and matching what htmlToMd expects.
+document.execCommand("defaultParagraphSeparator", false, "p");
+
 // ---------- API helpers ----------
 async function api(path, options = {}) {
   const res = await fetch(`/api${path}`, {
@@ -252,6 +258,20 @@ function escapeHtml(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// Only allow schemes that can't execute code when clicked/loaded:
+// http(s), mailto, and schemeless (relative paths, #anchors — covers
+// our own /api/files/... upload URLs). Anything else (javascript:,
+// vbscript:, data:, etc.) is neutralized to "#" rather than inserted
+// as-is — a note containing `[x](javascript:...)`, typed directly or
+// imported from a file, would otherwise execute arbitrary script in
+// the logged-in session when clicked.
+function sanitizeUrl(url) {
+  const trimmed = (url || "").trim();
+  if (/^(https?:|mailto:)/i.test(trimmed)) return trimmed;
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed;
+  return "#";
+}
+
 function inlineMdToHtml(text) {
   let html = escapeHtml(text);
   const codes = [];
@@ -259,9 +279,9 @@ function inlineMdToHtml(text) {
     codes.push(c);
     return "\u0000C" + (codes.length - 1) + "\u0000";
   });
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => '<img src="' + sanitizeUrl(url) + '" alt="' + alt + '">');
   html = html.replace(/\[\^([^\]]+)\]/g, '<sup class="footnote-ref" data-fn="$1">$1</sup>');
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) => '<a href="' + sanitizeUrl(url) + '">' + label + "</a>");
   html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
   html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
@@ -271,11 +291,27 @@ function inlineMdToHtml(text) {
 
 function inlineNodeToMd(node) {
   let out = "";
-  node.childNodes.forEach((child) => {
-    if (child.nodeType === 3) { out += child.textContent; return; }
-    if (child.nodeType !== 1) return;
+  const children = Array.from(node.childNodes);
+  let i = 0;
+  while (i < children.length) {
+    const child = children[i];
+    if (child.nodeType === 1 && child.tagName.toLowerCase() === "br") {
+      let runLength = 0;
+      let j = i;
+      while (j < children.length && children[j].nodeType === 1 && children[j].tagName.toLowerCase() === "br") {
+        runLength++;
+        j++;
+      }
+      if (runLength === 1) out += "\n";
+      else if (runLength === 2) out += "\n\n";
+      else out += "\n\n" + "<br>\n".repeat(runLength - 2);
+      i = j;
+      continue;
+    }
+    if (child.nodeType === 3) { out += child.textContent; i++; continue; }
+    if (child.nodeType !== 1) { i++; continue; }
     const tag = child.tagName.toLowerCase();
-    if (tag === "input" && child.type === "checkbox") return;
+    if (tag === "input" && child.type === "checkbox") { i++; continue; }
     const inner = inlineNodeToMd(child);
     if (tag === "strong" || tag === "b") out += "**" + inner + "**";
     else if (tag === "em" || tag === "i") out += "*" + inner + "*";
@@ -284,10 +320,10 @@ function inlineNodeToMd(node) {
     else if (tag === "a") out += "[" + inner + "](" + child.getAttribute("href") + ")";
     else if (tag === "img") out += "![" + (child.getAttribute("alt") || "") + "](" + child.getAttribute("src") + ")";
     else if (tag === "sup" && child.classList.contains("footnote-ref")) out += "[^" + child.getAttribute("data-fn") + "]";
-    else if (tag === "br") out += "\n";
     else if (tag === "ul" || tag === "ol") { /* handled separately by caller */ }
     else out += inner;
-  });
+    i++;
+  }
   return out;
 }
 
@@ -303,6 +339,20 @@ const HEADING_PATTERNS = [
   [/^######\s+/, "h6"], [/^#####\s+/, "h5"], [/^####\s+/, "h4"],
   [/^###\s+/, "h3"], [/^##\s+/, "h2"], [/^#\s+/, "h1"],
 ];
+
+// Used to know when to stop consuming lines into the current
+// paragraph — a paragraph continues across lines until a blank line
+// *or* a line that starts a different kind of block.
+function isBlockStart(line) {
+  if (/^```/.test(line)) return true;
+  if (/^\|.*\|\s*$/.test(line)) return true;
+  if (HEADING_PATTERNS.some((p) => p[0].test(line))) return true;
+  if (/^\[\^([^\]]+)\]:\s*/.test(line)) return true;
+  if (/^>\s?/.test(line)) return true;
+  if (/^(---|\*\*\*)\s*$/.test(line)) return true;
+  if (/^(\s*)([-*]|\d+\.)\s+/.test(line)) return true;
+  return false;
+}
 
 let footnoteDefs;
 function mdToHtmlInner(md) {
@@ -434,8 +484,26 @@ function mdToHtmlInner(md) {
     if (raw.trim() === "") { closeAllLists(); i++; continue; }
 
     closeAllLists();
-    html += "<p>" + inlineMdToHtml(raw) + "</p>";
+    const paraLines = [raw];
     i++;
+    while (i < lines.length && lines[i].trim() !== "" && !isBlockStart(lines[i])) {
+      paraLines.push(lines[i]);
+      i++;
+    }
+    let paraHtml = "";
+    paraLines.forEach((line, idx) => {
+      const isLast = idx === paraLines.length - 1;
+      const trimmed = line.trim();
+      if (/^<br\s*\/?>$/i.test(trimmed)) {
+        paraHtml += "<br>";
+        return;
+      }
+      const hardBreak = !isLast && /(  +|\\)$/.test(line);
+      const cleanLine = line.replace(/(  +|\\)$/, "");
+      paraHtml += inlineMdToHtml(cleanLine);
+      if (!isLast) paraHtml += hardBreak ? "<br>" : "\n";
+    });
+    html += "<p>" + paraHtml + "</p>";
   }
   closeAllLists();
 
@@ -516,7 +584,37 @@ function htmlToMd(container) {
       rows.forEach((r) => tlines.push("| " + r.join(" | ") + " |"));
       out.push(tlines.join("\n"));
     } else if (tag === "p" || tag === "div") {
-      out.push(inlineOnly(node));
+      if (node.querySelector("p, div, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, table, hr")) {
+        // Unexpected nested block content mixed with loose text —
+        // walk this node's own children directly so any loose text
+        // sitting alongside a nested block isn't silently dropped
+        // (recursing wholesale would skip it, since htmlToMd only
+        // processes element children, not bare text nodes).
+        const parts = [];
+        let looseBuffer = document.createElement("div");
+        const flushLoose = () => {
+          if (looseBuffer.childNodes.length) {
+            const text = inlineOnly(looseBuffer);
+            if (text) parts.push(text);
+            looseBuffer = document.createElement("div");
+          }
+        };
+        node.childNodes.forEach((child) => {
+          if (child.nodeType === 1 && /^(p|div|h[1-6]|ul|ol|blockquote|pre|table|hr)$/.test(child.tagName.toLowerCase())) {
+            flushLoose();
+            const wrapper = document.createElement("div");
+            wrapper.appendChild(child.cloneNode(true));
+            const nested = htmlToMd(wrapper);
+            if (nested) parts.push(nested);
+          } else {
+            looseBuffer.appendChild(child.cloneNode(true));
+          }
+        });
+        flushLoose();
+        if (parts.length) out.push(parts.join("\n\n"));
+      } else {
+        out.push(inlineOnly(node));
+      }
     }
   });
   return out.join("\n\n");
@@ -664,6 +762,44 @@ function onEditingInput() {
 el("raw-textarea").addEventListener("input", onEditingInput);
 el("title-input").addEventListener("input", onEditingInput);
 el("wysiwyg-editor").addEventListener("input", onEditingInput);
+// Enter and Shift+Enter both just insert a line break — never a
+// native paragraph split. What that break *means* in the saved
+// markdown depends on how many land in a row (handled by
+// inlineNodeToMd's run-length logic): one is a soft break, two is a
+// real paragraph break, three or more adds explicit <br> lines, since
+// GFM collapses any number of blank lines to a single paragraph break
+// and extra ones add no visual gap on their own.
+el("wysiwyg-editor").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.execCommand("insertLineBreak");
+  }
+  // Browsers auto-wire Ctrl+U to underline for any contenteditable,
+  // with no code of ours calling for it — underline has no GFM
+  // representation, so block it explicitly rather than relying only
+  // on the serializer's fallback to silently drop it on save.
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "u") {
+    e.preventDefault();
+  }
+});
+// Force paste to plain text only. Rich HTML from Word/Google Docs/a
+// webpage can carry formatting with zero GFM representation (colors,
+// underline, fonts, justified/centered text), and — more importantly —
+// can carry arbitrary markup that bypasses the markdown converter's
+// own URL sanitization entirely, unlike anything typed or imported
+// through this app's own paths.
+el("wysiwyg-editor").addEventListener("paste", (e) => {
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+  document.execCommand("insertText", false, text);
+});
+// Native drag-and-drop has the same problem — dropped content can
+// carry a browser's own rich HTML/URLs straight into the DOM. Direct
+// users to the Upload/Attach toolbar buttons instead, which go
+// through this app's own upload endpoint.
+el("wysiwyg-editor").addEventListener("drop", (e) => {
+  e.preventDefault();
+});
 el("wysiwyg-editor").addEventListener("change", (e) => {
   if (e.target && e.target.type === "checkbox") onEditingInput();
 });
@@ -799,15 +935,16 @@ el("format-bar").addEventListener("click", (e) => {
   } else if (cmd === "code") {
     wrapSelectionInline("code");
   } else if (cmd === "link") {
-    const url = prompt("Link URL:", "https://");
-    if (!url) return;
+    const rawUrl = prompt("Link URL:", "https://");
+    if (!rawUrl) return;
+    const url = sanitizeUrl(rawUrl);
     if (!selectedText) document.execCommand("insertHTML", false, '<a href="' + url + '">' + escapeHtml(url) + "</a>");
     else document.execCommand("createLink", false, url);
   } else if (cmd === "image") {
     const imgUrl = prompt("Image URL:", "https://");
     if (!imgUrl) return;
     const alt = prompt("Alt text (optional):", "") || "";
-    document.execCommand("insertHTML", false, '<img src="' + imgUrl + '" alt="' + escapeHtml(alt) + '">');
+    document.execCommand("insertHTML", false, '<img src="' + sanitizeUrl(imgUrl) + '" alt="' + escapeHtml(alt) + '">');
   } else if (cmd === "upload") {
     el("image-upload-input").click();
     return;
@@ -856,7 +993,7 @@ el("image-upload-input").addEventListener("change", async (e) => {
   try {
     const { url } = await uploadFile(file);
     el("wysiwyg-editor").focus();
-    document.execCommand("insertHTML", false, '<img src="' + url + '" alt="' + escapeHtml(file.name) + '">');
+    document.execCommand("insertHTML", false, '<img src="' + sanitizeUrl(url) + '" alt="' + escapeHtml(file.name) + '">');
     onEditingInput();
   } catch (err) {
     alert(err.message);
@@ -870,7 +1007,7 @@ el("attach-file-input").addEventListener("change", async (e) => {
   try {
     const { filename, url } = await uploadFile(file);
     el("wysiwyg-editor").focus();
-    document.execCommand("insertHTML", false, '<a href="' + url + '">' + escapeHtml(filename) + "</a>");
+    document.execCommand("insertHTML", false, '<a href="' + sanitizeUrl(url) + '">' + escapeHtml(filename) + "</a>");
     onEditingInput();
   } catch (err) {
     alert(err.message);
