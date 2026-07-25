@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.3.10 — 2026-07-24
+
+- Fixed three Enters in a row silently doing nothing beyond a normal
+  paragraph break, instead of adding the extra explicit line the
+  design has always intended. Root cause, confirmed via direct DOM
+  inspection in a real browser: inserting a `<br>` at the very start
+  of an existing text node (e.g. right after a previous Enter's
+  zero-width-space filler) splits that node, leaving an invisible
+  *empty* text node behind as the new `<br>`'s previous sibling. That
+  phantom node broke the run-length count used to tell a soft break
+  from a paragraph break from an explicit `<br>` line — a run of 3
+  consecutive `<br>`s got fragmented into a run of 1 and a run of 2,
+  neither of which reaches the "add an explicit line" threshold.
+  Fixed by removing that empty text node immediately after insertion.
+  Verified against the exact reported case, and confirmed it survives
+  a real save, page reload, and repeated mode-switching without
+  drifting — this also resolves the long-standing caveat that
+  resaving a 3-Enter note without further edits collapsed it back to
+  a plain paragraph break.
+- Fixed the "/" search-focus shortcut stealing keystrokes anywhere in
+  the app, not just outside of it. It only ever excluded the search
+  box itself, so typing a URL like `https://example.com` directly
+  into a note's title, Writer view, or Markdown view yanked focus to
+  search mid-keystroke and dropped the `/`. Now skips the shortcut
+  whenever focus is already on anything you can type into — any
+  `input`/`textarea`/`select`, or the Writer editor's `contenteditable`
+  — not just the search box specifically.
+
 ## 1.3.9 — 2026-07-23
 
 - Fixed the formatting toolbar staying visible in Markdown mode. The JS
