@@ -241,8 +241,19 @@ el("search-box").addEventListener("keydown", (e) => {
   }
 });
 
+// Only excluding the search box itself meant "/" was stolen from every
+// other typing surface too — a note title, the Writer editor, the raw
+// Markdown textarea — so a URL like "https://example.com" typed into a
+// note yanked focus to search mid-keystroke and dropped the slash.
+// Skip the shortcut whenever focus is already on anything you can type
+// into, not just the search box specifically.
+function isTypingTarget(node) {
+  if (!node) return false;
+  if (node.tagName === "INPUT" || node.tagName === "TEXTAREA" || node.tagName === "SELECT") return true;
+  return !!node.isContentEditable;
+}
 document.addEventListener("keydown", (e) => {
-  if (e.key === "/" && document.activeElement !== el("search-box") && !el("app-screen").hidden) {
+  if (e.key === "/" && !isTypingTarget(document.activeElement) && !el("app-screen").hidden) {
     e.preventDefault();
     el("search-box").focus();
   }
@@ -870,6 +881,22 @@ el("wysiwyg-editor").addEventListener("keydown", (e) => {
         }
       }
       if (!insertedOutside) range.insertNode(br);
+
+      // Range.insertNode() on a collapsed range positioned at the very
+      // start of an existing text node (e.g. right after a previous
+      // Enter's zero-width-space filler, with the cursor sitting at its
+      // start) splits that node in two, leaving an empty text node
+      // *before* the <br>. It's invisible, but it's a real sibling —
+      // and it breaks the run-length count of consecutive <br>s just
+      // below, used to tell a soft break from a paragraph break from an
+      // explicit <br> line. Without this, three Enters in a row can
+      // leave one dangling behind the first <br>, splitting what should
+      // be a single run of 3 into a run of 1 and a run of 2 — so the
+      // third Enter silently does nothing instead of adding the extra
+      // line, since GFM collapses runs of 2 and "1 then 2" identically.
+      if (br.previousSibling && br.previousSibling.nodeType === 3 && br.previousSibling.textContent === "") {
+        br.previousSibling.remove();
+      }
 
       // A <br> with nothing after it (the common case — pressing
       // Enter at the end of what you're typing) doesn't render a new
