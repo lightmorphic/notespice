@@ -1,5 +1,55 @@
 # Changelog
 
+## 1.4.0 — 2026-07-25
+
+Writer <-> Markdown fidelity release. Every fix below was found by a
+new 58-scenario end-to-end suite driving the real app in a real
+browser (now committed as `tests/e2e-roundtrip.js`), and all 58
+scenarios pass after these changes — covering the full GFM feature
+set in both directions plus real toolbar/keyboard interactions.
+
+- **Inline formatting inside blockquotes was destroyed on save** —
+  bold/italic/strikethrough/code in a quote silently became plain
+  text (`> **a** b` -> `> a b`, permanently). The quote serializer
+  read `textContent`, which strips every inline element. This is the
+  likely mechanism behind "I made text bold, switched to Markdown,
+  and it wasn't bold" reports. Now serializes quote content through
+  the same inline-aware path as everything else.
+- **Enter could never create a second list item.** The custom Enter
+  handler unconditionally inserted a line break, which inside a list
+  item just breaks the line *within* that item — and the resulting
+  markdown drifted on every subsequent mode switch. Enter inside a
+  list now uses the browser's native behavior: split into a new item,
+  or exit the list when the current item is empty.
+- **Indenting a list item could erase the whole list.** Browsers'
+  native indent nests a `<ul>` directly inside a `<ul>` with no
+  wrapping `<li>` — invalid HTML, but real — and the serializer only
+  looked for `<li>` children, so such a list serialized to an empty
+  string: total data loss on save. The list serializer now walks all
+  child elements and handles directly-nested lists.
+- **Enter inside a code block lost the line break on save.** The
+  code-block serializer read `textContent`, to which a `<br>`
+  contributes nothing — two code lines silently joined into one.
+  Enter in a code block now inserts a literal newline character, and
+  the serializer converts any `<br>` it still finds into a newline.
+- **GFM hard breaks were downgraded to soft breaks on resave.** A
+  note containing a real hard break (two trailing spaces before the
+  newline) lost those spaces the first time it was saved from Writer
+  mode, because a single `<br>` serialized as a bare `\n` — the same
+  bytes a soft break round-trips as, so the two could not coexist.
+  A single line break (including one typed with Enter) now serializes
+  as a proper GFM hard break. Visually identical in Writer and on
+  GitHub; the saved markdown is now valid GFM for a forced break and
+  survives round trips.
+- Hardening from the same test pass: formatting expressed as styled
+  `<span>`s (what some browsers produce instead of `<b>`/`<i>`) is
+  now read off the inline style instead of dropped; an inline
+  formatting element left holding only whitespace/breaks no longer
+  emits orphaned `**`/`*` markers; and content that must stay on one
+  markdown line (headings, table cells, list items, quotes, callout
+  bodies, footnote definitions) has embedded line breaks flattened to
+  spaces so a stray break can't corrupt the construct's syntax.
+
 ## 1.3.10 — 2026-07-24
 
 - Fixed three Enters in a row silently doing nothing beyond a normal
