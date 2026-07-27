@@ -1,5 +1,42 @@
 # Changelog
 
+## 1.5.0 — 2026-07-27
+
+Visual redesign release: Material design language, Urbanist type,
+same yellow.
+
+- **Typeface: Urbanist everywhere.** Inter is gone entirely; so is
+  the monospace face that Markdown mode and code blocks used.
+  Urbanist is self-hosted as a variable font (one face covers every
+  weight from 100 to 900, plus true italics) — still no Google Fonts
+  CDN, no external font request of any kind. License file swapped to
+  the Urbanist OFL.
+- **Material design treatment throughout**, keeping the exact same
+  brand yellow (#FFC107) as the highlight color in both themes:
+  - "New note" is now an extended floating action button, bottom
+    right — the primary action, always on screen and thumb-reachable
+    on mobile without opening the drawer first (it used to be a tiny
+    "+" hidden next to the search box, inside the drawer).
+  - The sidebar is a proper navigation drawer: pill-shaped note rows
+    with a yellow-tinted active state, a rounded Material search bar,
+    and pill-shaped Export/Import/Log out buttons.
+  - Writer/Markdown is a segmented control instead of two bare text
+    labels — the active mode also no longer renders white-on-white
+    in light theme (previously a hardcoded `#fff`).
+  - Round icon buttons with Material state-layer hovers everywhere:
+    app bar, format bar, drawer.
+  - The brand mark now sits small and quiet in the top app bar, so
+    it stays visible even when the drawer is collapsed.
+  - Warm yellow-biased neutrals in both themes instead of flat grays;
+    links and callout titles use a dark amber in light theme (the raw
+    brand yellow was unreadable on a light ground) and the brand
+    yellow in dark theme.
+  - Visible focus rings for keyboard navigation, and all transitions
+    disabled under `prefers-reduced-motion`.
+- Service-worker cache bumped (v2) and the font files added to the
+  cached shell, so installed PWAs pick the redesign up on next load.
+- PWA theme color updated from the old orange to the brand yellow.
+
 ## 1.4.0 — 2026-07-25
 
 Writer <-> Markdown fidelity release. Every fix below was found by a

@@ -34,7 +34,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history.
 - 🔐 Argon2id password hashing, per-IP login rate limiting, and a
   handful of other deliberate security choices (see
   [Security notes](#security-notes))
-- 🔤 Self-hosted [Inter](https://rsms.me/inter/) typeface — no Google
+- 🔤 Self-hosted [Urbanist](https://github.com/coreyhu/Urbanist) typeface — no Google
   Fonts CDN, no external font request of any kind
 
 ## Storage
@@ -314,7 +314,7 @@ notespice/
 │   ├── manifest.json         # PWA manifest
 │   ├── sw.js                 # service worker (app shell only, no note data)
 │   ├── icons/
-│   └── fonts/                # self-hosted Inter
+│   └── fonts/                # self-hosted Urbanist
 ├── docs/
 │   └── logo.png
 ├── Cargo.toml

@@ -1,57 +1,81 @@
-/* Inter, self-hosted (SIL Open Font License — see fonts/INTER-LICENSE.txt).
-   No Google Fonts CDN, no external request of any kind for this. */
+/* Urbanist, self-hosted (SIL Open Font License — see
+   fonts/URBANIST-LICENSE.txt). Variable weight file: one face covers
+   100-900. No Google Fonts CDN, no external request of any kind. */
 @font-face {
-  font-family: "Inter";
+  font-family: "Urbanist";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/inter-400.woff2") format("woff2");
+  src: url("/fonts/urbanist.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: "Inter";
+  font-family: "Urbanist";
   font-style: normal;
-  font-weight: 500;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/inter-500.woff2") format("woff2");
+  src: url("/fonts/urbanist-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 600;
+  font-family: "Urbanist";
+  font-style: italic;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/inter-600.woff2") format("woff2");
+  src: url("/fonts/urbanist-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
+  font-family: "Urbanist";
+  font-style: italic;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/inter-700.woff2") format("woff2");
+  src: url("/fonts/urbanist-italic-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* Material 3-flavored tokens. Neutrals carry a slight warm bias toward
+   the brand yellow rather than pure gray; the yellow itself (#FFC107)
+   is the one fixed point, identical in both themes. */
 :root {
-  --bg: #ffffff;
-  --bg-sidebar: #ececee;
-  --bg-canvas: #e4e3e0;
-  --code-bg: #e8e2d0;
-  --border: #c9c9ce;
-  --text: #1a1a1a;
-  --text-muted: #6b6b70;
+  --bg: #FFFDF6;                 /* surface (editor, cards) */
+  --bg-sidebar: #F4F0E5;         /* surface-container (drawer) */
+  --bg-canvas: #E8E4DA;          /* page behind the app card */
+  --surface-high: #ECE7D9;       /* inputs, chips, hovered rows */
+  --code-bg: #F0EBDC;
+  --border: #D8D2C4;             /* outline-variant */
+  --text: #1D1B13;
+  --text-muted: #6C675A;
   --accent: #FFC107;
-  --danger: #d1453d;
+  --on-accent: #241A00;
+  --accent-tint: rgba(255, 193, 7, 0.22);
+  --link: #8A6A00;              /* readable amber on light ground */
+  --danger: #BA1A1A;
+  --on-danger: #FFFFFF;
+  --hover-layer: rgba(29, 27, 19, 0.07);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 3px 1px rgba(0, 0, 0, 0.06);
+  --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.14);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1c1c1e;
-    --bg-sidebar: #131315;
-    --bg-canvas: #0c0c0d;
-    --code-bg: #362f26;
-    --border: #45454c;
-    --text: #eaeaea;
-    --text-muted: #9a9a9e;
+    --bg: #17150F;
+    --bg-sidebar: #1E1B13;
+    --bg-canvas: #0F0D08;
+    --surface-high: #2A2619;
+    --code-bg: #272213;
+    --border: #48432F;
+    --text: #EAE3D2;
+    --text-muted: #A8A190;
     --accent: #FFC107;
-    --danger: #ef5350;
+    --on-accent: #241A00;
+    --accent-tint: rgba(255, 193, 7, 0.16);
+    --link: #FFC107;            /* the brand yellow reads fine on dark */
+    --danger: #FFB4AB;
+    --on-danger: #690005;
+    --hover-layer: rgba(234, 227, 210, 0.08);
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px 1px rgba(0, 0, 0, 0.25);
+    --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -59,9 +83,10 @@
 
 body {
   margin: 0;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Urbanist", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: var(--bg-canvas);
   color: var(--text);
+  font-size: 15px;
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -70,8 +95,7 @@ body {
   padding: 20px;
 }
 
-/* Custom scrollbars matching the app's own palette, instead of the
-   browser/OS default chrome that doesn't know about our theme. */
+/* Scrollbars in the app's own palette. */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -81,20 +105,27 @@ body {
 *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 *::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 .screen {
   height: 100%;
   width: 100%;
   max-width: 1400px;
-  border-radius: 16px;
+  border-radius: 24px;
   border: 1px solid var(--border);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35), 0 2px 10px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.30), 0 2px 10px rgba(0, 0, 0, 0.15);
   background: var(--bg);
 }
 #login-screen[hidden], #app-screen[hidden] { display: none; }
 
-/* The floating-card look needs room to breathe — on phone-width
-   screens, go full-bleed instead, matching how a native/installed PWA
-   should look (no visible canvas margin, no rounded window corners). */
+/* Full-bleed on phone widths, matching an installed PWA. */
 @media (max-width: 640px) {
   body { padding: 0; }
   .screen { border-radius: 0; border: none; box-shadow: none; max-width: none; }
@@ -109,61 +140,70 @@ body {
 }
 
 .login-card {
-  width: 320px;
-  padding: 32px;
+  width: 340px;
+  padding: 36px 32px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 24px;
+  background: var(--bg-sidebar);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-}
-
-.login-card h1 {
-  margin: 0 0 8px 0;
-  font-size: 22px;
+  gap: 16px;
 }
 
 .brand-lockup {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 4px;
 }
 .brand-lockup img {
-  border-radius: 7px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 .brand-lockup h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .login-card label {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 13px;
+  font-weight: 600;
   color: var(--text-muted);
 }
 
 .login-card input {
-  padding: 8px 10px;
-  font-size: 14px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: inherit;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 12px;
   background: var(--bg);
   color: var(--text);
 }
+.login-card input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  border-color: transparent;
+}
 
 .login-card button {
-  margin-top: 6px;
-  padding: 10px;
+  margin-top: 8px;
+  padding: 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 100px;
   background: var(--accent);
-  color: #1a1a1a;
-  font-size: 14px;
+  color: var(--on-accent);
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: var(--shadow-1);
 }
+.login-card button:hover { box-shadow: var(--shadow-3); }
 
 .error {
   color: var(--danger);
@@ -178,8 +218,9 @@ body {
   overflow: hidden;
 }
 
+/* ---- Navigation drawer (sidebar) ---- */
 .sidebar {
-  width: 260px;
+  width: 280px;
   flex-shrink: 0;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
@@ -197,20 +238,17 @@ body {
 
 #sidebar-backdrop { display: none; }
 
-/* Below this width the sidebar overlays the editor pane instead of
-   sharing space with it — a mobile-style nav drawer. Uses a container
-   query (not a viewport media query) so it responds to how wide the
-   app is actually rendered, not the whole browser window. */
 @media (max-width: 700px) {
   .sidebar {
     position: absolute; top: 0; left: 0; height: 100%;
-    width: 82%; max-width: 320px; opacity: 1;
+    width: 84%; max-width: 330px; opacity: 1;
     z-index: 20; box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
     transform: translateX(0);
     transition: transform 0.2s ease;
+    border-radius: 0 24px 24px 0;
   }
   .sidebar.collapsed {
-    width: 82%; max-width: 320px; opacity: 1;
+    width: 84%; max-width: 330px; opacity: 1;
     border-right: 1px solid var(--border);
     transform: translateX(-100%);
   }
@@ -218,11 +256,9 @@ body {
     display: block; position: absolute; inset: 0;
     background: rgba(0, 0, 0, 0.35); z-index: 15;
   }
-  /* The single-row toolbar (menu, title, undo/redo, mode toggle,
-     delete) doesn't fit on a narrow screen — undo/redo/mode-toggle/
-     delete were getting squeezed off to the side rather than actually
-     disappearing, but effectively unreachable. Wrap into two rows
-     instead, with that action group on its own row above the title. */
+  /* The single-row app bar doesn't fit on a narrow screen — wrap into
+     two rows, with the action group on its own row above the title,
+     the four groups spread edge to edge. */
   .editor-toolbar {
     flex-wrap: wrap;
     row-gap: 8px;
@@ -235,133 +271,150 @@ body {
   }
 }
 
-.menu-toggle-btn {
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text);
-  border-radius: 6px;
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-toggle-btn:hover { background: var(--border); }
-.menu-toggle-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
-
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 10px 8px;
-  font-weight: 600;
-  font-size: 13px;
+  gap: 10px;
+  padding: 18px 18px 10px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.01em;
   color: var(--text);
 }
 .sidebar-brand img {
-  border-radius: 5px;
+  border-radius: 6px;
 }
 .pin-btn {
   margin-left: auto;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   background: transparent;
   color: var(--text-muted);
-  border-radius: 6px;
+  border-radius: 100px;
   cursor: pointer;
 }
 .pin-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
-.pin-btn:hover { background: var(--border); color: var(--text); }
+.pin-btn:hover { background: var(--hover-layer); color: var(--text); }
 .pin-btn.active { color: var(--accent); }
 .pin-btn.active svg { fill: var(--accent); }
 
+/* Material search bar */
 .sidebar-header {
   display: flex;
   gap: 6px;
-  padding: 10px;
-  border-bottom: 1px solid var(--border);
+  padding: 6px 14px 12px;
 }
 
 #search-box {
   flex: 1;
-  padding: 7px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
+  padding: 11px 18px;
+  border: none;
+  border-radius: 100px;
+  background: var(--surface-high);
   color: var(--text);
-  font-size: 13px;
+  font-size: 14px;
+  font-family: inherit;
+  min-width: 0;
+}
+#search-box::placeholder { color: var(--text-muted); }
+#search-box:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
 }
 
-#new-note-btn {
-  width: 32px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 16px;
-  cursor: pointer;
-}
-
+/* Note list: Material drawer items — full-pill active state */
 #note-list {
   list-style: none;
   margin: 0;
-  padding: 6px;
+  padding: 4px 10px;
   overflow-y: auto;
   flex: 1;
 }
 
 #note-list li {
-  padding: 9px 10px;
-  border-radius: 6px;
+  padding: 11px 16px;
+  border-radius: 100px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--text);
+  margin-bottom: 2px;
 }
 
-#note-list li:hover { background: var(--border); }
-#note-list li.active { background: var(--accent); color: #1a1a1a; }
-
-.logout-btn {
-  margin: 10px;
-  padding: 8px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text-muted);
-  font-size: 12px;
-  cursor: pointer;
+#note-list li:hover { background: var(--hover-layer); }
+#note-list li.active {
+  background: var(--accent-tint);
+  color: var(--text);
+  font-weight: 700;
 }
 
 .sidebar-footer-actions {
   display: flex;
-  gap: 6px;
-  margin: 10px 10px 0;
+  gap: 8px;
+  margin: 10px 14px 0;
 }
 
 .sidebar-text-btn {
   flex: 1;
-  padding: 8px;
+  padding: 9px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
+  border-radius: 100px;
+  background: transparent;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
 }
 .sidebar-text-btn:hover {
-  background: var(--border);
+  background: var(--hover-layer);
   color: var(--text);
 }
+
+.logout-btn {
+  margin: 8px 14px 16px;
+  padding: 9px;
+  border: none;
+  border-radius: 100px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.logout-btn:hover { background: var(--hover-layer); color: var(--text); }
+
+/* ---- Extended FAB: the primary action, always in reach ---- */
+.fab {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 22px 0 18px;
+  height: 56px;
+  border: none;
+  border-radius: 16px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow-3);
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+.fab svg { width: 22px; height: 22px; stroke: currentColor; fill: none; }
+.fab:hover { box-shadow: 0 6px 14px 4px rgba(0, 0, 0, 0.22), 0 2px 5px rgba(0, 0, 0, 0.2); }
+.fab:active { transform: scale(0.97); }
 
 /* ---- Editor pane ---- */
 .editor-pane {
@@ -372,9 +425,9 @@ body {
 }
 
 .empty-state {
-  padding: 14px 20px;
+  padding: 16px 24px;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 14px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -385,12 +438,40 @@ body {
   min-height: 0;
 }
 
+/* ---- Top app bar ---- */
 .editor-toolbar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 12px 20px;
   border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.menu-toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  border-radius: 100px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.menu-toggle-btn:hover { background: var(--hover-layer); }
+.menu-toggle-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+
+/* The brand mark lives in the app bar so it's always on screen —
+   even with the drawer collapsed — without shouting. */
+.appbar-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  opacity: 0.9;
 }
 
 #title-input {
@@ -398,134 +479,142 @@ body {
   border: none;
   background: transparent;
   color: var(--text);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.005em;
   outline: none;
+  font-family: inherit;
+  min-width: 0;
 }
 
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin-left: auto;
   flex-shrink: 0;
 }
 
-/* Undo and redo travel together as a single visual unit so the mobile
-   toolbar spreads four groups evenly, not five buttons. */
 .undo-redo-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
 }
 
+/* ---- Segmented Writer / Markdown control ---- */
 .mode-toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  overflow: hidden;
 }
 
 .mode-btn {
   border: none;
   background: transparent;
-  padding: 0;
-  color: #888;
+  padding: 7px 16px;
+  color: var(--text-muted);
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-}
-
-.mode-btn.active {
-  color: #fff;
   font-weight: 600;
 }
+.mode-btn:hover { background: var(--hover-layer); }
 
-.mode-sep {
-  color: #888;
-  font-size: 12px;
+.mode-btn.active {
+  background: var(--accent-tint);
+  color: var(--text);
+  font-weight: 700;
 }
+
+.mode-sep { display: none; }
 
 .save-indicator {
   font-size: 12px;
+  font-weight: 600;
   color: var(--text-muted);
-  min-width: 60px;
+  min-width: 52px;
+  text-align: center;
 }
 
 .icon-btn {
-  border: 1px solid transparent;
+  border: none;
   background: transparent;
   color: var(--text);
-  border-radius: 6px;
-  width: 32px;
-  height: 32px;
+  border-radius: 100px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-.icon-btn:hover { background: var(--border); }
-.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
+.icon-btn:hover { background: var(--hover-layer); }
+.icon-btn svg { width: 19px; height: 19px; stroke: currentColor; fill: none; }
 .icon-btn.danger:hover { background: color-mix(in srgb, var(--danger) 15%, transparent); color: var(--danger); }
 .icon-btn.danger.confirming {
   width: auto;
-  padding: 0 10px;
+  padding: 0 16px;
   background: var(--danger);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
+  color: var(--on-danger);
+  font-size: 13px;
+  font-weight: 700;
   white-space: nowrap;
 }
-.icon-btn.danger.confirming:hover { background: var(--danger); color: #fff; }
+.icon-btn.danger.confirming:hover { background: var(--danger); color: var(--on-danger); }
 
+/* ---- Format bar ---- */
 .format-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
-  padding: 6px 20px;
+  padding: 8px 20px;
   border-bottom: 1px solid var(--border);
   align-items: center;
+  background: var(--bg);
 }
-/* .format-bar's `display: flex` has the same specificity as the browser's
-   built-in `[hidden] { display: none }`, so it wins the tie and the bar
-   never actually hides when JS sets `hidden`. The attribute selector below
-   raises specificity so hiding works — same fix already used for
-   #login-screen/#app-screen above. */
+/* Same specificity as the browser's [hidden] { display: none } — this
+   attribute rule must exist or `display: flex` above wins the tie and
+   the bar never hides in Markdown mode. */
 .format-bar[hidden] { display: none; }
 .format-bar button {
-  border: 1px solid transparent;
+  border: none;
   background: transparent;
   color: var(--text);
-  border-radius: 5px;
-  width: 30px;
-  height: 30px;
+  border-radius: 100px;
+  width: 34px;
+  height: 34px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.format-bar button:hover { background: var(--border); }
+.format-bar button:hover { background: var(--hover-layer); }
 .format-bar button svg { width: 17px; height: 17px; stroke: currentColor; fill: none; }
 .format-bar select {
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text);
-  border-radius: 5px;
-  height: 30px;
-  font-size: 12px;
-  padding: 0 4px;
+  border-radius: 100px;
+  height: 34px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 0 10px;
   cursor: pointer;
 }
-.format-bar .sep { width: 1px; align-self: stretch; background: var(--border); margin: 3px 5px; }
+.format-bar .sep { width: 1px; align-self: stretch; background: var(--border); margin: 4px 6px; }
 
-.md-alert { border-left: 4px solid var(--accent); background: rgba(255, 193, 7, 0.1); border-radius: 0 8px 8px 0; padding: 10px 16px; margin: 0.8em 0; }
+/* ---- Rendered note content ---- */
+.md-alert { border-left: 4px solid var(--accent); background: rgba(255, 193, 7, 0.1); border-radius: 0 12px 12px 0; padding: 10px 16px; margin: 0.8em 0; }
 .md-alert p { margin: 0.3em 0; }
-.md-alert-title { font-weight: 600; color: var(--accent); font-size: 13px; }
+.md-alert-title { font-weight: 700; color: var(--link); font-size: 13px; }
 .md-alert-tip { border-color: #3fb950; background: rgba(63, 185, 80, 0.1); } .md-alert-tip .md-alert-title { color: #3fb950; }
 .md-alert-important { border-color: #a371f7; background: rgba(163, 113, 247, 0.1); } .md-alert-important .md-alert-title { color: #a371f7; }
 .md-alert-warning { border-color: #d29922; background: rgba(210, 153, 34, 0.1); } .md-alert-warning .md-alert-title { color: #d29922; }
-.md-alert-caution { border-color: var(--danger); background: rgba(239, 83, 80, 0.1); } .md-alert-caution .md-alert-title { color: var(--danger); }
+.md-alert-caution { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); } .md-alert-caution .md-alert-title { color: var(--danger); }
 
 .wysiwyg-container hr {
   border: none;
@@ -536,40 +625,38 @@ body {
 .wysiwyg-container {
   flex: 1;
   overflow-y: auto;
-  padding: 10px 30px;
+  padding: 14px 32px 120px; /* bottom clearance for the FAB */
   outline: none;
   line-height: 1.6;
+  font-size: 15px;
 }
-
-/* (Previously capped note content to a fixed reading-column width,
-   but with a persistent sidebar already taking space — unlike
-   flatnotes, which has no sidebar at all — that just created a stark,
-   empty gap rather than a comfortable column. Content fills the
-   available editor-pane width instead.) */
 
 .wysiwyg-container code {
   background: var(--code-bg);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.9em;
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.92em;
 }
 .wysiwyg-container pre {
   background: var(--code-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 12px 16px;
   margin: 0.6em 0;
   white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: anywhere;
-  line-height: 2;
+  line-height: 1.8;
+  font-family: inherit; /* Urbanist everywhere — browsers default <pre> to monospace */
 }
 .wysiwyg-container pre code {
   background: none;
   border: none;
   padding: 0;
   border-radius: 0;
+  font-weight: 500;
 }
 
 .wysiwyg-container table {
@@ -581,34 +668,38 @@ body {
 .wysiwyg-container th,
 .wysiwyg-container td {
   border: 1px solid var(--border);
-  padding: 6px 12px;
+  padding: 7px 12px;
 }
 .wysiwyg-container th {
   background: var(--code-bg);
-  font-weight: 600;
+  font-weight: 700;
   text-align: left;
 }
 
-.wysiwyg-container h1 { font-size: 26px; margin: 0.5em 0 0.3em; }
-.wysiwyg-container h2 { font-size: 21px; margin: 0.5em 0 0.3em; }
-.wysiwyg-container h3 { font-size: 18px; margin: 0.5em 0 0.3em; }
+.wysiwyg-container h1 { font-size: 27px; font-weight: 700; margin: 0.5em 0 0.3em; }
+.wysiwyg-container h2 { font-size: 22px; font-weight: 700; margin: 0.5em 0 0.3em; }
+.wysiwyg-container h3 { font-size: 18px; font-weight: 700; margin: 0.5em 0 0.3em; }
 .wysiwyg-container h4,
 .wysiwyg-container h5,
-.wysiwyg-container h6 { font-size: 15px; margin: 0.5em 0 0.3em; color: var(--text-muted); }
+.wysiwyg-container h6 { font-size: 15px; font-weight: 700; margin: 0.5em 0 0.3em; color: var(--text-muted); }
+/* pre-line matters: soft breaks are literal \n characters in paragraph
+   text, and this is what renders them as visible line breaks (matching
+   GitHub's own GFM rendering). Do not remove. */
 .wysiwyg-container p { margin: 0.6em 0; white-space: pre-line; }
 .wysiwyg-container ul,
 .wysiwyg-container ol { padding-left: 24px; margin: 0.5em 0; }
 .wysiwyg-container ul.task-list { list-style: none; padding-left: 4px; }
 .wysiwyg-container ul.task-list li { display: flex; align-items: baseline; gap: 6px; }
+.wysiwyg-container ul.task-list input[type="checkbox"] { accent-color: var(--accent); }
 .wysiwyg-container blockquote {
-  border-left: 3px solid var(--border);
+  border-left: 3px solid var(--accent);
   margin: 0.6em 0;
   padding: 2px 0 2px 14px;
   color: var(--text-muted);
 }
-.wysiwyg-container a { color: var(--accent); }
-.wysiwyg-container img { max-width: 100%; border-radius: 6px; }
-.wysiwyg-container sup.footnote-ref { color: var(--accent); font-size: 0.75em; }
+.wysiwyg-container a { color: var(--link); text-underline-offset: 2px; }
+.wysiwyg-container img { max-width: 100%; border-radius: 12px; }
+.wysiwyg-container sup.footnote-ref { color: var(--link); font-size: 0.75em; }
 .wysiwyg-container .footnotes { margin-top: 1.2em; font-size: 13px; color: var(--text-muted); }
 .wysiwyg-container .footnotes hr { margin-bottom: 0.8em; }
 .wysiwyg-container .footnotes ol { padding-left: 20px; }
@@ -618,21 +709,26 @@ body {
   border: none;
   outline: none;
   resize: none;
-  padding: 20px 30px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 14px;
+  padding: 20px 32px 120px; /* bottom clearance for the FAB */
+  font-family: inherit;
+  font-size: 15px;
   line-height: 1.6;
   background: var(--bg);
   color: var(--text);
 }
 
-#search-results { flex: 1; overflow-y: auto; padding: 8px; }
-#search-results .results-heading { padding: 8px 12px; font-size: 12px; color: var(--text-muted); }
+/* ---- Search results ---- */
+#search-results { flex: 1; overflow-y: auto; padding: 10px 14px; }
+#search-results .results-heading { padding: 8px 12px; font-size: 12px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); }
 #search-results .result-item {
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border-radius: 16px;
   cursor: pointer;
   margin-bottom: 2px;
 }
-#search-results .result-item:hover { background: var(--border); }
-#search-results .result-title { font-size: 14px; font-weight: 500; }
+#search-results .result-item:hover { background: var(--hover-layer); }
+#search-results .result-title { font-size: 15px; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
