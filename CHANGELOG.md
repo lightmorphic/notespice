@@ -10,6 +10,10 @@
   from that version's CHANGELOG.md section. Cutting a release is now
   just `git tag -a <version> -m "Notespice <version>" && git push
   origin <version>`.
+- A companion one-time `backfill-releases.yml` workflow (manual
+  trigger, idempotent, safe to delete afterwards) creates the missing
+  releases for every version that shipped without one — 1.3.1 through
+  1.5.3 — each tagged at the commit where that version first landed.
 
 ## 1.5.2 — 2026-07-27
 
