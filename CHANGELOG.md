@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.5.6 — 2026-07-28
+
+- Blank lines in Writer are now REAL lines, not spacing tricks. The
+  parser previously split plain text into separate paragraph blocks
+  with a CSS margin as the visible gap — which meant the blank line
+  between two paragraphs wasn't actually there: pressing the down
+  arrow jumped straight from one paragraph to the next, skipping the
+  gap the eye could see, unlike the Markdown view where every blank
+  line is a real line the cursor can land on. Consecutive text
+  paragraphs now parse into a single flow where a paragraph break is
+  a real rendered blank line (and each explicit `<br>` line one
+  more), exactly matching what typing in Writer produces. Verified in
+  a real browser: arrow keys now move one visual line per press
+  through blank lines, identically to the Markdown textarea; every
+  gap is pixel-identical between the two views (24px per line, blank
+  lines included); the full 58-scenario round-trip suite still
+  passes; and the saved markdown is byte-identical through repeated
+  mode switches.
+
 ## 1.5.5 — 2026-07-27
 
 - The sidebar now shows "Notespice vX.Y.Z" beneath Log out, linking
