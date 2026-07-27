@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.1 — 2026-07-27
+
+- The save indicator now always shows a state: "saved" from the moment
+  a note is opened, rather than sitting blank until the first edit.
+- The app bar's four action groups — undo/redo, Writer/Markdown, the
+  save state, and delete — now sit at equal distances: a uniform gap
+  on desktop, spread edge-to-edge on mobile. Fixed the mobile row
+  overflowing a phone-width screen (the delete button was pushed past
+  the right edge, and the segmented control truncated to "Mari…") —
+  the compact mobile sizing was being silently overridden by
+  equal-specificity rules later in the stylesheet, so it now lives at
+  the end of the file where it wins the cascade.
+
 ## 1.5.0 — 2026-07-27
 
 Visual redesign release: Material design language, Urbanist type,
