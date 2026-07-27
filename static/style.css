@@ -711,13 +711,12 @@ button {
    text, and this is what renders them as visible line breaks (matching
    GitHub's own GFM rendering). Do not remove.
 
-   The 1.6em margin makes a paragraph break render as exactly one full
-   blank line (1.6em = one line at this line-height, and adjacent
-   paragraph margins collapse to a single 1.6em) — the same gap the
-   raw Markdown view shows for its literal blank line. Anything
-   smaller renders a paragraph break as a subtle spacing bump that
-   looks inconsistent next to the plain line breaks around it. */
-.wysiwyg-container p { margin: 1.6em 0; white-space: pre-line; }
+   Paragraph breaks are NOT margins: the parser renders them as real
+   <br><br> blank lines inside one <p>, so the caret can land on the
+   blank line exactly like in the Markdown textarea. The margin here
+   only separates a text run from real blocks (headings, lists, code)
+   — never from another text paragraph. */
+.wysiwyg-container p { margin: 0.6em 0; white-space: pre-line; }
 .wysiwyg-container > p:first-child { margin-top: 0; }
 .wysiwyg-container ul,
 .wysiwyg-container ol { padding-left: 24px; margin: 0.5em 0; }
