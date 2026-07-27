@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.2 — 2026-07-27
+
+- Documentation refresh: the README's security notes claimed a 5MB
+  request-body cap when the actual limit is 25MB (with a 20MB
+  per-file attachment cap), and didn't mention the decompressed-size
+  caps on zip imports added in 1.3.0. Both corrected. Added the
+  `tests/` directory to the project-structure listing, and a
+  Development note pointing at the 58-scenario end-to-end
+  Writer<->Markdown suite that guards the converter.
+
 ## 1.5.1 — 2026-07-27
 
 - The save indicator now always shows a state: "saved" from the moment
