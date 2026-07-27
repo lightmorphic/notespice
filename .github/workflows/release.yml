@@ -1,0 +1,56 @@
+# Pushing a version tag (e.g. 1.5.3) creates the matching GitHub
+# release automatically, in the exact format this project has always
+# used by hand: tag = bare version number, release title
+# "1.5.3 — YYYY-MM-DD" taken from the CHANGELOG.md heading, release
+# body = that version's changelog section, verbatim.
+#
+# So cutting a release is now just:
+#   git tag -a 1.5.3 -m "Notespice 1.5.3" && git push origin 1.5.3
+name: Release from changelog
+
+on:
+  push:
+    tags:
+      - "[0-9]*.[0-9]*.[0-9]*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # The changelog on main is the source of truth for every
+      # release's title and body — including tags pointing at older
+      # commits, whose own tree may predate later changelog entries.
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG already exists — nothing to do."
+            exit 0
+          fi
+          python3 - <<'PYEOF'
+          import os, re
+          tag = os.environ["TAG"]
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          m = re.search(
+              rf"^## {re.escape(tag)} — (\S+)\n(.*?)(?=^## |\Z)",
+              text, re.M | re.S)
+          if not m:
+              raise SystemExit(f"No CHANGELOG.md section found for {tag}")
+          open("release-title.txt", "w", encoding="utf-8").write(f"{tag} — {m.group(1)}")
+          open("release-body.md", "w", encoding="utf-8").write(m.group(2).strip() + "\n")
+          PYEOF
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$(cat release-title.txt)" \
+            --notes-file release-body.md \
+            --verify-tag

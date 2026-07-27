@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.5.3 — 2026-07-27
+
+- Releases are now created automatically: pushing a version tag (e.g.
+  `1.5.3`) triggers a new `release.yml` workflow that builds the
+  GitHub release in the format this project has always used by hand —
+  tag as the bare version number, title taken from the changelog
+  heading (`1.5.3 — YYYY-MM-DD`), and the release body copied verbatim
+  from that version's CHANGELOG.md section. Cutting a release is now
+  just `git tag -a <version> -m "Notespice <version>" && git push
+  origin <version>`.
+
 ## 1.5.2 — 2026-07-27
 
 - Documentation refresh: the README's security notes claimed a 5MB
