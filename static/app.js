@@ -783,6 +783,10 @@ async function openNote(title) {
   el("title-input").value = note.title;
   el("raw-textarea").value = note.content;
   el("wysiwyg-editor").innerHTML = mdToHtml(note.content);
+  // The indicator always shows a state — a freshly opened note is by
+  // definition saved, so say so rather than sitting blank until the
+  // first edit.
+  el("save-indicator").textContent = "saved";
   resetDeleteButton();
 
   // Opening a note just moved it to the front of the server's
