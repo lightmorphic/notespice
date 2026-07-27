@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.5 — 2026-07-27
+
+- The sidebar now shows "Notespice vX.Y.Z" beneath Log out, linking
+  to the GitHub repository — so which build is running is always one
+  glance away. The version comes from the server itself (baked in
+  from Cargo.toml at compile time and reported via `/api/session`),
+  not from the frontend files, so it can't drift from the binary
+  actually serving the app.
+
 ## 1.5.4 — 2026-07-27
 
 - A paragraph break now renders in Writer as exactly one full blank
