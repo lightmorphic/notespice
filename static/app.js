@@ -21,6 +21,10 @@ const el = (id) => document.getElementById(id);
 // nesting can vary by cursor position) — forcing a real <p> per Enter
 // keeps the DOM shape predictable and matching what htmlToMd expects.
 document.execCommand("defaultParagraphSeparator", false, "p");
+// Force semantic tags (<b>, <i>) from formatting commands, never
+// styled <span>s. The serializer reads styled spans too as a fallback,
+// but semantic tags are the shape everything here is tested against.
+document.execCommand("styleWithCSS", false, false);
 
 // ---------- API helpers ----------
 async function api(path, options = {}) {
@@ -313,7 +317,15 @@ function inlineNodeToMd(node) {
         runLength++;
         j++;
       }
-      if (runLength === 1) out += "\n";
+      // A single <br> is a hard line break, and GFM's syntax for that
+      // is two trailing spaces before the newline. Serializing it as a
+      // bare "\n" (a soft break) silently downgraded any imported
+      // note's real hard breaks on resave — a bare newline is exactly
+      // what a soft break (a literal \n in paragraph text) already
+      // round-trips as, so the two DOM forms need two distinct
+      // serializations to both survive. Visually identical either way,
+      // both here (white-space: pre-line) and on GitHub.
+      if (runLength === 1) out += "  \n";
       else if (runLength === 2) out += "\n\n";
       else out += "\n\n" + "<br>\n".repeat(runLength - 2);
       i = j;
@@ -324,14 +336,34 @@ function inlineNodeToMd(node) {
     const tag = child.tagName.toLowerCase();
     if (tag === "input" && child.type === "checkbox") { i++; continue; }
     const inner = inlineNodeToMd(child);
-    if (tag === "strong" || tag === "b") out += "**" + inner + "**";
-    else if (tag === "em" || tag === "i") out += "*" + inner + "*";
-    else if (tag === "del" || tag === "s" || tag === "strike") out += "~~" + inner + "~~";
-    else if (tag === "code") out += "`" + inner + "`";
+    // An inline formatting element whose content is only whitespace,
+    // breaks, or zero-width-space fillers must not emit its markers —
+    // a <b> holding nothing but a stray <br> would otherwise become
+    // "**\n**", visible junk asterisks after the next reparse.
+    const innerVisible = inner.replace(/\s/g, "").replace(/\u200B/g, "") !== "";
+    if (tag === "strong" || tag === "b") out += innerVisible ? "**" + inner + "**" : inner;
+    else if (tag === "em" || tag === "i") out += innerVisible ? "*" + inner + "*" : inner;
+    else if (tag === "del" || tag === "s" || tag === "strike") out += innerVisible ? "~~" + inner + "~~" : inner;
+    else if (tag === "code") out += innerVisible ? "`" + inner + "`" : inner;
     else if (tag === "a") out += "[" + inner + "](" + child.getAttribute("href") + ")";
     else if (tag === "img") out += "![" + (child.getAttribute("alt") || "") + "](" + child.getAttribute("src") + ")";
     else if (tag === "sup" && child.classList.contains("footnote-ref")) out += "[^" + child.getAttribute("data-fn") + "]";
     else if (tag === "ul" || tag === "ol") { /* handled separately by caller */ }
+    else if (tag === "span") {
+      // Some browsers express formatting as styled spans instead of
+      // semantic tags (execCommand's CSS mode, or styling that
+      // survived from elsewhere). Read the common ones off the inline
+      // style so that formatting isn't silently dropped on save.
+      let styled = inner;
+      if (innerVisible && child.style) {
+        const fw = String(child.style.fontWeight || "");
+        const deco = String(child.style.textDecorationLine || child.style.textDecoration || "");
+        if (deco.indexOf("line-through") !== -1) styled = "~~" + styled + "~~";
+        if (child.style.fontStyle === "italic") styled = "*" + styled + "*";
+        if (fw === "bold" || fw === "bolder" || parseInt(fw, 10) >= 600) styled = "**" + styled + "**";
+      }
+      out += styled;
+    }
     else out += inner;
     i++;
   }
@@ -534,14 +566,34 @@ function mdToHtml(md) {
   return mdToHtmlInner(md);
 }
 
+// Collapse line breaks inside content that must stay on a single
+// markdown line (a heading, a table cell, a list item, a quote): a
+// stray "\n" or "  \n" inside one of those would split the construct
+// across lines and break its syntax on reparse.
+function oneLine(s) {
+  return s.replace(/\s*\n\s*/g, " ").trim();
+}
+
 function serializeList(listEl, depth) {
   const lines = [];
   const isOl = listEl.tagName.toLowerCase() === "ol";
   let n = 1;
-  listEl.querySelectorAll(":scope > li").forEach((li) => {
+  // Walk direct children in document order rather than querying only
+  // <li>s: browsers' native indent (execCommand) nests a <ul> directly
+  // inside a <ul> with no wrapping <li> — technically invalid HTML,
+  // but real. Querying ":scope > li" alone made such a list serialize
+  // to an empty string: the entire list silently vanished on save.
+  Array.from(listEl.children).forEach((child) => {
+    const t = child.tagName.toLowerCase();
+    if (t === "ul" || t === "ol") {
+      lines.push(serializeList(child, depth + 1));
+      return;
+    }
+    if (t !== "li") return;
+    const li = child;
     const indent = "  ".repeat(depth);
     const cb = li.querySelector(':scope > label > input[type="checkbox"], :scope > input[type="checkbox"]');
-    const text = inlineOnly(li);
+    const text = oneLine(inlineOnly(li));
     if (cb) {
       lines.push(indent + "- [" + (cb.checked ? "x" : " ") + "] " + text);
     } else if (isOl) {
@@ -584,33 +636,52 @@ function htmlToMd(container) {
     }
     // A real block element ends any implicit paragraph in progress.
     flushLoose();
-    if (/^h[1-6]$/.test(tag)) out.push("#".repeat(+tag[1]) + " " + inlineOnly(node));
-    else if (tag === "blockquote") out.push("> " + node.textContent);
+    if (/^h[1-6]$/.test(tag)) out.push("#".repeat(+tag[1]) + " " + oneLine(inlineOnly(node)));
+    // inlineOnly, not textContent: textContent strips every inline
+    // element, so bold/italic/code inside a quote was destroyed on
+    // save — "> **a** b" became "> a b" permanently.
+    else if (tag === "blockquote") out.push("> " + oneLine(inlineOnly(node)));
     else if (tag === "div" && node.classList.contains("md-alert")) {
       const type = Array.from(node.classList).find((c) => c.indexOf("md-alert-") === 0).replace("md-alert-", "").toUpperCase();
       const bodyP = node.querySelector("p:not(.md-alert-title)");
-      const bodyText = bodyP ? inlineOnly(bodyP) : "";
+      const bodyText = bodyP ? oneLine(inlineOnly(bodyP)) : "";
       out.push("> [!" + type + "]" + (bodyText ? "\n> " + bodyText : ""));
     } else if (tag === "div" && node.classList.contains("footnotes")) {
       const lines = [];
       node.querySelectorAll("li").forEach((li) => {
         const id = li.id.replace(/^fn-/, "");
-        lines.push("[^" + id + "]: " + inlineOnly(li));
+        lines.push("[^" + id + "]: " + oneLine(inlineOnly(li)));
       });
       out.push(lines.join("\n\n"));
     } else if (tag === "hr") out.push("---");
     else if (tag === "pre") {
       const lang = node.getAttribute("data-lang") || "";
-      out.push("```" + lang + "\n" + node.textContent + "\n```");
+      // textContent alone loses line structure: a <br> inside the
+      // block (what pressing Enter in a code block leaves behind)
+      // contributes nothing to textContent, silently joining two code
+      // lines into one. Walk the nodes and turn each <br> back into a
+      // real newline.
+      let codeText = "";
+      (function walkPre(n) {
+        n.childNodes.forEach((c) => {
+          if (c.nodeType === 3) codeText += c.textContent;
+          else if (c.nodeType === 1) {
+            if (c.tagName.toLowerCase() === "br") codeText += "\n";
+            else walkPre(c);
+          }
+        });
+      })(node);
+      codeText = codeText.replace(/\u200B/g, "").replace(/\n$/, "");
+      out.push("```" + lang + "\n" + codeText + "\n```");
     } else if (tag === "ul" || tag === "ol") {
       out.push(serializeList(node, 0));
     } else if (tag === "table") {
       const headerCells = [];
-      node.querySelectorAll("thead th").forEach((th) => headerCells.push(inlineOnly(th)));
+      node.querySelectorAll("thead th").forEach((th) => headerCells.push(oneLine(inlineOnly(th))));
       const rows = [];
       node.querySelectorAll("tbody tr").forEach((tr) => {
         const cells = [];
-        tr.querySelectorAll("td").forEach((td) => cells.push(inlineOnly(td)));
+        tr.querySelectorAll("td").forEach((td) => cells.push(oneLine(inlineOnly(td))));
         rows.push(cells);
       });
       const tlines = [];
@@ -825,6 +896,54 @@ el("wysiwyg-editor").addEventListener("input", onEditingInput);
 // and extra ones add no visual gap on their own.
 el("wysiwyg-editor").addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
+    const sel = window.getSelection();
+
+    // Inside a list item, the custom <br> insertion below is exactly
+    // wrong: it puts a line break *inside* the current item, so
+    // pressing Enter could never create a second bullet — and the
+    // "item<br>next" DOM it left behind serialized to markdown that
+    // drifted on every mode switch. The browser's native Enter in an
+    // <li> does the two things people actually expect: split into a
+    // new item, and exit the list when the current item is empty. Let
+    // it through untouched.
+    if (sel.rangeCount) {
+      let scan = sel.getRangeAt(0).startContainer;
+      const editorEl = el("wysiwyg-editor");
+      let inLi = false, inPre = false;
+      while (scan && scan !== editorEl) {
+        if (scan.nodeType === 1) {
+          const t = scan.tagName.toLowerCase();
+          if (t === "li") inLi = true;
+          if (t === "pre") inPre = true;
+        }
+        scan = scan.parentNode;
+      }
+      if (inLi) return; // native list behavior
+      if (inPre) {
+        // Inside a code block, a line break is a literal newline
+        // character, not a <br> — the serializer reads the block's
+        // text, and white-space: pre-wrap renders the \n directly.
+        e.preventDefault();
+        const r = sel.getRangeAt(0);
+        r.deleteContents();
+        const nl = document.createTextNode("\n");
+        r.insertNode(nl);
+        // Same trailing-invisibility problem as the <br> case below:
+        // a newline with nothing after it doesn't render a visible
+        // new line, so give the browser a zero-width space to hold
+        // the line open until something is typed.
+        if (!nl.nextSibling || (nl.nextSibling.nodeType === 3 && nl.nextSibling.textContent === "")) {
+          nl.textContent = "\n\u200B";
+        }
+        r.setStart(nl, nl.textContent.length);
+        r.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(r);
+        onEditingInput();
+        return;
+      }
+    }
+
     e.preventDefault();
     // Manual Range-based insertion, not execCommand("insertLineBreak")
     // — execCommand's exact DOM behavior varies by browser in ways
@@ -834,7 +953,6 @@ el("wysiwyg-editor").addEventListener("keydown", (e) => {
     // structure the markdown parser doesn't walk correctly. This
     // mirrors wrapSelectionInline's approach below, which is directly
     // testable and already verified.
-    const sel = window.getSelection();
     if (sel.rangeCount) {
       const range = sel.getRangeAt(0);
       range.deleteContents();
