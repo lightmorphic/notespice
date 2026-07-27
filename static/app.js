@@ -1420,6 +1420,11 @@ function switchMode(next) {
     showLogin();
     return;
   }
+  // The server reports its own version (from Cargo.toml at compile
+  // time), so the sidebar footer always shows which build is running.
+  if (status.version) {
+    el("version-link").textContent = "Notespice v" + status.version;
+  }
   if (status.logged_in) {
     showApp();
     try {

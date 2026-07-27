@@ -89,7 +89,13 @@ pub async fn logout(State(state): State<Arc<AppState>>, headers: HeaderMap) -> R
 
 pub async fn session_status(State(state): State<Arc<AppState>>, headers: HeaderMap) -> Response {
     let logged_in = require_auth(&state, &headers).is_ok();
-    Json(serde_json::json!({ "logged_in": logged_in })).into_response()
+    // Version comes from Cargo.toml at compile time, so the frontend
+    // can display which build it's actually talking to.
+    Json(serde_json::json!({
+        "logged_in": logged_in,
+        "version": env!("CARGO_PKG_VERSION"),
+    }))
+    .into_response()
 }
 
 // ---------- note endpoints ----------
