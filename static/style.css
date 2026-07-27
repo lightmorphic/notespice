@@ -379,7 +379,7 @@ button {
 }
 
 .logout-btn {
-  margin: 8px 14px 16px;
+  margin: 8px 14px 4px;
   padding: 9px;
   border: none;
   border-radius: 100px;
@@ -390,6 +390,25 @@ button {
   cursor: pointer;
 }
 .logout-btn:hover { background: var(--hover-layer); color: var(--text); }
+
+/* Sidebar footer: name + running version, linking to the repo — so
+   which build is running is always one glance away. */
+.version-link {
+  display: block;
+  text-align: center;
+  margin: 0 14px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0.8;
+}
+.version-link:hover {
+  color: var(--link);
+  text-decoration: underline;
+  opacity: 1;
+}
 
 /* ---- Extended FAB: the primary action, always in reach ---- */
 .fab {
