@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.5.4 — 2026-07-27
+
+- A paragraph break now renders in Writer as exactly one full blank
+  line — the same gap the Markdown view shows for its literal blank
+  line. Previously it rendered as only a small spacing bump, so a
+  note with a paragraph break followed by plain line breaks showed
+  three subtly-different line gaps in Writer while Markdown mode
+  showed a clear blank line: the two views disagreed about the same
+  content. Measured in-browser after the fix: paragraph gap 48px,
+  plain line break 24px, in both views identically.
+- The release workflow can now also be run manually (workflow
+  dispatch with a version input): it creates the tag at main's head
+  and the release in one step, for situations where pushing a tag
+  directly isn't possible.
+
 ## 1.5.3 — 2026-07-27
 
 - Releases are now created automatically: pushing a version tag (e.g.
