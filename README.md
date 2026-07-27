@@ -226,8 +226,10 @@ to disclose something new.
 - The container runs as a non-root user, and the base image's OS
   packages are patched at every build (see the CI workflow's weekly
   scheduled rebuild).
-- Request bodies are capped at 5MB to blunt trivial
-  resource-exhaustion attempts.
+- Request bodies are capped at 25MB (covering the 20MB per-file
+  attachment cap plus multipart overhead), and zip imports are
+  additionally capped on *decompressed* size — 20MB per entry, 200MB
+  per archive — so a crafted "zip bomb" can't exhaust the server.
 
 ## Export / Import
 
@@ -314,7 +316,9 @@ notespice/
 │   ├── manifest.json         # PWA manifest
 │   ├── sw.js                 # service worker (app shell only, no note data)
 │   ├── icons/
-│   └── fonts/                # self-hosted Urbanist
+│   └── fonts/                # self-hosted Urbanist (variable weight + italic)
+├── tests/
+│   └── e2e-roundtrip.js      # 58-scenario Writer<->Markdown suite (real browser)
 ├── docs/
 │   └── logo.png
 ├── Cargo.toml
@@ -334,6 +338,14 @@ Keep it simple — this app exists specifically to be small enough to
 read top to bottom: no frontend build step, no database, no dependency
 that isn't earning its place. If a change makes something harder to
 understand without a clear payoff, it's probably the wrong change.
+
+The Writer/Markdown converter is guarded by `tests/e2e-roundtrip.js`:
+58 scenarios covering the full supported GFM feature set in both
+directions, plus real toolbar and keyboard interactions, driven
+against the actual app in a real browser (Playwright + Chromium — see
+the file header for how to run it). Any change touching the editor,
+the converter, or Enter/paste handling should keep that suite at
+58/58 before shipping.
 
 ## License
 
