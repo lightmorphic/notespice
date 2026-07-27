@@ -527,25 +527,50 @@ function mdToHtmlInner(md) {
     if (raw.trim() === "") { closeAllLists(); i++; continue; }
 
     closeAllLists();
-    const paraLines = [raw];
-    i++;
-    while (i < lines.length && lines[i].trim() !== "" && !isBlockStart(lines[i])) {
-      paraLines.push(lines[i]);
+    // Consume an entire run of plain text — INCLUDING the blank lines
+    // between its paragraphs — into a single <p>, encoding every kind
+    // of break as something the caret can actually land on:
+    //   soft break            -> a literal "\n"  (one line down)
+    //   hard break ("  "/"\") -> <br>            (one line down)
+    //   paragraph break       -> <br><br>        (a REAL blank line)
+    //   each literal <br> line-> one more <br>   (one more blank line)
+    // Splitting paragraphs into separate <p>s with margin gaps made
+    // the blank line purely visual: arrow keys jumped straight across
+    // it, unlike the Markdown textarea where every blank line is a
+    // real line. This is also exactly the DOM shape typing in Writer
+    // produces, so the serializer's existing <br> run-length logic
+    // round-trips it unchanged.
+    let paraHtml = "";
+    let sep = null; // pending separator before the next text line
+    while (i < lines.length) {
+      const line = lines[i];
+      if (line.trim() === "") {
+        // Blank run: consume it all, then peek. Blanks before a block
+        // (or the end) are separators for the join, not content.
+        let j = i;
+        while (j < lines.length && lines[j].trim() === "") j++;
+        if (j >= lines.length || isBlockStart(lines[j])) { i = j; break; }
+        sep = "<br><br>";
+        i = j;
+        continue;
+      }
+      if (isBlockStart(line)) break;
+      if (/^<br\s*\/?>$/i.test(line.trim())) {
+        // A literal <br> line: one additional blank line on top of
+        // whatever break precedes it.
+        sep = (sep && sep.indexOf("<br>") === 0 ? sep : "") + "<br>";
+        i++;
+        continue;
+      }
+      if (paraHtml !== "") paraHtml += sep === null ? "\n" : sep;
+      // A region can legitimately begin with pending breaks (a note
+      // whose text starts with a literal <br> line) — keep them.
+      else if (sep && sep.indexOf("<br>") === 0) paraHtml += sep;
+      const hardBreak = /(  +|\\)$/.test(line);
+      paraHtml += inlineMdToHtml(line.replace(/(  +|\\)$/, ""));
+      sep = hardBreak ? "<br>" : "\n";
       i++;
     }
-    let paraHtml = "";
-    paraLines.forEach((line, idx) => {
-      const isLast = idx === paraLines.length - 1;
-      const trimmed = line.trim();
-      if (/^<br\s*\/?>$/i.test(trimmed)) {
-        paraHtml += "<br>";
-        return;
-      }
-      const hardBreak = !isLast && /(  +|\\)$/.test(line);
-      const cleanLine = line.replace(/(  +|\\)$/, "");
-      paraHtml += inlineMdToHtml(cleanLine);
-      if (!isLast) paraHtml += hardBreak ? "<br>" : "\n";
-    });
     html += "<p>" + paraHtml + "</p>";
   }
   closeAllLists();
