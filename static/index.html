@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notespice</title>
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#c45a20" />
+  <meta name="theme-color" content="#FFC107" />
   <link rel="icon" href="/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Notespice" />
   <link rel="stylesheet" href="/style.css" />
-  <!-- Inter is self-hosted under /fonts (see style.css @font-face) —
+  <!-- Urbanist is self-hosted under /fonts (see style.css @font-face) —
        no Google Fonts CDN, no request to Google at all. -->
 </head>
 <body>
@@ -47,8 +47,8 @@
         </button>
       </div>
       <div class="sidebar-header">
-        <input type="search" id="search-box" placeholder="Filter names… Enter to search all notes" />
-        <button id="new-note-btn" title="New note">+</button>
+        <input type="search" id="search-box" placeholder="Search notes…"
+               title="Type to filter by name; press Enter to search all note content" />
       </div>
       <ul id="note-list"></ul>
       <div class="sidebar-footer-actions">
@@ -70,6 +70,7 @@
           <button id="menu-toggle-btn" class="menu-toggle-btn" title="Toggle sidebar" aria-label="Toggle sidebar">
             <svg viewBox="0 0 20 20" stroke-width="1.7" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
           </button>
+          <img class="appbar-logo" src="/icons/icon-192.png" alt="" width="22" height="22" />
           <input type="text" id="title-input" placeholder="Untitled note" />
           <div class="toolbar-right">
             <div class="undo-redo-group">
@@ -96,6 +97,13 @@
         <textarea id="raw-textarea" class="raw-textarea" hidden></textarea>
       </div>
     </main>
+
+    <!-- Extended FAB: the primary action, reachable from anywhere —
+         including on mobile without opening the drawer first. -->
+    <button id="new-note-btn" class="fab" title="New note">
+      <svg viewBox="0 0 20 20" stroke-width="2" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>
+      <span>New note</span>
+    </button>
   </div>
 
   <script src="/app.js"></script>
