@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.7 — 2026-07-28
+
+- Removed the emoji icons from the README's feature list.
+
 ## 1.5.6 — 2026-07-28
 
 - Blank lines in Writer are now REAL lines, not spacing tricks. The
