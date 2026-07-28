@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.8 — 2026-07-28
+
+- Dark theme recolored from warm browns to a cool navy palette: the
+  main surface is now `#10141C` and container boxes (sidebar drawer,
+  code blocks, login card) are `#19212B`, with borders, input fields,
+  canvas, and muted text derived from the same hue family. The brand
+  yellow and the light theme are unchanged.
+
 ## 1.5.7 — 2026-07-28
 
 - Removed the emoji icons from the README's feature list.
