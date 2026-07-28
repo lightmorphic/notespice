@@ -2,6 +2,11 @@
 # your notes to Claude over the Model Context Protocol.
 FROM node:22-alpine
 
+# Links the GHCR package to the repository automatically.
+LABEL org.opencontainers.image.source="https://github.com/FOSSCharlie/notespice"
+LABEL org.opencontainers.image.description="Notespice MCP server — exposes your notes to Claude"
+LABEL org.opencontainers.image.licenses="MIT"
+
 # Keep OS packages patched at build time, mirroring the main image.
 RUN apk upgrade --no-cache
 
