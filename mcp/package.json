@@ -1,6 +1,6 @@
 {
   "name": "notespice-mcp",
-  "version": "1.6.0",
+  "version": "1.6.2",
   "description": "MCP server exposing Notespice notes to Claude over Streamable HTTP",
   "private": true,
   "main": "server.js",
