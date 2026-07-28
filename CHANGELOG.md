@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.6.1 — 2026-07-28
+
+- Both Docker images now carry the OCI `org.opencontainers.image.source`
+  label, so GHCR automatically links the packages to this repository —
+  the new `notespice-mcp` package was landing unlinked under the
+  account's package list, which made it look like it didn't exist.
+  (One-time manual step still applies to the already-pushed package:
+  set `notespice-mcp` to public in the package settings.)
+
 ## 1.6.0 — 2026-07-28
 
 - Optional MCP server: Claude (Claude Code, claude.ai custom
