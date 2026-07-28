@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.5.9 — 2026-07-28
+
+- Typeface changed from Urbanist to Geist, everywhere — UI, Writer,
+  Markdown view, and code blocks. Urbanist is removed completely:
+  font files, license file, `@font-face` rules, stylesheet
+  references, service-worker cache entries, and documentation.
+  Geist is self-hosted as a variable font (weights 100-900, latin +
+  latin-ext, SIL Open Font License) — verified in a real browser
+  that the page loads it from local files with zero external
+  network requests of any kind. Geist ships no italic faces, so
+  italics render as a browser-synthesized oblique. Service-worker
+  cache bumped (v3) so installed PWAs pick up the new font on next
+  load.
+
 ## 1.5.8 — 2026-07-28
 
 - Dark theme recolored from warm browns to a cool navy palette: the
