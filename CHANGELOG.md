@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.6.0 — 2026-07-28
+
+- Optional MCP server: Claude (Claude Code, claude.ai custom
+  connectors, Claude Desktop) can now list, read, search, create,
+  update, append to, and delete notes through the Model Context
+  Protocol. Ships as a commented-out `notespice-mcp` service in
+  `docker-compose.yml` — disabled by default; uncomment the block and
+  restart to enable. It speaks the Streamable HTTP transport (the one
+  every Claude surface supports) and is a thin client of the
+  Notespice API: it logs in with the same credentials as the web app
+  and uses the same endpoints, so search indexing, title
+  sanitization, and collision handling behave identically. Optional
+  `MCP_TOKEN` bearer auth for Claude Code; full setup and security
+  notes in the README's "Claude integration (MCP)" section. The CI
+  workflow now also publishes the companion image
+  (`ghcr.io/fosscharlie/notespice-mcp`). Verified end-to-end against
+  a running instance: initialize, tools/list, and every tool
+  exercised over the wire.
+
 ## 1.5.9 — 2026-07-28
 
 - Typeface changed from Urbanist to Geist, everywhere — UI, Writer,

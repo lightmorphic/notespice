@@ -17,3 +17,38 @@ services:
       # on purpose so it's never mixed in with your actual data.
     ports:
       - "8080:8080"
+
+  # ---------------------------------------------------------------
+  # Optional: MCP server — lets Claude (Claude Code, claude.ai custom
+  # connectors, Claude Desktop) list, read, search, create, update,
+  # and delete your notes through the Model Context Protocol.
+  #
+  # Disabled by default. To enable, uncomment the block below, set
+  # NOTES_PASSWORD to the same password as above, and restart:
+  #   docker compose up -d
+  #
+  # Then connect Claude to  http://<your-host>:4200/mcp
+  #   - Claude Code:  claude mcp add --transport http notespice http://<your-host>:4200/mcp
+  #   - claude.ai:    Settings -> Connectors -> Add custom connector
+  #                   (needs an HTTPS URL — put this behind the same
+  #                   reverse proxy / Tailscale Serve as the app)
+  #
+  # Anyone who can reach this port can read and edit your notes, so
+  # keep it inside your own network or tailnet. Optionally set
+  # MCP_TOKEN to require "Authorization: Bearer <token>" — supported
+  # by Claude Code, but claude.ai custom connectors can't send custom
+  # headers, so leave it unset if you connect from claude.ai.
+  # ---------------------------------------------------------------
+  # notespice-mcp:
+  #   image: ghcr.io/fosscharlie/notespice-mcp:latest
+  #   container_name: notespice-mcp
+  #   restart: unless-stopped
+  #   environment:
+  #     NOTES_URL: "http://notespice:8080"
+  #     NOTES_USERNAME: "admin"
+  #     NOTES_PASSWORD: "changeMe!" # must match the app's password above
+  #     # MCP_TOKEN: "some-long-random-string"  # optional bearer auth (not for claude.ai)
+  #   ports:
+  #     - "4200:4200"
+  #   depends_on:
+  #     - notespice
