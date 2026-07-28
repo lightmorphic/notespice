@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.6.2 — 2026-07-29
+
+- MCP server: the `/healthz` endpoint is no longer behind the bearer
+  token gate. With `MCP_TOKEN` set, the container's own Docker
+  healthcheck (which probes `/healthz` without credentials) always got
+  a 401, permanently marking the container unhealthy — which in turn
+  made deploy tools that wait on container health refuse the stack.
+  The health probe leaks nothing and is now always open; the `/mcp`
+  endpoint itself remains fully guarded by the token. The MCP server
+  also now reports its real package version instead of a hardcoded
+  string.
+
 ## 1.6.1 — 2026-07-28
 
 - Both Docker images now carry the OCI `org.opencontainers.image.source`

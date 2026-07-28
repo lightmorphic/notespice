@@ -82,7 +82,7 @@ async function apiJson(path, opts = {}) {
 const text = (s) => ({ content: [{ type: "text", text: s }] });
 
 function buildServer() {
-  const server = new McpServer({ name: "notespice", version: "1.6.0" });
+  const server = new McpServer({ name: "notespice", version: require("./package.json").version });
 
   server.registerTool(
     "list_notes",
@@ -215,6 +215,12 @@ function buildServer() {
 const app = express();
 app.use(express.json({ limit: "25mb" }));
 
+// Health probe: registered BEFORE the auth gate on purpose. The
+// container's own Docker HEALTHCHECK (and any monitoring) probes this
+// without credentials — guarding it made the container permanently
+// "unhealthy" whenever MCP_TOKEN was set. It leaks nothing.
+app.get("/healthz", (req, res) => res.json({ ok: true }));
+
 app.use((req, res, next) => {
   if (TOKEN && req.headers.authorization !== `Bearer ${TOKEN}`) {
     res.status(401).json({ error: "unauthorized" });
@@ -259,8 +265,6 @@ const methodNotAllowed = (req, res) =>
   });
 app.get("/mcp", methodNotAllowed);
 app.delete("/mcp", methodNotAllowed);
-
-app.get("/healthz", (req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => {
   console.log(`Notespice MCP server listening on :${PORT} (endpoint: /mcp), talking to ${BASE}`);
