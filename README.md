@@ -12,29 +12,29 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history.
 
 ## Features
 
-- ✨ Clean, minimal interface with a full GitHub Flavored Markdown
+- Clean, minimal interface with a full GitHub Flavored Markdown
   toolbar — headings, lists, tables, footnotes, GitHub-style callouts,
   the works (see [GitHub Flavored Markdown support](#github-flavored-markdown-support))
-- 📝 WYSIWYG editor with a one-click raw-markdown toggle — a small
+- WYSIWYG editor with a one-click raw-markdown toggle — a small
   hand-written markdown converter, not a third-party library loaded
   from a CDN, so there's nothing external to version-mismatch or break
-- 🗂️ No database — every note is just a `.md` file you can open,
+- No database — every note is just a `.md` file you can open,
   edit, or move with any other tool, even while the app is running
-- 📎 Images, uploads, and file attachments, stored alongside your
+- Images, uploads, and file attachments, stored alongside your
   notes and referenced by plain markdown links
-- 🔍 Full-text search, plus instant name-filtering as you type
-- 🕓 Sidebar shows your last 10 *viewed* notes first, not just
+- Full-text search, plus instant name-filtering as you type
+- Sidebar shows your last 10 *viewed* notes first, not just
   last-edited
-- ↩️ Undo/redo
-- 📤 One-click export to a dated zip; import that same zip (or a loose
+- Undo/redo
+- One-click export to a dated zip; import that same zip (or a loose
   `.md` file) back in, never overwriting on a title collision
-- 📱 Installable PWA — works offline for the app shell, "Add to Home
+- Installable PWA — works offline for the app shell, "Add to Home
   Screen" on mobile or desktop
-- 🌓 Dark/light mode, following system preference
-- 🔐 Argon2id password hashing, per-IP login rate limiting, and a
+- Dark/light mode, following system preference
+- Argon2id password hashing, per-IP login rate limiting, and a
   handful of other deliberate security choices (see
   [Security notes](#security-notes))
-- 🔤 Self-hosted [Urbanist](https://github.com/coreyhu/Urbanist) typeface — no Google
+- Self-hosted [Urbanist](https://github.com/coreyhu/Urbanist) typeface — no Google
   Fonts CDN, no external font request of any kind
 
 ## Storage
