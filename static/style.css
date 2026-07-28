@@ -59,21 +59,24 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #17150F;
-    --bg-sidebar: #1E1B13;
-    --bg-canvas: #0F0D08;
-    --surface-high: #2A2619;
-    --code-bg: #272213;
-    --border: #48432F;
-    --text: #EAE3D2;
-    --text-muted: #A8A190;
+    /* Cool navy dark palette: #10141C is the main surface, #19212B
+       the container "boxes" (drawer, code blocks); everything else is
+       derived from the same hue family. The yellow is unchanged. */
+    --bg: #10141C;
+    --bg-sidebar: #19212B;
+    --bg-canvas: #0A0D13;
+    --surface-high: #212B38;
+    --code-bg: #19212B;
+    --border: #303B4A;
+    --text: #E6EAF0;
+    --text-muted: #93A0B0;
     --accent: #FFC107;
     --on-accent: #241A00;
     --accent-tint: rgba(255, 193, 7, 0.16);
     --link: #FFC107;            /* the brand yellow reads fine on dark */
     --danger: #FFB4AB;
     --on-danger: #690005;
-    --hover-layer: rgba(234, 227, 210, 0.08);
+    --hover-layer: rgba(230, 234, 240, 0.07);
     --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px 1px rgba(0, 0, 0, 0.25);
     --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.4);
   }
