@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.7.0 — 2026-07-29
+
+- Removed the optional MCP server (added in 1.6.0) entirely: the
+  `mcp/` directory, the commented-out compose service, the CI image
+  build, and the README's Claude-integration section. Notespice is a
+  notes app again, nothing more. The already-published
+  `ghcr.io/fosscharlie/notespice-mcp` images remain on GHCR but will
+  no longer be updated — the package can be deleted from the GitHub
+  Packages page. The OCI source label on the main image (added in
+  1.6.1) stays, since it usefully links the package to this repo.
+
 ## 1.6.2 — 2026-07-29
 
 - MCP server: the `/healthz` endpoint is no longer behind the bearer

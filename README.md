@@ -36,10 +36,6 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history.
   [Security notes](#security-notes))
 - Self-hosted [Geist](https://vercel.com/font) typeface — no font CDN,
   no external font request of any kind
-- Optional MCP server so Claude (Claude Code, claude.ai, Claude
-  Desktop) can list, read, search, create, and update your notes —
-  ships in `docker-compose.yml`, disabled by default (see
-  [Claude integration (MCP)](#claude-integration-mcp))
 
 ## Storage
 
@@ -169,45 +165,6 @@ without a code change), using the repo's built-in `GITHUB_TOKEN` — no
 extra secrets needed. Make sure the resulting package is set to public
 in the repo's Packages tab if you want to `docker pull` it without
 authenticating.
-
-## Claude integration (MCP)
-
-An optional companion container exposes your notes to Claude over the
-[Model Context Protocol](https://modelcontextprotocol.io) (Streamable
-HTTP transport — the one all Claude surfaces support). It's a thin
-client of the Notespice API: it logs in with the same credentials as
-the web app and goes through the same endpoints, so search indexing,
-title sanitization, and collision handling behave exactly as in the
-app. Tools exposed: `list_notes`, `read_note`, `search_notes`,
-`create_note`, `update_note`, `append_to_note`, `delete_note`.
-
-**Enable it:** uncomment the `notespice-mcp` block in
-`docker-compose.yml`, set `NOTES_PASSWORD` to the same password as the
-app, then `docker compose up -d`. It's commented out by default — if
-you don't want it, do nothing.
-
-**Connect Claude** to `http://<your-host>:4200/mcp`:
-
-- **Claude Code:**
-  `claude mcp add --transport http notespice http://<your-host>:4200/mcp`
-- **claude.ai (Chat) and Claude Desktop:** Settings -> Connectors ->
-  Add custom connector. claude.ai requires an HTTPS URL reachable from
-  your browser — put the MCP port behind the same reverse proxy or
-  Tailscale Serve you use for the app itself.
-
-**Security:** anyone who can reach port 4200 can read and edit your
-notes, so keep it inside your own network or tailnet. You can set
-`MCP_TOKEN` to require `Authorization: Bearer <token>` on every
-request — Claude Code supports custom headers, but claude.ai custom
-connectors do not, so leave it unset if you connect from claude.ai.
-
-| Variable | Required | Default | Purpose |
-|---|---|---|---|
-| `NOTES_URL` | no | `http://notespice:8080` | Base URL of the Notespice app |
-| `NOTES_USERNAME` | no | `admin` | Same login as the web app |
-| `NOTES_PASSWORD` | **yes** | — | Same password as the web app |
-| `MCP_PORT` | no | `4200` | Port the MCP server listens on |
-| `MCP_TOKEN` | no | — | Optional bearer token (not usable from claude.ai) |
 
 ## Environment variables
 
@@ -362,10 +319,6 @@ notespice/
 │   └── fonts/                # self-hosted Geist (variable weight)
 ├── tests/
 │   └── e2e-roundtrip.js      # 58-scenario Writer<->Markdown suite (real browser)
-├── mcp/                      # optional MCP server for Claude (own image)
-│   ├── server.js
-│   ├── package.json
-│   └── Dockerfile
 ├── docs/
 │   └── logo.png
 ├── Cargo.toml
