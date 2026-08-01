@@ -38,12 +38,3 @@ jobs:
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/notespice:latest
             ghcr.io/${{ env.OWNER_LC }}/notespice:${{ github.sha }}
-
-      - name: Build and push MCP server
-        uses: docker/build-push-action@v6
-        with:
-          context: ./mcp
-          push: true
-          tags: |
-            ghcr.io/${{ env.OWNER_LC }}/notespice-mcp:latest
-            ghcr.io/${{ env.OWNER_LC }}/notespice-mcp:${{ github.sha }}
