@@ -319,7 +319,14 @@ const MD_CASES = [
   await actionCase('code block with two lines',
     async () => {
       await page.keyboard.type('a'); await page.click('[data-cmd="codeblock"]');
-      await page.click('#wysiwyg-editor'); await page.keyboard.press('End');
+      // Not '#wysiwyg-editor' here: a code block always gets a trailing
+      // empty paragraph placed after it (so there's something to click
+      // below the block, elsewhere in this suite's coverage), which
+      // makes that paragraph - not the code block - the container's
+      // last child. Clicking the container's own background would
+      // land the cursor there instead of back in the code, so this
+      // clicks the code block directly instead.
+      await page.click('#wysiwyg-editor pre'); await page.keyboard.press('End');
       await page.keyboard.press('Enter'); await page.keyboard.type('b');
     },
     (md) => md === '```\na\nb\n```' || 'got ' + JSON.stringify(md));

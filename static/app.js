@@ -1462,7 +1462,39 @@ el("format-bar").addEventListener("click", (e) => {
   else if (cmd === "strike") document.execCommand("strikeThrough");
   else if (cmd === "quote") document.execCommand("formatBlock", false, "BLOCKQUOTE");
   else if (cmd === "codeblock") {
-    document.execCommand("formatBlock", false, "PRE");
+    // execCommand("formatBlock", "PRE") is exactly the kind of
+    // browser-dependent DOM surgery this file avoids everywhere else
+    // (see wrapSelectionInline and the Enter handler above) - and for
+    // good reason: tested directly, it can silently do nothing at
+    // all, leaving the toolbar button looking like it worked while no
+    // <pre> exists, which is what made escaping a "code block" that
+    // was never actually created look like a stuck-forever bug. Build
+    // the <pre><code> by hand instead, so the result is always the
+    // same shape mdToHtml itself produces - the shape
+    // ensureTrailingParagraphAfterCodeBlock, the double-Enter exit,
+    // and the click-below fallback all depend on.
+    if (sel && sel.rangeCount) {
+      const range = sel.getRangeAt(0);
+      let block = range.startContainer;
+      while (block && block !== editor && !(block.nodeType === 1 && /^(P|DIV|H[1-6]|BLOCKQUOTE|LI|PRE)$/.test(block.tagName))) {
+        block = block.parentNode;
+      }
+      if (block === editor) block = null;
+      if (!block || block.tagName !== "PRE") {
+        const text = (block ? block.textContent : selectedText || "").replace(/\u200B/g, "");
+        const pre = document.createElement("pre");
+        const code = document.createElement("code");
+        code.textContent = text;
+        pre.appendChild(code);
+        if (block && block.parentNode) block.replaceWith(pre);
+        else editor.appendChild(pre);
+        const r = document.createRange();
+        r.selectNodeContents(code);
+        r.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(r);
+      }
+    }
     ensureTrailingParagraphAfterCodeBlock();
   }
   else if (cmd === "ul") document.execCommand("insertUnorderedList");

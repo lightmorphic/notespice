@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.8.15 — 2026-08-26
+
+- Found the actual root cause of the code-block escape bug: the
+  toolbar's "Code block" button built the block with
+  `execCommand("formatBlock", "PRE")`, which turned out to be
+  unreliable enough to sometimes do nothing at all - leaving the
+  editor's actual content untouched while looking, on screen, like a
+  code block had been created. Every fix so far (the trailing
+  paragraph, the double-Enter exit, the click-below fallback) depended
+  on a real `<pre>` existing in a predictable shape, so when
+  `execCommand` silently failed, none of them had anything to work
+  with. The button now builds the `<pre><code>` by hand instead of
+  through `execCommand`, the same way this app already avoids it for
+  other formatting - guaranteeing the shape every other fix depends
+  on, every time.
+
 ## 1.8.14 — 2026-08-26
 
 - Found the actual reason clicking below a trailing code block
