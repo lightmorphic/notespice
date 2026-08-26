@@ -1091,17 +1091,60 @@ el("wysiwyg-editor").addEventListener("keydown", (e) => {
     if (sel.rangeCount) {
       let scan = sel.getRangeAt(0).startContainer;
       const editorEl = el("wysiwyg-editor");
-      let inLi = false, inPre = false;
+      let inLi = false, inPre = false, preEl = null;
       while (scan && scan !== editorEl) {
         if (scan.nodeType === 1) {
           const t = scan.tagName.toLowerCase();
           if (t === "li") inLi = true;
-          if (t === "pre") inPre = true;
+          if (t === "pre") { inPre = true; preEl = scan; }
         }
         scan = scan.parentNode;
       }
       if (inLi) return; // native list behavior
       if (inPre) {
+        // A code block is otherwise a one-way trap: Enter inside it
+        // never means "leave", so typing all the way to the bottom of
+        // a note with nothing after the block left no way out except a
+        // precise click on a sliver of empty space below it. Two
+        // Enters in a row on the already-blank last line - the same
+        // "exit the block" gesture GitHub, Obsidian and VS Code's own
+        // markdown editors all use - now exits into whatever follows
+        // (creating an empty paragraph first if the block was the very
+        // last thing in the note), instead of adding a second blank
+        // line inside the fence.
+        const r0 = sel.getRangeAt(0);
+        const beforeRange = document.createRange();
+        beforeRange.selectNodeContents(preEl);
+        beforeRange.setEnd(r0.startContainer, r0.startOffset);
+        const textBefore = beforeRange.toString().replace(/\u200B/g, "");
+        const afterRange = document.createRange();
+        afterRange.selectNodeContents(preEl);
+        afterRange.setStart(r0.endContainer, r0.endOffset);
+        const textAfter = afterRange.toString().replace(/\u200B/g, "");
+        const atEnd = textAfter === "";
+        const onBlankLine = textBefore !== "" && textBefore.endsWith("\n");
+        if (atEnd && onBlankLine) {
+          e.preventDefault();
+          const codeChild = preEl.querySelector(":scope > code");
+          const trimmedText = preEl.textContent.replace(/\u200B/g, "").replace(/\n$/, "");
+          if (codeChild) {
+            codeChild.textContent = trimmedText;
+            Array.from(preEl.childNodes).forEach((n) => { if (n !== codeChild) n.remove(); });
+          } else {
+            preEl.textContent = trimmedText;
+          }
+          ensureTrailingParagraphAfterCodeBlock();
+          const target = preEl.nextElementSibling;
+          if (target) {
+            const r2 = document.createRange();
+            r2.selectNodeContents(target);
+            r2.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(r2);
+          }
+          onEditingInput();
+          return;
+        }
         // Inside a code block, a line break is a literal newline
         // character, not a <br> - the serializer reads the block's
         // text, and white-space: pre-wrap renders the \n directly.

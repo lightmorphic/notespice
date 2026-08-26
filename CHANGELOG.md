@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.8.13 — 2026-08-26
+
+- The 1.8.11 code-block fix (a click target below a trailing block)
+  wasn't reliable enough on its own - clicking into a thin empty line
+  next to the editor's large bottom padding didn't always land where
+  intended. Pressing Enter twice on the already-blank last line of a
+  code block now exits it directly, the same gesture GitHub, Obsidian
+  and VS Code's own markdown editors use, and works regardless of
+  where the block sits in the note.
+
 ## 1.8.12 — 2026-08-26
 
 - Moved the running version number off its own line in the sidebar
