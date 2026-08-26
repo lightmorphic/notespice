@@ -442,19 +442,26 @@ button {
 }
 .export-menu-item:hover { background: var(--hover-layer); }
 
-/* Sidebar footer: running version, linking to the repo - so which
-   build is running is always one glance away. The brand name isn't
-   repeated here; it's already at the top of the sidebar. */
+/* Sidebar footer: running version, linking to the repo, sharing a row
+   with the Lightmorphic badge rather than a whole line to itself -
+   worth being able to check, not worth a permanent line of its own.
+   The brand name isn't repeated here either way; it's already at the
+   top of the sidebar. */
+.sidebar-footer-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 14px 14px;
+}
 .version-link {
-  display: block;
-  text-align: center;
-  margin: 8px 14px 12px;
-  font-size: 11px;
+  flex-shrink: 0;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   color: var(--text-muted);
   text-decoration: none;
-  opacity: 0.8;
+  opacity: 0.65;
 }
 .version-link:hover {
   color: var(--link);
@@ -468,7 +475,7 @@ button {
   justify-content: center;
   gap: 6px;
   width: fit-content;
-  margin: 0 auto 14px;
+  margin: 0;
   background: var(--surface-high);
   border: 1px solid var(--border);
   border-radius: 999px;

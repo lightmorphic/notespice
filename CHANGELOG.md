@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.12 — 2026-08-26
+
+- Moved the running version number off its own line in the sidebar
+  footer and onto the same row as the Lightmorphic badge, small and
+  muted - worth being able to check, not worth a permanent line to
+  itself.
+
 ## 1.8.11 — 2026-08-26
 
 - Fixed a Writer dead end: a code block at the very end of a note had
