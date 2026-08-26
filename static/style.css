@@ -324,24 +324,75 @@ button {
   flex: 1;
 }
 
-#note-list li {
-  padding: 11px 16px;
+.note-list-heading {
+  padding: 14px 16px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.note-list-heading:first-child { padding-top: 6px; }
+
+.note-list-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 11px 8px 11px 16px;
   border-radius: 100px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   color: var(--text);
   margin-bottom: 2px;
 }
 
-#note-list li:hover { background: var(--hover-layer); }
-#note-list li.active {
+.note-list-title {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-list-item:hover { background: var(--hover-layer); }
+.note-list-item.active {
   background: var(--accent-tint);
   color: var(--text);
   font-weight: 700;
+}
+
+/* Pin toggle: hidden until the row is hovered/focused or the note is
+   already pinned, so the list stays uncluttered for the common case
+   of an unpinned note. */
+.note-pin-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 100px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+}
+.note-pin-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+.note-list-item:hover .note-pin-btn,
+.note-list-item:focus-within .note-pin-btn,
+.note-pin-btn.active {
+  opacity: 1;
+}
+.note-pin-btn:hover { background: var(--hover-layer); color: var(--text); }
+.note-pin-btn.active { color: var(--accent); }
+.note-pin-btn.active svg { fill: var(--accent); }
+
+/* Touch devices have no hover state to reveal the button on - keep it
+   visible on every row rather than making it undiscoverable. */
+@media (hover: none) {
+  .note-pin-btn { opacity: 1; }
 }
 
 .sidebar-footer-actions {

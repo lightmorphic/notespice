@@ -256,20 +256,27 @@ as a normal upload through the editor.)
 
 ## Note list order
 
-The sidebar shows your last 10 *viewed* notes first,
+Pinned notes come first, under a "Pinned" heading. Click the pin icon
+on a sidebar row (it appears on hover on desktop, and is always shown
+on touch devices) to pin or unpin a note; pinning has no effect on the
+note's content or its file on disk.
+
+Below the pinned notes, the sidebar shows your last 10 *viewed* notes,
 most-recently-opened at the top, not last-edited. Opening a note you
 don't change still brings it to the top; editing isn't required.
 Reopening a note already in that list moves it back to the top rather
 than duplicating it. Every other note (anything outside the last 10
 viewed) falls back to last-modified order underneath.
 
-This is tracked in a small `.recent.json` file in `NOTES_DATA_DIR`:
-plain JSON, an array of up to 10 titles, most-recent-first. It's
-disposable app state, not a note, which is exactly why it lives in a
-separate directory from the notes themselves rather than mixed in with
-your vault: deleting it just resets the sidebar to modified-time order,
-nothing else is affected, and it's excluded from search, export, and
-the note list itself.
+Both are tracked as small JSON files in `NOTES_DATA_DIR`:
+`.recent.json` is an array of up to 10 titles, most-recent-first;
+`.pinned.json` is an array of pinned titles. Both are disposable app
+state, not a note, which is exactly why they live in a separate
+directory from the notes themselves rather than mixed in with your
+vault: deleting `.recent.json` just resets the sidebar to
+modified-time order, and deleting `.pinned.json` just unpins
+everything — nothing else is affected, and neither file is part of
+search, export, or the note list itself.
 
 ## Data model
 

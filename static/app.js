@@ -180,20 +180,78 @@ async function loadNotes() {
   }
 }
 
+const PIN_ICON =
+  '<svg viewBox="0 0 20 20" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+  '<path d="M9 3.5h2l.5 5.5 2.5 2v1.5H6V11l2.5-2z"/><path d="M10 12.5V17"/></svg>';
+
+async function togglePin(title, pinned) {
+  await apiJson(`/notes/${encodeURIComponent(title)}/pin`, {
+    method: "POST",
+    body: JSON.stringify({ pinned }),
+  });
+  // Re-fetch rather than patching the local `pinned` flag in place:
+  // the sidebar groups pinned notes into one contiguous run, and the
+  // server is the one place that knows the correct pinned-then-recent
+  // order after a toggle - patching the flag alone would leave the
+  // client's copy of the list in the wrong order for that grouping.
+  allNotes = await apiJson("/notes");
+  renderNoteList(allNotes);
+}
+
 function renderNoteList(notes) {
   const list = el("note-list");
   list.innerHTML = "";
-  for (const note of notes) {
+
+  // Pinned notes are already sorted first by the server - just find
+  // where that run ends so a "Pinned" label can separate it from the
+  // rest, the same way a real pinned-items list reads anywhere else.
+  const pinnedCount = notes.findIndex((n) => !n.pinned);
+  const splitAt = pinnedCount === -1 ? notes.length : pinnedCount;
+
+  if (splitAt > 0 && splitAt < notes.length) {
+    const heading = document.createElement("li");
+    heading.className = "note-list-heading";
+    heading.textContent = "Pinned";
+    list.appendChild(heading);
+  }
+
+  notes.forEach((note, i) => {
+    if (splitAt > 0 && i === splitAt) {
+      const heading = document.createElement("li");
+      heading.className = "note-list-heading";
+      heading.textContent = "Notes";
+      list.appendChild(heading);
+    }
+
     const li = document.createElement("li");
-    li.textContent = note.title;
+    li.className = "note-list-item";
     li.dataset.title = note.title;
     if (note.title === currentTitle) li.classList.add("active");
+
+    const titleSpan = document.createElement("span");
+    titleSpan.className = "note-list-title";
+    titleSpan.textContent = note.title;
+    li.appendChild(titleSpan);
+
+    const pinBtn = document.createElement("button");
+    pinBtn.className = "note-pin-btn";
+    pinBtn.type = "button";
+    pinBtn.innerHTML = PIN_ICON;
+    pinBtn.title = note.pinned ? "Unpin note" : "Pin note to top";
+    pinBtn.setAttribute("aria-label", pinBtn.title);
+    if (note.pinned) pinBtn.classList.add("active");
+    pinBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePin(note.title, !note.pinned).catch((err) => alert(err.message));
+    });
+    li.appendChild(pinBtn);
+
     li.addEventListener("click", () => {
       openNote(note.title);
       if (isNarrow() && !sidebarPinned) setSidebarOpen(false);
     });
     list.appendChild(li);
-  }
+  });
 }
 
 function closeSearchResults() {

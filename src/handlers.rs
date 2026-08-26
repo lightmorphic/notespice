@@ -104,6 +104,7 @@ pub async fn session_status(State(state): State<Arc<AppState>>, headers: HeaderM
 pub struct NoteMetaOut {
     title: String,
     modified: u64,
+    pinned: bool,
 }
 
 pub async fn list_notes(State(state): State<Arc<AppState>>, headers: HeaderMap) -> Response {
@@ -114,24 +115,36 @@ pub async fn list_notes(State(state): State<Arc<AppState>>, headers: HeaderMap) 
         Ok(notes) => {
             // store.list() already sorts by last-modified - that's the
             // right fallback order, but recently *viewed* notes (which
-            // may not have been edited at all) take priority over it.
-            // Split into "recent, in view order" followed by
-            // "everything else, in the existing modified-time order".
+            // may not have been edited at all) take priority over it,
+            // and pinned notes take priority over that. Split into
+            // "pinned, in pin order" followed by "recent, in view
+            // order" followed by "everything else, in the existing
+            // modified-time order".
+            let pinned_titles = state.store.pinned_titles();
             let recent_titles = state.store.recent_titles();
+            let pinned_set: std::collections::HashSet<&str> =
+                pinned_titles.iter().map(|t| t.as_str()).collect();
             let mut by_title: std::collections::HashMap<String, NoteMetaOut> = notes
                 .into_iter()
                 .map(|n| {
+                    let pinned = pinned_set.contains(n.title.as_str());
                     (
                         n.title.clone(),
                         NoteMetaOut {
                             title: n.title,
                             modified: n.modified,
+                            pinned,
                         },
                     )
                 })
                 .collect();
 
             let mut ordered = Vec::with_capacity(by_title.len());
+            for title in &pinned_titles {
+                if let Some(meta) = by_title.remove(title) {
+                    ordered.push(meta);
+                }
+            }
             for title in &recent_titles {
                 if let Some(meta) = by_title.remove(title) {
                     ordered.push(meta);
@@ -249,6 +262,29 @@ pub async fn delete_note(
     }
     state.search.update_note(&title, None);
     Json(serde_json::json!({ "ok": true })).into_response()
+}
+
+#[derive(Deserialize)]
+pub struct PinNoteRequest {
+    pinned: bool,
+}
+
+pub async fn pin_note(
+    State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
+    axum::extract::Path(title): axum::extract::Path<String>,
+    Json(body): Json<PinNoteRequest>,
+) -> Response {
+    if let Err(resp) = require_auth(&state, &headers) {
+        return resp;
+    }
+    if !state.store.exists(&title) {
+        return err(StatusCode::NOT_FOUND, "note not found");
+    }
+    if let Err(e) = state.store.set_pinned(&title, body.pinned) {
+        return err(StatusCode::INTERNAL_SERVER_ERROR, e.to_string());
+    }
+    Json(serde_json::json!({ "title": title, "pinned": body.pinned })).into_response()
 }
 
 // ---------- search ----------

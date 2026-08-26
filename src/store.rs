@@ -128,11 +128,12 @@ pub struct Store {
 impl Store {
     /// `root` holds notes (.md) and their `files/` subfolder - the
     /// actual vault, meant to be backed up. `app_data_root` holds only
-    /// app-internal state that isn't a note (currently just
-    /// `.recent.json`, the recently-viewed list) - separate on
-    /// purpose, so it can live on different storage than the notes
-    /// themselves without either directory containing a mix of "your
-    /// data" and "the app's own bookkeeping".
+    /// app-internal state that isn't a note (`.recent.json`, the
+    /// recently-viewed list, and `.pinned.json`, the pinned-notes
+    /// list) - separate on purpose, so it can live on different
+    /// storage than the notes themselves without either directory
+    /// containing a mix of "your data" and "the app's own
+    /// bookkeeping".
     pub fn new(root: PathBuf, app_data_root: PathBuf) -> Result<Self> {
         std::fs::create_dir_all(&root)
             .with_context(|| format!("creating notes directory at {}", root.display()))?;
@@ -266,6 +267,13 @@ impl Store {
             self.save_recent(&recent);
         }
 
+        let mut pinned = self.load_pinned();
+        let before = pinned.len();
+        pinned.retain(|t| t != title);
+        if pinned.len() != before {
+            let _ = self.write_pinned(&pinned);
+        }
+
         Ok(())
     }
 
@@ -289,6 +297,18 @@ impl Store {
             }
         }
         self.save_recent(&recent);
+
+        let mut pinned = self.load_pinned();
+        let mut pinned_changed = false;
+        for t in pinned.iter_mut() {
+            if t == old_title {
+                *t = new_title.to_string();
+                pinned_changed = true;
+            }
+        }
+        if pinned_changed {
+            let _ = self.write_pinned(&pinned);
+        }
 
         Ok(())
     }
@@ -343,6 +363,65 @@ impl Store {
     /// this just reports what's on file.
     pub fn recent_titles(&self) -> Vec<String> {
         self.load_recent()
+    }
+
+    // ---------- pinned notes ----------
+    //
+    // Same shape as the recently-viewed list above, and in the same
+    // place: a small JSON file of titles in app_data_root, not a
+    // database and not anything written into the notes themselves. A
+    // pin is a preference about the sidebar, not part of the note, so
+    // the .md files on disk stay exactly as plain as they were - you
+    // can still open the whole vault in any editor and see nothing but
+    // your own text.
+    //
+    // The one thing this list is *not* is best-effort. Losing the
+    // recently-viewed list just reshuffles the sidebar and it rebuilds
+    // itself as you keep working; losing a pin silently drops
+    // something you deliberately asked for, so `set_pinned` reports a
+    // failed write back to the caller instead of swallowing it.
+
+    fn pinned_path(&self) -> PathBuf {
+        self.app_data_root.join(".pinned.json")
+    }
+
+    fn load_pinned(&self) -> Vec<String> {
+        std::fs::read_to_string(self.pinned_path())
+            .ok()
+            .and_then(|s| serde_json::from_str::<Vec<String>>(&s).ok())
+            .unwrap_or_default()
+    }
+
+    fn write_pinned(&self, list: &[String]) -> Result<()> {
+        let json = serde_json::to_string(list)?;
+        std::fs::write(self.pinned_path(), json).with_context(|| {
+            format!("saving pinned notes to {}", self.pinned_path().display())
+        })?;
+        Ok(())
+    }
+
+    /// The pinned titles, in the order they were pinned (oldest pin
+    /// first). The sidebar renders the pinned group in this order, so
+    /// pinning a note adds it to the bottom of the pinned group rather
+    /// than jumping it above notes pinned earlier.
+    pub fn pinned_titles(&self) -> Vec<String> {
+        self.load_pinned()
+    }
+
+    /// Pins or unpins a note. Idempotent - pinning an already-pinned
+    /// note is a no-op that doesn't touch the disk.
+    pub fn set_pinned(&self, title: &str, pinned: bool) -> Result<()> {
+        let mut list = self.load_pinned();
+        let already = list.iter().any(|t| t == title);
+        if pinned == already {
+            return Ok(());
+        }
+        if pinned {
+            list.push(title.to_string());
+        } else {
+            list.retain(|t| t != title);
+        }
+        self.write_pinned(&list)
     }
 
     // ---------- attachments (files/ subfolder) ----------
