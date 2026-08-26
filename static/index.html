@@ -52,16 +52,32 @@
                title="Type to filter by name; press Enter to search all note content" />
       </div>
       <ul id="note-list"></ul>
-      <div class="sidebar-footer-actions">
-        <button id="export-btn" class="sidebar-text-btn">Export all</button>
-        <button id="import-btn" class="sidebar-text-btn">Import</button>
+      <div class="sidebar-footer-icons">
+        <div class="export-note-wrap">
+          <button id="export-note-btn" class="icon-btn" title="Export this note" aria-label="Export this note" aria-haspopup="true" aria-expanded="false">
+            <svg viewBox="0 0 20 20" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5h5l3 3v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-12a1 1 0 0 1 1-1z"/><path d="M10 8v6M7.3 11.3 10 14l2.7-2.7"/></svg>
+          </button>
+          <div id="export-note-menu" class="export-menu" role="menu" hidden>
+            <button type="button" class="export-menu-item" data-format="md" role="menuitem">Markdown (.md)</button>
+            <button type="button" class="export-menu-item" data-format="pdf" role="menuitem">PDF</button>
+          </div>
+        </div>
+        <button id="export-btn" class="icon-btn" title="Export all notes" aria-label="Export all notes">
+          <svg viewBox="0 0 20 20" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 5.5a1 1 0 0 1 1-1h4l1.5 2h7a1 1 0 0 1 1 1v7.5a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1z"/><path d="M10 9v5M7.3 11.3 10 14l2.7-2.7"/></svg>
+        </button>
+        <button id="import-btn" class="icon-btn" title="Import notes" aria-label="Import notes">
+          <svg viewBox="0 0 20 20" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 13v3a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3"/><path d="M10 12V3M6.5 6.5 10 3l3.5 3.5"/></svg>
+        </button>
         <input type="file" id="import-file-input" accept=".md,.zip" style="display:none" />
+        <span class="sep"></span>
+        <button id="logout-btn" class="icon-btn" title="Log out" aria-label="Log out">
+          <svg viewBox="0 0 20 20" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5H4.5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1H8"/><path d="M13 6.5 17 10l-4 3.5M17 10H8"/></svg>
+        </button>
       </div>
-      <button id="logout-btn" class="logout-btn">Log out</button>
       <a id="version-link" class="version-link"
          href="https://github.com/lightmorphic/notespice"
          target="_blank" rel="noopener"
-         title="Notespice on GitHub">Notespice</a>
+         title="Notespice on GitHub"></a>
       <a class="lightmorphic-badge" href="https://lightmorphic.co.uk" target="_blank" rel="noopener noreferrer" translate="no">
         <span>Created by</span>
         <img class="lightmorphic-badge-logo-dark" src="/images/lightmorphic-dark-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
@@ -113,6 +129,11 @@
         <div id="wysiwyg-editor" class="wysiwyg-container" contenteditable="true"
              role="textbox" aria-multiline="true" aria-label="Note content"></div>
         <textarea id="raw-textarea" class="raw-textarea" aria-label="Markdown source" hidden></textarea>
+        <!-- Filled just before a PDF export and printed in its place -
+             a plain <textarea> doesn't paginate onto printed pages
+             usefully, so PDF export always renders through this
+             regardless of which mode (Writer/Markdown) is on screen. -->
+        <div id="print-note" class="wysiwyg-container print-only"></div>
       </div>
     </main>
 

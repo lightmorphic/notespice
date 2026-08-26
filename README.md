@@ -26,8 +26,9 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history.
 - Sidebar shows your last 10 *viewed* notes first, not just
   last-edited
 - Undo/redo
-- One-click export to a dated zip; import that same zip (or a loose
-  `.md` file) back in, never overwriting on a title collision
+- Export a single note as Markdown or PDF, or everything as one dated
+  zip; import that same zip (or a loose `.md` file) back in, never
+  overwriting on a title collision
 - Installable PWA that works offline for the app shell, with "Add to
   Home Screen" on mobile or desktop
 - Dark/light mode, following system preference
@@ -233,12 +234,22 @@ to disclose something new.
 
 ## Export / Import
 
-**Export** (sidebar → "Export all") downloads every note and
-attachment as one zip, named `YYYY-MM-DD_notes.zip`: notes at the
-root as `.md` files, attachments under `files/`. It's the same shape
-either way, so an export is also a valid import.
+The sidebar footer has four icon buttons: export this note, export
+everything, import, and log out.
 
-**Import** (sidebar → "Import") accepts either:
+**Export this note** downloads just the note that's open, in a choice
+of format: **Markdown (.md)**, the note's own file exactly as it's
+stored, built and downloaded entirely client-side (no server request);
+or **PDF**, which goes through the browser's own print-to-PDF rather
+than a rendering library - nothing loaded from anywhere else to make
+it work.
+
+**Export all** downloads every note and attachment as one zip, named
+`YYYY-MM-DD_notes.zip`: notes at the root as `.md` files, attachments
+under `files/`. It's the same shape either way, so an export is also
+a valid import.
+
+**Import** accepts either:
 - That same `.zip` shape. Every `.md` file at its root becomes a
   note, everything under `files/` becomes an attachment
 - A single loose `.md` file. Its filename (minus the extension)
