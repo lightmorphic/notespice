@@ -106,6 +106,74 @@ el("logout-btn").addEventListener("click", async () => {
 });
 
 // ---------- export / import ----------
+
+// Single-note export, in a choice of formats - separate from "export
+// everything" below, which always produces one zip of the whole vault.
+// Markdown is a plain client-side Blob download (the note's content is
+// already in hand, no server round trip needed); PDF reuses the
+// browser's own print-to-PDF rather than a rendering library, in
+// keeping with this app pulling in nothing external - see the
+// @media print rules in style.css for what's hidden/shown.
+function downloadBlob(filename, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function closeExportNoteMenu() {
+  el("export-note-menu").hidden = true;
+  el("export-note-btn").setAttribute("aria-expanded", "false");
+}
+
+el("export-note-btn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (!currentTitle) return;
+  const menu = el("export-note-menu");
+  const opening = menu.hidden;
+  closeExportNoteMenu();
+  if (opening) {
+    menu.hidden = false;
+    el("export-note-btn").setAttribute("aria-expanded", "true");
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (el("export-note-menu").hidden) return;
+  const wrap = el("export-note-btn").closest(".export-note-wrap");
+  if (wrap && !wrap.contains(e.target)) closeExportNoteMenu();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeExportNoteMenu();
+});
+
+el("export-note-menu").addEventListener("click", (e) => {
+  const btn = e.target.closest(".export-menu-item");
+  if (!btn || !currentTitle) return;
+  closeExportNoteMenu();
+  const format = btn.dataset.format;
+  if (format === "md") {
+    downloadBlob(currentTitle + ".md", currentMarkdown(), "text/markdown;charset=utf-8");
+  } else if (format === "pdf") {
+    // Always render through mdToHtml for print, regardless of which
+    // mode (Writer/Markdown) is on screen - printing the raw <textarea>
+    // directly doesn't paginate its content onto printed pages at all
+    // in most browsers.
+    el("print-note").innerHTML = mdToHtml(currentMarkdown());
+    const previousTitle = document.title;
+    document.title = currentTitle;
+    window.print();
+    document.title = previousTitle;
+    el("print-note").innerHTML = "";
+  }
+});
+
 el("export-btn").addEventListener("click", () => {
   window.location.href = "/api/export";
 });
@@ -872,6 +940,7 @@ async function openNote(title) {
   el("title-input").value = note.title;
   el("raw-textarea").value = note.content;
   el("wysiwyg-editor").innerHTML = mdToHtml(note.content);
+  ensureTrailingParagraphAfterCodeBlock();
   // The indicator always shows a state - a freshly opened note is by
   // definition saved, so say so rather than sitting blank until the
   // first edit.
@@ -973,8 +1042,28 @@ function insertChecklistItem(labelText) {
   s.addRange(nr);
 }
 
+// A code block is the one block type Enter can never get you out of
+// (see the keydown handler above - inside a <pre>, Enter always inserts
+// a literal newline, never exits it) and formatBlock("PRE") on the last
+// paragraph leaves the <pre> as the very last element in the editor. In
+// that spot there's also nothing below to click into, so a code block
+// created or arrived at, at the bottom of a note, was previously a
+// dead end. Same fix already used for a freshly inserted table above:
+// give it a trailing empty paragraph, a click target below the block
+// that isn't inside it. Safe to call anytime - it only appends when the
+// very last element genuinely is a <pre>, so calling it again once that
+// paragraph exists (e.g. on every keystroke, from onEditingInput) is a
+// no-op.
+function ensureTrailingParagraphAfterCodeBlock() {
+  const editor = el("wysiwyg-editor");
+  if (editor.lastElementChild && editor.lastElementChild.tagName === "PRE") {
+    editor.appendChild(document.createElement("p"));
+  }
+}
+
 function onEditingInput() {
   if (!sidebarPinned) setSidebarOpen(false);
+  if (mode === "wysiwyg") ensureTrailingParagraphAfterCodeBlock();
   scheduleSave();
 }
 el("raw-textarea").addEventListener("input", onEditingInput);
@@ -1304,7 +1393,10 @@ el("format-bar").addEventListener("click", (e) => {
   else if (cmd === "italic") document.execCommand("italic");
   else if (cmd === "strike") document.execCommand("strikeThrough");
   else if (cmd === "quote") document.execCommand("formatBlock", false, "BLOCKQUOTE");
-  else if (cmd === "codeblock") document.execCommand("formatBlock", false, "PRE");
+  else if (cmd === "codeblock") {
+    document.execCommand("formatBlock", false, "PRE");
+    ensureTrailingParagraphAfterCodeBlock();
+  }
   else if (cmd === "ul") document.execCommand("insertUnorderedList");
   else if (cmd === "ol") document.execCommand("insertOrderedList");
   else if (cmd === "indent") document.execCommand("indent");
@@ -1529,6 +1621,7 @@ function switchMode(next) {
     el("raw-textarea").value = markdown;
   } else {
     el("wysiwyg-editor").innerHTML = mdToHtml(markdown);
+    ensureTrailingParagraphAfterCodeBlock();
   }
 }
 
@@ -1544,7 +1637,7 @@ function switchMode(next) {
   // The server reports its own version (from Cargo.toml at compile
   // time), so the sidebar footer always shows which build is running.
   if (status.version) {
-    el("version-link").textContent = "Notespice v" + status.version;
+    el("version-link").textContent = "v" + status.version;
   }
   if (status.logged_in) {
     showApp();

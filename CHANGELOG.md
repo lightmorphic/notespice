@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.8.11 — 2026-08-26
+
+- Fixed a Writer dead end: a code block at the very end of a note had
+  no way out of it. Enter inside a `<pre>` only ever inserts a literal
+  newline, and with nothing below it there was nothing to click into
+  either. A code block created via the toolbar, or arrived at by
+  opening/loading a note that ends in one, now always gets an empty
+  paragraph placed after it as a click target - matching the same fix
+  already used for a freshly inserted table.
+- Redesigned the sidebar footer into two compact rows: export this
+  note (new - Markdown or PDF, the latter via the browser's own
+  print-to-PDF, no library involved), export all notes, import, and
+  log out are now one row of icon buttons instead of two rows of text
+  buttons. Below that, just the running version number and the
+  Lightmorphic badge - the "Notespice" name isn't repeated there since
+  it's already at the top of the sidebar.
+
 ## 1.8.10 — 2026-08-26
 
 - Added the ability to pin notes: a pin button on each sidebar row

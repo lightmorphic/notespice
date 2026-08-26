@@ -395,47 +395,60 @@ button {
   .note-pin-btn { opacity: 1; }
 }
 
-.sidebar-footer-actions {
+/* One compact row of icon actions: export this note, export
+   everything, import, and (past a divider, since it's a different
+   kind of action) log out. Icon-only with a title/aria-label each,
+   same .icon-btn used by the editor toolbar - text labels for four
+   buttons didn't fit on one line, and these actions are common enough
+   to not need a label once learned. */
+.sidebar-footer-icons {
   display: flex;
-  gap: 8px;
-  margin: 10px 14px 0;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin: 6px 10px 2px;
 }
+.sidebar-footer-icons .sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
 
-.sidebar-text-btn {
-  flex: 1;
-  padding: 9px;
+.export-note-wrap { position: relative; }
+
+.export-menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  min-width: 170px;
+  background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 100px;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: var(--shadow-3);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
-.sidebar-text-btn:hover {
-  background: var(--hover-layer);
-  color: var(--text);
-}
-
-.logout-btn {
-  margin: 8px 14px 4px;
-  padding: 9px;
+.export-menu-item {
   border: none;
-  border-radius: 100px;
   background: transparent;
-  color: var(--text-muted);
+  color: var(--text);
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 6px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
+  font-family: inherit;
 }
-.logout-btn:hover { background: var(--hover-layer); color: var(--text); }
+.export-menu-item:hover { background: var(--hover-layer); }
 
-/* Sidebar footer: name + running version, linking to the repo - so
-   which build is running is always one glance away. */
+/* Sidebar footer: running version, linking to the repo - so which
+   build is running is always one glance away. The brand name isn't
+   repeated here; it's already at the top of the sidebar. */
 .version-link {
   display: block;
   text-align: center;
-  margin: 0 14px 12px;
+  margin: 8px 14px 12px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -791,6 +804,15 @@ button {
    - never from another text paragraph. */
 .wysiwyg-container p { margin: 0.6em 0; white-space: pre-line; }
 .wysiwyg-container > p:first-child { margin-top: 0; }
+/* A genuinely empty <p></p> (no text, no <br>) has zero content-box
+   height by itself, so it's there in the DOM but nothing to click on -
+   exactly the trap a code block left behind at the end of a note
+   before ensureTrailingParagraphAfterCodeBlock() in app.js started
+   appending one. min-height (not a <br> filler) is deliberate: a <br>
+   inside would read back to the saved note as a real hard line break,
+   corrupting content just to create a click target. This is presentation
+   only - the paragraph is still empty in the DOM either way. */
+.wysiwyg-container p:empty { min-height: 1.6em; }
 .wysiwyg-container ul,
 .wysiwyg-container ol { padding-left: 24px; margin: 0.5em 0; }
 .wysiwyg-container ul.task-list { list-style: none; padding-left: 4px; }
@@ -848,4 +870,22 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
+}
+
+/* ---- Print (PDF export via the browser's own print dialog - no
+   library, no server round trip) ---- */
+.print-only { display: none; }
+@media print {
+  .sidebar, #sidebar-backdrop, .editor-toolbar, .format-bar, .fab,
+  #wysiwyg-editor, #raw-textarea { display: none !important; }
+  .print-only { display: block !important; }
+  .editor-pane { overflow: visible; }
+  .wysiwyg-container {
+    padding: 0;
+    overflow: visible;
+    color: #000;
+    background: #fff;
+  }
+  .wysiwyg-container pre, .wysiwyg-container code { background: #f2f2f2; border-color: #ccc; }
+  body, .app-shell, #app-screen { background: #fff; }
 }
