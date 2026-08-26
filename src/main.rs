@@ -49,8 +49,9 @@ async fn main() -> anyhow::Result<()> {
     // Two separate directories, on purpose: NOTES_DIR is the actual
     // vault (notes + their files/ subfolder) - back this up, sync it,
     // whatever you like. NOTES_DATA_DIR is app-only bookkeeping
-    // (currently just the recently-viewed list) that isn't a note at
-    // all; losing it just resets sidebar ordering, nothing more.
+    // (the recently-viewed list and the pinned-notes list) that isn't
+    // a note at all; losing it just resets sidebar ordering and
+    // unpins everything, nothing more.
     let notes_dir = PathBuf::from(env_or("NOTES_DIR", "/notes"));
     let data_dir = PathBuf::from(env_or("NOTES_DATA_DIR", "/data"));
     let port: u16 = env_or("NOTES_PORT", "8080").parse()?;
@@ -103,6 +104,7 @@ async fn main() -> anyhow::Result<()> {
                 .put(handlers::update_note)
                 .delete(handlers::delete_note),
         )
+        .route("/notes/:title/pin", post(handlers::pin_note))
         .route("/search", get(handlers::search_notes))
         .route("/files", post(handlers::upload_file))
         .route("/files/:filename", get(handlers::get_file))

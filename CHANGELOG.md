@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.8.10 — 2026-08-26
+
+- Added the ability to pin notes: a pin button on each sidebar row
+  (hover to reveal on desktop, always visible on touch) keeps a note
+  at the top of the list, above a "Pinned" heading, ahead of the
+  regular recent/last-modified ordering. Pin state is stored in
+  `.pinned.json` alongside the existing `.recent.json` in
+  `NOTES_DATA_DIR` — app bookkeeping, not part of the note file
+  itself — and survives note renames and gets cleaned up on delete.
+
 ## 1.8.9 — 2026-08-10
 
 - Centered the login screen's logo and "Notespice" heading; it was
