@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.8.16 — 2026-08-26
+
+- Fixed two more problems with the "Code block" button surfaced by
+  1.8.15's rebuild: clicking it with the cursor sitting in a blank
+  line between two paragraphs pulled the earlier paragraph's text
+  into the new code block too (this editor keeps a blank-line
+  paragraph break as `<br><br>` inside one `<p>`, not as two separate
+  paragraphs, so "convert the current block" meant "convert both"),
+  and Undo did nothing afterward, since building the block with plain
+  DOM calls never touches the browser's native undo stack. Both are
+  fixed by using `execCommand("insertHTML")` for the actual insertion
+  - a single step the browser can undo, and reliable in a way
+  `formatBlock` wasn't - while only converting the text from the
+  cursor onward when there's real text after it, or the whole block
+  when there isn't (the ordinary case right after typing).
+
 ## 1.8.15 — 2026-08-26
 
 - Found the actual root cause of the code-block escape bug: the
