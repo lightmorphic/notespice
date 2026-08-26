@@ -415,8 +415,7 @@ button {
 .export-menu {
   position: absolute;
   bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   z-index: 20;
   min-width: 170px;
   background: var(--bg);
@@ -424,10 +423,22 @@ button {
   border-radius: 10px;
   box-shadow: var(--shadow-3);
   padding: 4px;
-  display: flex;
   flex-direction: column;
   gap: 1px;
 }
+/* export-note-btn is the leftmost icon in the row, so centering this
+   on it (as originally written) pushed roughly half the menu's width
+   past the sidebar's left edge - anchoring to the button's own left
+   edge instead keeps the whole thing on screen.
+   The [hidden] attribute (toggled from app.js) is how this menu
+   actually opens and closes; a plain ".export-menu { display: flex }"
+   here would tie with the browser's own "[hidden] { display: none }"
+   rule on specificity, and since author CSS wins ties over the UA
+   stylesheet, that flex would always win - the menu would never
+   actually disappear no matter what app.js set .hidden to. Only apply
+   the flex layout when the element is NOT hidden, so [hidden] stays
+   in control. */
+.export-menu:not([hidden]) { display: flex; }
 .export-menu-item {
   border: none;
   background: transparent;

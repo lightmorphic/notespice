@@ -1069,6 +1069,31 @@ function onEditingInput() {
 el("raw-textarea").addEventListener("input", onEditingInput);
 el("title-input").addEventListener("input", onEditingInput);
 el("wysiwyg-editor").addEventListener("input", onEditingInput);
+// The editor reserves 120px of bottom padding for the floating "New
+// note" button - visually that reads as empty space below whatever
+// the last block is, but a click landing on that padding hits the
+// editor <div> itself as its target, not any block inside it, so the
+// browser never moves the cursor anywhere (the trailing paragraph
+// after a code block only actually catches a click if it lands on
+// that exact thin line, not the much larger empty area below it).
+// When the click target is the editor container itself - meaning it
+// didn't land on any specific block - send the cursor to the end of
+// the last block instead, creating a trailing paragraph first if that
+// last block is a code fence.
+el("wysiwyg-editor").addEventListener("click", (e) => {
+  const editor = el("wysiwyg-editor");
+  if (e.target !== editor) return;
+  ensureTrailingParagraphAfterCodeBlock();
+  const last = editor.lastElementChild;
+  if (!last) return;
+  const range = document.createRange();
+  range.selectNodeContents(last);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  editor.focus();
+});
 // Enter and Shift+Enter both just insert a line break - never a
 // native paragraph split. What that break *means* in the saved
 // markdown depends on how many land in a row (handled by

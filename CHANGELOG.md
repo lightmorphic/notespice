@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.8.14 — 2026-08-26
+
+- Found the actual reason clicking below a trailing code block
+  (1.8.11) still didn't get you out of it: the editor reserves 120px
+  of bottom padding for the floating "New note" button, and a click
+  anywhere in that padding - which is most of what "click underneath"
+  looks like in practice - lands on the editor's own container, not
+  the thin trailing-paragraph line, so the cursor never moved. A click
+  that lands on the container itself, rather than any specific block,
+  now sends the cursor to the end of the last block (creating a
+  trailing paragraph first if that block is a code fence).
+- Fixed two bugs in the new "Export this note" menu (1.8.11): it
+  opened centered on its trigger icon, which sits at the left edge of
+  the sidebar, so roughly half of it rendered off-screen; and it
+  never actually closed on an outside click or Escape, because its
+  `display: flex` rule tied in CSS specificity with the browser's own
+  `[hidden]` rule and, as the later author-stylesheet rule, always
+  won that tie regardless of what the hidden attribute was set to.
+  The menu now opens anchored to its trigger's left edge, and only
+  gets `display: flex` when it's genuinely not hidden.
+
 ## 1.8.13 — 2026-08-26
 
 - The 1.8.11 code-block fix (a click target below a trailing block)
