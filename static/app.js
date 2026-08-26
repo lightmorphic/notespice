@@ -1462,17 +1462,27 @@ el("format-bar").addEventListener("click", (e) => {
   else if (cmd === "strike") document.execCommand("strikeThrough");
   else if (cmd === "quote") document.execCommand("formatBlock", false, "BLOCKQUOTE");
   else if (cmd === "codeblock") {
-    // execCommand("formatBlock", "PRE") is exactly the kind of
-    // browser-dependent DOM surgery this file avoids everywhere else
-    // (see wrapSelectionInline and the Enter handler above) - and for
-    // good reason: tested directly, it can silently do nothing at
-    // all, leaving the toolbar button looking like it worked while no
-    // <pre> exists, which is what made escaping a "code block" that
-    // was never actually created look like a stuck-forever bug. Build
-    // the <pre><code> by hand instead, so the result is always the
-    // same shape mdToHtml itself produces - the shape
-    // ensureTrailingParagraphAfterCodeBlock, the double-Enter exit,
-    // and the click-below fallback all depend on.
+    // execCommand("formatBlock", "PRE") turned out to be unreliable
+    // (see the commit history), but building the <pre> with plain DOM
+    // calls instead of any execCommand brought two problems of its
+    // own: it converted the WHOLE current block's text, which for a
+    // click on what looks like a blank line between two paragraphs
+    // swallowed the earlier one too - this editor keeps a blank-line
+    // paragraph break as <br><br> INSIDE one <p>, not as two separate
+    // paragraphs - and plain DOM mutation never lands on the
+    // browser's native undo stack at all, so Undo did nothing
+    // afterward. insertHTML is the fix for both: still a single
+    // execCommand call the browser can undo, but - unlike
+    // formatBlock - it reliably inserts exactly the HTML given. When
+    // there's real text after the cursor within the block, only that
+    // part is selected and becomes code, leaving the rest as its own
+    // paragraph - the same technique the "hr" and "footnote" buttons
+    // already rely on execCommand for, to split a paragraph correctly
+    // at the cursor. When there's nothing meaningful after the cursor
+    // (the ordinary case right after typing, where the cursor sits at
+    // the end), the whole block is selected instead, so what was just
+    // typed becomes the code rather than being left untouched next to
+    // a new empty block.
     if (sel && sel.rangeCount) {
       const range = sel.getRangeAt(0);
       let block = range.startContainer;
@@ -1481,18 +1491,61 @@ el("format-bar").addEventListener("click", (e) => {
       }
       if (block === editor) block = null;
       if (!block || block.tagName !== "PRE") {
-        const text = (block ? block.textContent : selectedText || "").replace(/\u200B/g, "");
-        const pre = document.createElement("pre");
-        const code = document.createElement("code");
-        code.textContent = text;
-        pre.appendChild(code);
-        if (block && block.parentNode) block.replaceWith(pre);
-        else editor.appendChild(pre);
-        const r = document.createRange();
-        r.selectNodeContents(code);
-        r.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(r);
+        // <br> inside a normal paragraph is a soft break - reading
+        // plain textContent alone would silently join lines together,
+        // same reasoning as the walkPre reader used when reading a
+        // code block back out for saving.
+        const walkForText = (node) => {
+          let out = "";
+          node.childNodes.forEach((c) => {
+            if (c.nodeType === 3) out += c.textContent;
+            else if (c.nodeType === 1) out += c.tagName === "BR" ? "\n" : walkForText(c);
+          });
+          return out;
+        };
+        let afterText;
+        if (block) {
+          const afterRange = document.createRange();
+          afterRange.selectNodeContents(block);
+          afterRange.setStart(range.startContainer, range.startOffset);
+          const afterOnly = walkForText(afterRange.cloneContents()).replace(/\u200B/g, "").replace(/^\n+/, "");
+          if (afterOnly.trim() === "") {
+            // Nothing meaningful after the cursor - the ordinary case
+            // right after typing, where the cursor naturally sits at
+            // the end of what was just typed. Convert the whole block
+            // instead of leaving that text untouched next to a new
+            // empty code block.
+            afterText = walkForText(block).replace(/\u200B/g, "");
+            const wholeRange = document.createRange();
+            wholeRange.selectNode(block);
+            sel.removeAllRanges();
+            sel.addRange(wholeRange);
+          } else {
+            afterText = afterOnly;
+            sel.removeAllRanges();
+            sel.addRange(afterRange);
+          }
+        } else {
+          afterText = (selectedText || "").replace(/\u200B/g, "");
+        }
+        document.execCommand("insertHTML", false, "<pre><code>" + escapeHtml(afterText) + "</code></pre>");
+        // Walk up from wherever the selection actually landed after
+        // the insert, rather than searching the whole document for a
+        // <pre> - a note with an existing code block further down
+        // would make querySelector("pre:last-of-type") find that one
+        // instead of the one just created here.
+        let insertedPre = sel.rangeCount ? sel.getRangeAt(0).startContainer : null;
+        while (insertedPre && insertedPre !== editor && !(insertedPre.nodeType === 1 && insertedPre.tagName === "PRE")) {
+          insertedPre = insertedPre.parentNode;
+        }
+        const insertedCode = insertedPre && insertedPre !== editor ? insertedPre.querySelector("code") : null;
+        if (insertedCode) {
+          const r = document.createRange();
+          r.selectNodeContents(insertedCode);
+          r.collapse(false);
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
       }
     }
     ensureTrailingParagraphAfterCodeBlock();
