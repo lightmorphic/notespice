@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.8.17 — 2026-08-26
+
+- Cleanup pass, no behavior change: the last few code-block fixes left
+  three near-identical "walk up to the nearest matching ancestor"
+  loops in the editor's Enter/toolbar handling - two of them (finding
+  the block to convert, then finding the `<pre>` just inserted) were
+  genuinely the same pattern and are now one small shared helper. The
+  recently-viewed and pinned-notes lists in the Rust store had the
+  same duplicated "read a JSON array of titles, default to empty on
+  any failure" logic; that read path is now shared too, while the
+  write side (best-effort for recent, reported to the caller for
+  pinned) stays exactly as different as it already was. Verified the
+  editor change against the same four cursor-position cases already
+  covered (typed text, blank line between paragraphs, a brand-new
+  note, mid-word) with identical results before and after.
+
 ## 1.8.16 — 2026-08-26
 
 - Fixed two more problems with the "Code block" button surfaced by

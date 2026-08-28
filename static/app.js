@@ -1448,6 +1448,15 @@ function buildFormatBar() {
 }
 buildFormatBar();
 
+// Walks up from `node` looking for the nearest ancestor matching
+// `predicate`, stopping at (and never returning) `boundary`. Shared
+// by the "codeblock" command below, which needs this twice - once to
+// find the block to convert, once to find the <pre> it just inserted.
+function closestAncestorMatching(node, boundary, predicate) {
+  while (node && node !== boundary && !predicate(node)) node = node.parentNode;
+  return node === boundary ? null : node;
+}
+
 el("format-bar").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
@@ -1485,11 +1494,8 @@ el("format-bar").addEventListener("click", (e) => {
     // a new empty block.
     if (sel && sel.rangeCount) {
       const range = sel.getRangeAt(0);
-      let block = range.startContainer;
-      while (block && block !== editor && !(block.nodeType === 1 && /^(P|DIV|H[1-6]|BLOCKQUOTE|LI|PRE)$/.test(block.tagName))) {
-        block = block.parentNode;
-      }
-      if (block === editor) block = null;
+      const blockTags = /^(P|DIV|H[1-6]|BLOCKQUOTE|LI|PRE)$/;
+      const block = closestAncestorMatching(range.startContainer, editor, (n) => n.nodeType === 1 && blockTags.test(n.tagName));
       if (!block || block.tagName !== "PRE") {
         // <br> inside a normal paragraph is a soft break - reading
         // plain textContent alone would silently join lines together,
@@ -1534,11 +1540,12 @@ el("format-bar").addEventListener("click", (e) => {
         // <pre> - a note with an existing code block further down
         // would make querySelector("pre:last-of-type") find that one
         // instead of the one just created here.
-        let insertedPre = sel.rangeCount ? sel.getRangeAt(0).startContainer : null;
-        while (insertedPre && insertedPre !== editor && !(insertedPre.nodeType === 1 && insertedPre.tagName === "PRE")) {
-          insertedPre = insertedPre.parentNode;
-        }
-        const insertedCode = insertedPre && insertedPre !== editor ? insertedPre.querySelector("code") : null;
+        const insertedPre = closestAncestorMatching(
+          sel.rangeCount ? sel.getRangeAt(0).startContainer : null,
+          editor,
+          (n) => n.tagName === "PRE"
+        );
+        const insertedCode = insertedPre ? insertedPre.querySelector("code") : null;
         if (insertedCode) {
           const r = document.createRange();
           r.selectNodeContents(insertedCode);

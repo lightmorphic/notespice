@@ -317,6 +317,19 @@ impl Store {
         &self.root
     }
 
+    /// Reads a JSON array of titles from `path`, shared by both the
+    /// recently-viewed and pinned-notes lists below - same on-disk
+    /// shape, same "missing or unreadable file just means an empty
+    /// list" fallback. What differs between the two is how a *write*
+    /// failure is handled (best-effort vs reported to the caller), so
+    /// only the read side is common.
+    fn load_title_list(path: &Path) -> Vec<String> {
+        std::fs::read_to_string(path)
+            .ok()
+            .and_then(|s| serde_json::from_str::<Vec<String>>(&s).ok())
+            .unwrap_or_default()
+    }
+
     // ---------- recently-viewed tracking ----------
     //
     // Separate from "last modified" - opening a note you don't edit
@@ -334,10 +347,7 @@ impl Store {
     }
 
     fn load_recent(&self) -> Vec<String> {
-        std::fs::read_to_string(self.recent_path())
-            .ok()
-            .and_then(|s| serde_json::from_str::<Vec<String>>(&s).ok())
-            .unwrap_or_default()
+        Self::load_title_list(&self.recent_path())
     }
 
     fn save_recent(&self, list: &[String]) {
@@ -386,10 +396,7 @@ impl Store {
     }
 
     fn load_pinned(&self) -> Vec<String> {
-        std::fs::read_to_string(self.pinned_path())
-            .ok()
-            .and_then(|s| serde_json::from_str::<Vec<String>>(&s).ok())
-            .unwrap_or_default()
+        Self::load_title_list(&self.pinned_path())
     }
 
     fn write_pinned(&self, list: &[String]) -> Result<()> {
