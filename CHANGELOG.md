@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.8.19 — 2026-09-05
+
+- A brand new code block was drawn barely taller than its own padding,
+  with the text cursor hanging out of the bottom edge. An empty code
+  block had no text in it, and the element holding that text is inline,
+  so with nothing inside it there was no height to draw. It is now a
+  block with a one-line floor: an empty code block is exactly one line
+  tall with the cursor sitting inside it, and one with code in it grows
+  as before.
+
 ## 1.8.18 — 2026-09-05
 
 Found by driving the real editor in a real browser with real typing and
