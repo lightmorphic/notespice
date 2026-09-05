@@ -677,7 +677,18 @@ function mdToHtmlInner(md) {
         // (or the end) are separators for the join, not content.
         let j = i;
         while (j < lines.length && lines[j].trim() === "") j++;
-        if (j >= lines.length || isBlockStart(lines[j])) { i = j; break; }
+        if (j >= lines.length || isBlockStart(lines[j])) {
+          // Breaks still pending here are blank lines the writer put
+          // between this text and whatever block follows it. They used
+          // to be dropped on the floor, so adding a code block after a
+          // few presses of Enter made those blank lines disappear.
+          // Keep them; the blank run itself is still just the
+          // separator, so an ordinary "text, blank line, block" is
+          // unaffected.
+          if (sep && sep.indexOf("<br>") === 0) paraHtml += sep;
+          i = j;
+          break;
+        }
         sep = "<br><br>";
         i = j;
         continue;
@@ -885,9 +896,23 @@ function htmlToMd(container) {
           leadingBrs++;
           child = child.nextSibling;
         }
-        const inline = inlineOnly(node);
-        if (leadingBrs > 0 && inline) {
-          out.push("<br>\n".repeat(leadingBrs) + inline);
+        let inline;
+        if (leadingBrs > 0) {
+          // Serialize what's left AFTER that leading run, not the
+          // whole paragraph. Reading the whole thing counts the same
+          // breaks twice - once as explicit <br> lines here, once
+          // again inside inlineOnly - which made a paragraph of
+          // nothing but blank lines grow a little longer every time
+          // the note was saved and reopened.
+          const rest = node.cloneNode(true);
+          for (let k = 0; k < leadingBrs; k++) rest.removeChild(rest.firstChild);
+          inline = inlineOnly(rest);
+        } else {
+          inline = inlineOnly(node);
+        }
+        if (leadingBrs > 0) {
+          const marks = "<br>\n".repeat(leadingBrs);
+          out.push(inline ? marks + inline : marks.replace(/\n$/, ""));
         } else {
           out.push(inline);
         }
@@ -1597,17 +1622,26 @@ el("format-bar").addEventListener("click", (e) => {
           editor,
           (n) => n.tagName === "PRE"
         );
-        // Splitting a paragraph to make room for the block leaves the
-        // <br>s that used to be the blank line stranded against it.
-        // They render as extra empty lines and save as extra blank
-        // lines, which reloading the note then quietly discards - so
-        // the Writer and the saved Markdown disagree until you reopen
-        // it. Drop them here instead.
+        // The blank lines above the new block are the writer's, so
+        // they stay put - mdToHtml keeps them now, so they survive a
+        // save and reload. The one exception is a run of exactly two
+        // breaks: that is a single blank line, which Markdown cannot
+        // tell apart from the ordinary gap before a block, so it would
+        // quietly vanish on reload. Drop it now instead, and the
+        // Writer keeps matching the file. One break, or three or more,
+        // are stored as written.
         if (insertedPre) {
           const prev = insertedPre.previousElementSibling;
-          while (prev && prev.lastChild && prev.lastChild.nodeName === "BR") prev.lastChild.remove();
-          const next = insertedPre.nextElementSibling;
-          while (next && next.firstChild && next.firstChild.nodeName === "BR") next.firstChild.remove();
+          if (prev) {
+            const trailing = [];
+            let scan = prev.lastChild;
+            while (scan) {
+              if (scan.nodeType === 3 && scan.textContent.replace(/​/g, "") === "") { scan = scan.previousSibling; continue; }
+              if (scan.nodeName === "BR") { trailing.push(scan); scan = scan.previousSibling; continue; }
+              break;
+            }
+            if (trailing.length === 2) trailing.forEach((br) => br.remove());
+          }
         }
         const insertedCode = insertedPre ? insertedPre.querySelector("code") : null;
         if (insertedCode) {

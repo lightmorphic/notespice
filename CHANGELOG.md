@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.8.22 — 2026-09-05
+
+- Blank lines above a code block are kept instead of being deleted.
+  Adding a code block after a few presses of Enter used to remove the
+  blank lines and pull the block back up the page. Two things caused
+  that: the Markdown reader treated blank lines sitting between text
+  and a following block as nothing more than a separator and dropped
+  them, so keeping them on screen would have meant showing something
+  the saved file could not hold; and the code block button then
+  deliberately cleared them away to stay honest about it. The reader
+  now keeps them, so they survive being saved and reopened, and the
+  button leaves them alone.
+- The one case that still collapses is a single blank line, which
+  Markdown genuinely cannot tell apart from the ordinary gap before a
+  block. That one is still removed as the block is made, rather than
+  disappearing later on reload.
+- Fixed a related counting fault: a paragraph made only of blank lines
+  had its breaks written out twice, once as markers and once as
+  content, so it grew a little longer every time the note was saved and
+  reopened.
+
 ## 1.8.21 — 2026-09-05
 
 - Pressing Enter several times and then adding a code block gave a
