@@ -1551,9 +1551,14 @@ el("format-bar").addEventListener("click", (e) => {
         let target;
         if (!block) {
           target = null;
-        } else if (walkForText(block).replace(/\u200B/g, "").trim() === "") {
+        } else if (walkForText(block).replace(/\u200B/g, "") === "") {
           // Nothing in this block at all (a brand new note): replace
           // the empty block itself rather than leaving it behind.
+          // Deliberately NOT a trimmed comparison - a block holding
+          // nothing but blank lines walks to "\n\n\n", and treating
+          // that as empty converted the whole run of them, so pressing
+          // Enter a few times and then adding a code block gave a
+          // block full of blank lines instead of an empty one.
           target = document.createRange();
           target.selectNode(block);
         } else {
