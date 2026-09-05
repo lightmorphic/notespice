@@ -366,7 +366,7 @@ const MD_CASES = [
       for (let i = 0; i < 5; i++) await page.keyboard.press('Enter');
       await page.click('[data-cmd="codeblock"]');
     },
-    (md) => md === '```\n\n```' || 'got ' + JSON.stringify(md));
+    (md) => md === '<br>\n<br>\n<br>\n<br>\n<br>\n\n```\n\n```' || 'got ' + JSON.stringify(md));
 
   await actionCase('several Enters after text, then a code block, keeps the text',
     async () => {
@@ -374,7 +374,7 @@ const MD_CASES = [
       for (let i = 0; i < 5; i++) await page.keyboard.press('Enter');
       await page.click('[data-cmd="codeblock"]');
     },
-    (md) => md === 'some text\n\n```\n\n```' || 'got ' + JSON.stringify(md));
+    (md) => md === 'some text\n\n<br>\n<br>\n<br>\n\n\n```\n\n```' || 'got ' + JSON.stringify(md));
 
   await actionCase('double Enter escapes a code block and typing continues after it',
     async () => {
