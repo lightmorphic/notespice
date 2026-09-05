@@ -357,6 +357,25 @@ const MD_CASES = [
     (md) => (/one/.test(md) && /three/.test(md) && /```\s*\ntwo\s*\n```/.test(md))
       || 'got ' + JSON.stringify(md));
 
+  // A block holding nothing but blank lines walks to "\n\n\n", which a
+  // trimmed "is this block empty" test read as empty - so several
+  // Enters followed by the Code block button swallowed every blank
+  // line into the block instead of giving an empty one.
+  await actionCase('code block after several Enters is empty, not full of blank lines',
+    async () => {
+      for (let i = 0; i < 5; i++) await page.keyboard.press('Enter');
+      await page.click('[data-cmd="codeblock"]');
+    },
+    (md) => md === '```\n\n```' || 'got ' + JSON.stringify(md));
+
+  await actionCase('several Enters after text, then a code block, keeps the text',
+    async () => {
+      await page.keyboard.type('some text');
+      for (let i = 0; i < 5; i++) await page.keyboard.press('Enter');
+      await page.click('[data-cmd="codeblock"]');
+    },
+    (md) => md === 'some text\n\n```\n\n```' || 'got ' + JSON.stringify(md));
+
   await actionCase('double Enter escapes a code block and typing continues after it',
     async () => {
       await page.click('[data-cmd="codeblock"]');

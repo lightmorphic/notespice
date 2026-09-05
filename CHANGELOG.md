@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.8.21 — 2026-09-05
+
+- Pressing Enter several times and then adding a code block gave a
+  block full of blank lines, with a very tall text cursor sitting in
+  it, instead of an empty one. A run of blank lines is a run of line
+  breaks inside a single paragraph, which reads as "\n\n\n" - and
+  the check for "is this block empty, so replace the whole thing"
+  trimmed whitespace before comparing, so a paragraph of nothing but
+  blank lines counted as empty and the whole run was converted. The
+  check no longer trims, so only a genuinely empty block is replaced
+  whole; anywhere else it stays on the current line as intended.
+
 ## 1.8.20 — 2026-09-05
 
 - Clicking in the empty strip beside a line now puts the cursor on that
