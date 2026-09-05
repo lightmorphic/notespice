@@ -7,7 +7,7 @@
 // request always goes straight to the network; caching that would
 // mean occasionally showing stale notes, which is a much worse outcome
 // for a notes app than "this one request failed."
-const SHELL_CACHE = "notespice-shell-v14";
+const SHELL_CACHE = "notespice-shell-v15";
 const SHELL_FILES = [
   "/",
   "/app.js",

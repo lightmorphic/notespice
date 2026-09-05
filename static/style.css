@@ -786,6 +786,14 @@ button {
   padding: 0;
   border-radius: 0;
   font-weight: 500;
+  /* A brand new code block has nothing in it yet, and an inline
+     element with no content has no height at all - so the box
+     collapsed to its own padding and the caret was drawn hanging out
+     of the bottom edge. As a block with a one-line floor, an empty
+     code block is exactly one line tall and the caret sits inside it;
+     one with code in it grows past the floor as usual. */
+  display: block;
+  min-height: 1.8em;
 }
 
 .wysiwyg-container table {
