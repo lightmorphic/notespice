@@ -331,6 +331,41 @@ const MD_CASES = [
     },
     (md) => md === '```\na\nb\n```' || 'got ' + JSON.stringify(md));
 
+  // A whole note lives in ONE <p> here - blank lines are <br><br>
+  // inside it, not separate paragraphs - so "make this a code block"
+  // used to convert the entire note, silently swallowing everything
+  // written above the cursor. These three pin the line-scoped
+  // behaviour that replaced it.
+  await actionCase('code block below existing text leaves that text alone',
+    async () => {
+      await page.keyboard.type('intro');
+      await page.keyboard.press('Enter'); await page.keyboard.press('Enter');
+      await page.click('[data-cmd="codeblock"]');
+      await page.keyboard.type('CODE');
+    },
+    (md) => md === 'intro\n\n```\nCODE\n```' || 'got ' + JSON.stringify(md));
+
+  await actionCase('code block on the middle line keeps the lines around it',
+    async () => {
+      await page.keyboard.type('one'); await page.keyboard.press('Enter');
+      await page.keyboard.type('two'); await page.keyboard.press('Enter');
+      await page.keyboard.type('three');
+      await selectSubstring('two');
+      await page.keyboard.press('ArrowRight'); // collapse onto the middle line
+      await page.click('[data-cmd="codeblock"]');
+    },
+    (md) => (/one/.test(md) && /three/.test(md) && /```\s*\ntwo\s*\n```/.test(md))
+      || 'got ' + JSON.stringify(md));
+
+  await actionCase('double Enter escapes a code block and typing continues after it',
+    async () => {
+      await page.click('[data-cmd="codeblock"]');
+      await page.keyboard.type('code');
+      await page.keyboard.press('Enter'); await page.keyboard.press('Enter');
+      await page.keyboard.type('after');
+    },
+    (md) => md === '```\ncode\n```\n\nafter' || 'got ' + JSON.stringify(md));
+
   await actionCase('exit list with double Enter',
     async () => {
       await page.keyboard.type('first'); await page.click('[data-cmd="ul"]');

@@ -1083,6 +1083,12 @@ el("wysiwyg-editor").addEventListener("input", onEditingInput);
 el("wysiwyg-editor").addEventListener("click", (e) => {
   const editor = el("wysiwyg-editor");
   if (e.target !== editor) return;
+  // Only when the click is genuinely BELOW everything. The editor's
+  // side padding is also "the container itself", and jumping to the
+  // end of the note because someone clicked a few pixels left of a
+  // line they were aiming at is worse than doing nothing.
+  const lastBefore = editor.lastElementChild;
+  if (lastBefore && e.clientY < lastBefore.getBoundingClientRect().bottom) return;
   ensureTrailingParagraphAfterCodeBlock();
   const last = editor.lastElementChild;
   if (!last) return;
@@ -1509,32 +1515,46 @@ el("format-bar").addEventListener("click", (e) => {
           });
           return out;
         };
-        let afterText;
-        if (block) {
-          const afterRange = document.createRange();
-          afterRange.selectNodeContents(block);
-          afterRange.setStart(range.startContainer, range.startOffset);
-          const afterOnly = walkForText(afterRange.cloneContents()).replace(/\u200B/g, "").replace(/^\n+/, "");
-          if (afterOnly.trim() === "") {
-            // Nothing meaningful after the cursor - the ordinary case
-            // right after typing, where the cursor naturally sits at
-            // the end of what was just typed. Convert the whole block
-            // instead of leaving that text untouched next to a new
-            // empty code block.
-            afterText = walkForText(block).replace(/\u200B/g, "");
-            const wholeRange = document.createRange();
-            wholeRange.selectNode(block);
-            sel.removeAllRanges();
-            sel.addRange(wholeRange);
-          } else {
-            afterText = afterOnly;
-            sel.removeAllRanges();
-            sel.addRange(afterRange);
-          }
+        // What becomes code: the selection if there is one, otherwise
+        // just the line the cursor is on. Scoping to the line matters
+        // because a whole note lives in ONE <p> here - blank lines are
+        // <br><br> inside it, not separate paragraphs - so "convert
+        // this block" would swallow every paragraph above the cursor
+        // as well, which is exactly what it used to do.
+        let target;
+        if (!block) {
+          target = null;
+        } else if (walkForText(block).replace(/\u200B/g, "").trim() === "") {
+          // Nothing in this block at all (a brand new note): replace
+          // the empty block itself rather than leaving it behind.
+          target = document.createRange();
+          target.selectNode(block);
         } else {
-          afterText = (selectedText || "").replace(/\u200B/g, "");
+          // Whole lines only. A fence can't hold half a line, and
+          // asking the browser to insert a <pre> over a part-line
+          // range makes it flatten the block into an inline styled
+          // <span> instead. So grow out to the <br> boundaries either
+          // side of whatever is selected (or of the bare cursor).
+          target = document.createRange();
+          target.selectNodeContents(block);
+          const brs = Array.from(block.querySelectorAll("br"));
+          const posOf = (br) => Array.prototype.indexOf.call(br.parentNode.childNodes, br);
+          for (const br of brs) {
+            if (range.comparePoint(br.parentNode, posOf(br)) === -1) target.setStartAfter(br);
+            else break;
+          }
+          for (const br of brs) {
+            if (range.comparePoint(br.parentNode, posOf(br)) === 1) { target.setEndBefore(br); break; }
+          }
         }
-        document.execCommand("insertHTML", false, "<pre><code>" + escapeHtml(afterText) + "</code></pre>");
+        const codeText = target
+          ? walkForText(target.cloneContents()).replace(/\u200B/g, "")
+          : (selectedText || "").replace(/\u200B/g, "");
+        if (target) {
+          sel.removeAllRanges();
+          sel.addRange(target);
+        }
+        document.execCommand("insertHTML", false, "<pre><code>" + escapeHtml(codeText) + "</code></pre>");
         // Walk up from wherever the selection actually landed after
         // the insert, rather than searching the whole document for a
         // <pre> - a note with an existing code block further down
@@ -1545,6 +1565,18 @@ el("format-bar").addEventListener("click", (e) => {
           editor,
           (n) => n.tagName === "PRE"
         );
+        // Splitting a paragraph to make room for the block leaves the
+        // <br>s that used to be the blank line stranded against it.
+        // They render as extra empty lines and save as extra blank
+        // lines, which reloading the note then quietly discards - so
+        // the Writer and the saved Markdown disagree until you reopen
+        // it. Drop them here instead.
+        if (insertedPre) {
+          const prev = insertedPre.previousElementSibling;
+          while (prev && prev.lastChild && prev.lastChild.nodeName === "BR") prev.lastChild.remove();
+          const next = insertedPre.nextElementSibling;
+          while (next && next.firstChild && next.firstChild.nodeName === "BR") next.firstChild.remove();
+        }
         const insertedCode = insertedPre ? insertedPre.querySelector("code") : null;
         if (insertedCode) {
           const r = document.createRange();
@@ -1564,7 +1596,27 @@ el("format-bar").addEventListener("click", (e) => {
   else if (cmd === "hr") document.execCommand("insertHorizontalRule");
   else if (cmd === "footnote") {
     const n = nextFootnoteNumber();
-    document.execCommand("insertHTML", false, '<sup class="footnote-ref" data-fn="' + n + '">' + n + "</sup>");
+    // Built by hand, not via insertHTML: the browser rewrites a
+    // pasted-in <sup class="footnote-ref"> into a plain <span> with
+    // the same styles inlined, which drops the class and data-fn the
+    // serializer reads - so the note ended up containing a bare "1"
+    // instead of a real footnote marker.
+    const sup = document.createElement("sup");
+    sup.className = "footnote-ref";
+    sup.setAttribute("data-fn", String(n));
+    sup.textContent = String(n);
+    if (sel && sel.rangeCount) {
+      const r = sel.getRangeAt(0);
+      r.deleteContents();
+      r.insertNode(sup);
+      const after = document.createRange();
+      after.setStartAfter(sup);
+      after.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(after);
+    } else {
+      editor.appendChild(sup);
+    }
     const fnP = document.createElement("p");
     fnP.textContent = "[^" + n + "]: ";
     editor.appendChild(fnP);
@@ -1698,10 +1750,16 @@ async function saveNote() {
       method: "PUT",
       body: JSON.stringify(body),
     });
+    const renamed = result.title !== originalTitle;
     originalTitle = result.title;
     currentTitle = result.title;
     el("save-indicator").textContent = "saved";
-    await loadNotes();
+    // Only re-fetch the sidebar when the title actually changed.
+    // Saving the text of the note you already have open can't reorder
+    // anything - it's pinned or recently-viewed either way - and doing
+    // it on every pause in typing meant a directory scan on the server
+    // plus a full sidebar rebuild every few seconds while writing.
+    if (renamed) await loadNotes();
   } catch (e) {
     el("save-indicator").textContent = "error: " + e.message;
   }

@@ -1,5 +1,48 @@
 # Changelog
 
+## 1.8.18 — 2026-09-05
+
+Found by driving the real editor in a real browser with real typing and
+clicking, rather than reasoning about the DOM. Four genuine bugs:
+
+- **Clicking beside a line jumped the cursor to the bottom of the
+  note.** The "click below the content to escape a trailing code
+  block" handler treated the editor's own side padding as "below
+  everything", so clicking a few pixels left or right of the line you
+  were aiming at silently moved the cursor to the end of the note.
+  Typing then appeared somewhere you weren't looking. It now only
+  fires for clicks genuinely below the last block.
+- **"Code block" swallowed everything written above it.** A whole note
+  lives in one `<p>` here - blank lines are `<br><br>` inside it, not
+  separate paragraphs - so converting "this block" converted the whole
+  note. It now converts only the line the cursor is on, or the lines a
+  selection touches, growing out to whole lines because a fence can't
+  hold half a line.
+- **The Footnote button wrote a bare "1" into the note.** The browser
+  rewrites an inserted `<sup class="footnote-ref">` into a plain
+  `<span>` with the styles inlined, dropping the class and `data-fn`
+  the serializer reads. Built by hand now.
+- **A code block left stray blank lines behind it.** The `<br>`s that
+  used to be the blank line stayed stranded against the block, so the
+  Writer and the saved Markdown disagreed until the note was reopened.
+
+Also less work per keystroke, and less running all day:
+
+- Saving no longer re-fetches the note list and rebuilds the whole
+  sidebar. That was a directory scan on the server plus a full DOM
+  rebuild every few seconds while writing, and it could not change the
+  sidebar's order anyway. It now only reloads after a rename.
+- Two worker threads instead of one per CPU core - this is a
+  single-person notes app, not a web service.
+- Link-time optimisation on the release build, for a smaller binary.
+- Container health check every two minutes instead of every thirty
+  seconds.
+- Fixed a stale `FOSSCharlie` repository label on the image, left over
+  from the account move.
+
+Regression tests added for the code-block cases. The suite is now 61
+checks and all pass.
+
 ## 1.8.17 — 2026-08-26
 
 - Cleanup pass, no behavior change: the last few code-block fixes left

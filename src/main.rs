@@ -28,7 +28,11 @@ fn env_or(key: &str, default: &str) -> String {
     std::env::var(key).unwrap_or_else(|_| default.to_string())
 }
 
-#[tokio::main]
+// Two worker threads, not one per CPU core. This is a single-person
+// notes app: the default would park a thread (and its stack) per core
+// on a big home-lab box for no benefit. Two still means a slow request
+// - a large export, say - can't stall everything else.
+#[tokio::main(flavor = "multi_thread", worker_threads = 2)]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(
