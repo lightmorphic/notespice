@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.8.20 — 2026-09-05
+
+- Clicking in the empty strip beside a line now puts the cursor on that
+  line, at whichever end is nearer. Before 1.8.18 such a click threw
+  the cursor to the bottom of the note; 1.8.18 stopped that but left it
+  doing nothing at all, which is nearly as bad - the cursor silently
+  stayed wherever it last was, so the next thing typed, or the next
+  toolbar button pressed, applied somewhere else entirely. Clicking
+  below everything still drops you out of a trailing code block as
+  before.
+
 ## 1.8.19 — 2026-09-05
 
 - A brand new code block was drawn barely taller than its own padding,

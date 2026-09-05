@@ -1083,12 +1083,39 @@ el("wysiwyg-editor").addEventListener("input", onEditingInput);
 el("wysiwyg-editor").addEventListener("click", (e) => {
   const editor = el("wysiwyg-editor");
   if (e.target !== editor) return;
-  // Only when the click is genuinely BELOW everything. The editor's
-  // side padding is also "the container itself", and jumping to the
-  // end of the note because someone clicked a few pixels left of a
-  // line they were aiming at is worse than doing nothing.
+  // Two different clicks land on the container itself. Beside a line,
+  // in the editor's side padding: put the caret on the line actually
+  // clicked, at whichever end is nearer, so typing goes where the
+  // writer is looking. (Doing nothing here is nearly as bad as the
+  // old jump-to-the-end - the caret silently stays wherever it was,
+  // and the next thing typed, or the next toolbar button, applies
+  // somewhere else entirely.)
   const lastBefore = editor.lastElementChild;
-  if (lastBefore && e.clientY < lastBefore.getBoundingClientRect().bottom) return;
+  if (lastBefore && e.clientY < lastBefore.getBoundingClientRect().bottom) {
+    const style = getComputedStyle(editor);
+    const box = editor.getBoundingClientRect();
+    const inLeft = box.left + parseFloat(style.paddingLeft) + 1;
+    const inRight = box.right - parseFloat(style.paddingRight) - 1;
+    const x = Math.min(Math.max(e.clientX, inLeft), inRight);
+    let range = null;
+    if (document.caretRangeFromPoint) {
+      range = document.caretRangeFromPoint(x, e.clientY);
+    } else if (document.caretPositionFromPoint) {
+      const pos = document.caretPositionFromPoint(x, e.clientY);
+      if (pos) {
+        range = document.createRange();
+        range.setStart(pos.offsetNode, pos.offset);
+        range.collapse(true);
+      }
+    }
+    if (range && editor.contains(range.startContainer)) {
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      editor.focus();
+    }
+    return;
+  }
   ensureTrailingParagraphAfterCodeBlock();
   const last = editor.lastElementChild;
   if (!last) return;
