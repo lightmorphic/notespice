@@ -21,6 +21,14 @@
   link to the Companies House register. The law asks for the number,
   the registered name, where the company is registered and the office
   address, all of which are still there; it does not ask for a link.
+- The privacy, cookies, terms, accessibility, complaints and 404 pages
+  now carry the same menu bar as the home page, and it stays at the top
+  of the window as you scroll. They had only a plain header with the
+  Notespice name, which did not follow you down the page and gave you
+  no way back to a section of the home page. The bar also brings the
+  app grid with it, so those pages now load a script from
+  apps.lightmorphic.com and their content-security rules were widened
+  from "no scripts at all" to allow that one origin.
 - Fixed a broken layout in the questions section of the home page. It
   put every question in one column and every answer in the other, so
   as soon as the answers ran to different lengths they drifted away

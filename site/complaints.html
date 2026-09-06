@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#FFC107" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apps.lightmorphic.com; style-src 'self'; img-src 'self' data: https://apps.lightmorphic.com; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>Complaints | Notespice</title>
 <meta name="description" content="How to complain about this website or about Notespice, and how long a reply takes." />
@@ -52,9 +52,23 @@
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<div class="topbar"><div class="inner">
-  <a class="home" href="/"><img src="/images/notespice-icon-80.png" width="28" height="28" alt="" />Notespice</a>
-</div></div>
+<header class="sitebar">
+  <div class="inner">
+    <a class="brand" href="/">
+      <img src="/images/notespice-icon-80.png" width="28" height="28" alt="" />
+      Notespice
+    </a>
+    <div class="bar-end">
+      <nav aria-label="Sections">
+        <a href="/#why">Why</a>
+        <a href="/#features">Features</a>
+        <a href="/#faq">Questions</a>
+        <a href="/#get-started">Get started</a>
+      </nav>
+      <div id="all-apps"></div>
+    </div>
+  </div>
+</header>
 <main id="main"><div class="panel">
 <h1>Complaints</h1>
 <p class="updated">How to raise a problem, and what happens next.</p>
@@ -109,5 +123,6 @@ explains how to report one.</p>
     </nav>
   </div>
 </footer>
+<script src="https://apps.lightmorphic.com/launcher.js" defer></script>
 </body>
 </html>

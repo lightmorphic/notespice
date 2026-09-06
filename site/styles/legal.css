@@ -6,6 +6,7 @@
   color-scheme: dark;
   --bg: #19212B;
   --bg-canvas: #10141C;
+  --bg-sidebar: #1E2733;
   --surface-high: #273240;
   --code-bg: #222B36;
   --border: #3B4757;
@@ -40,14 +41,33 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 }
 .skip-link:focus { left: 12px; top: 12px; }
 
-.topbar { padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--bg); }
-.topbar .inner { max-width: var(--max-w); margin: 0 auto; display: flex; align-items: center; gap: 12px; }
-.topbar a.home {
-  display: inline-flex; align-items: center; gap: 10px;
-  color: var(--text); text-decoration: none; font-weight: 700;
-  min-height: 44px; padding: 4px 0;
+/* The same menu bar as the home page: it stays at the top of the
+   window as you scroll, and its links go back to the sections there.
+   Kept in step with the copy inside index.html by hand. */
+.sitebar {
+  position: sticky; top: 0; z-index: 30;
+  background: var(--bg-sidebar); border-bottom: 1px solid var(--border);
+  padding: 0 24px;
 }
-.topbar img { border-radius: 8px; }
+.sitebar .inner { max-width: var(--max-w); margin: 0 auto;
+                  display: flex; align-items: center; gap: 18px; min-height: 60px; }
+.sitebar .brand { display: inline-flex; align-items: center; gap: 10px;
+                  font-weight: 700; color: var(--text); text-decoration: none;
+                  min-height: 44px; }
+.sitebar .brand img { border-radius: 8px; }
+.sitebar .bar-end { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.sitebar nav { display: flex; align-items: center; gap: 4px; }
+.sitebar nav a { color: var(--text-muted); font-size: 15px; text-decoration: none;
+                 padding: 12px 10px; min-height: 44px; display: inline-flex;
+                 align-items: center; border-radius: 8px; }
+.sitebar nav a:hover { color: var(--text); background: var(--surface-high); }
+/* Anything jumped to - the skip link's target included - has to clear
+   the bar rather than hide behind it. */
+:target, #main { scroll-margin-top: 76px; }
+@media (max-width: 700px) {
+  .sitebar nav { display: none; }
+  .sitebar .inner { min-height: 56px; }
+}
 
 /* The shell (top bar, sub-footer) runs to --max-w so it lines up with
    the home page; the prose panel stays narrower so lines stay readable. */
