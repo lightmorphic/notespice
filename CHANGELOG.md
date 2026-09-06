@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.8.24 — 2026-09-06
+
+- Notespice is dark only now. The light palette and the automatic
+  switch that followed your system setting have both gone, from the
+  app and from notespice.org. One considered set of colours, nothing
+  to configure, and no second palette to keep in step. The light
+  version of the Lightmorphic wordmark went with it, since only the
+  one that reads on a dark ground is used any more.
+- Every text and background pair on the website was measured again
+  after the change. The lowest is 5.17 to 1, against a 4.5 to 1
+  requirement, so nothing regressed.
+- The legal sub-footer now puts the company details on the left and
+  the five legal links on the right of the same row, stacking on a
+  narrow screen.
+- Contact addresses tidied: privacy@ on the privacy and cookies pages,
+  terms@ on the terms page, complaints@ on the complaints and
+  accessibility pages. No address appears anywhere else on the site.
+
 ## 1.8.23 — 2026-09-06
 
 - The "Created by Lightmorphic" badge in the sidebar pointed at

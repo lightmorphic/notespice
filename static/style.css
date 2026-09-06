@@ -10,52 +10,29 @@
   src: url("/fonts/manrope.woff2") format("woff2");
 }
 
-/* Material 3-flavored tokens. Neutrals carry a slight warm bias toward
-   the brand yellow rather than pure gray; the yellow itself (#FFC107)
-   is the one fixed point, identical in both themes. */
+/* Material 3-flavored tokens. Notespice is dark only: one palette,
+   no light variant and nothing to switch between. Cool navy neutrals -
+   #10141C is the main surface, #19212B the container "boxes" (drawer,
+   code blocks) - with the brand yellow (#FFC107) as the fixed point. */
 :root {
-  --bg: #FFFDF6;                 /* surface (editor, cards) */
-  --bg-sidebar: #F4F0E5;         /* surface-container (drawer) */
-  --bg-canvas: #E8E4DA;          /* page behind the app card */
-  --surface-high: #ECE7D9;       /* inputs, chips, hovered rows */
-  --code-bg: #F0EBDC;
-  --border: #D8D2C4;             /* outline-variant */
-  --text: #1D1B13;
-  --text-muted: #6C675A;
+  color-scheme: dark;
+  --bg: #10141C;                 /* surface (editor, cards) */
+  --bg-sidebar: #19212B;         /* surface-container (drawer) */
+  --bg-canvas: #0A0D13;          /* page behind the app card */
+  --surface-high: #212B38;       /* inputs, chips, hovered rows */
+  --code-bg: #19212B;
+  --border: #303B4A;             /* outline-variant */
+  --text: #E6EAF0;
+  --text-muted: #93A0B0;
   --accent: #FFC107;
   --on-accent: #241A00;
-  --accent-tint: rgba(255, 193, 7, 0.22);
-  --link: #8A6A00;              /* readable amber on light ground */
-  --danger: #BA1A1A;
-  --on-danger: #FFFFFF;
-  --hover-layer: rgba(29, 27, 19, 0.07);
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 3px 1px rgba(0, 0, 0, 0.06);
-  --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.14);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Cool navy dark palette: #10141C is the main surface, #19212B
-       the container "boxes" (drawer, code blocks); everything else is
-       derived from the same hue family. The yellow is unchanged. */
-    --bg: #10141C;
-    --bg-sidebar: #19212B;
-    --bg-canvas: #0A0D13;
-    --surface-high: #212B38;
-    --code-bg: #19212B;
-    --border: #303B4A;
-    --text: #E6EAF0;
-    --text-muted: #93A0B0;
-    --accent: #FFC107;
-    --on-accent: #241A00;
-    --accent-tint: rgba(255, 193, 7, 0.16);
-    --link: #FFC107;            /* the brand yellow reads fine on dark */
-    --danger: #FFB4AB;
-    --on-danger: #690005;
-    --hover-layer: rgba(230, 234, 240, 0.07);
-    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px 1px rgba(0, 0, 0, 0.25);
-    --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.4);
-  }
+  --accent-tint: rgba(255, 193, 7, 0.16);
+  --link: #FFC107;               /* the brand yellow reads fine on dark */
+  --danger: #FFB4AB;
+  --on-danger: #690005;
+  --hover-layer: rgba(230, 234, 240, 0.07);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px 1px rgba(0, 0, 0, 0.25);
+  --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 * { box-sizing: border-box; }
@@ -501,13 +478,6 @@ button {
 .lightmorphic-badge img { display: block; height: 16px; width: auto; }
 .lightmorphic-badge .external-link-icon { display: block; width: 10px; height: 10px; opacity: 0.6; }
 .lightmorphic-badge .external-link-icon svg { width: 100%; height: 100%; }
-
-.lightmorphic-badge img.lightmorphic-badge-logo-dark { display: none; }
-.lightmorphic-badge img.lightmorphic-badge-logo-light { display: block; }
-@media (prefers-color-scheme: dark) {
-  .lightmorphic-badge img.lightmorphic-badge-logo-dark { display: block; }
-  .lightmorphic-badge img.lightmorphic-badge-logo-light { display: none; }
-}
 
 /* ---- Extended FAB: the primary action, always in reach ---- */
 .fab {

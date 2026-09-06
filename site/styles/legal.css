@@ -1,29 +1,19 @@
 /* Styling for the legal and error pages. The tokens mirror the ones in
    index.html, which keeps its CSS inline so the home page renders with
-   no extra request. Change a colour in one and change it in the other. */
+   no extra request. Change a colour in one and change it in the other.
+   Dark only: there is no light variant anywhere in Notespice. */
 :root {
-  --bg: #FFFDF6;
-  --bg-canvas: #E8E4DA;
-  --surface-high: #ECE7D9;
-  --code-bg: #F0EBDC;
-  --border: #D8D2C4;
-  --text: #1D1B13;
-  --text-muted: #6B6659;
+  color-scheme: dark;
+  --bg: #19212B;
+  --bg-canvas: #10141C;
+  --surface-high: #273240;
+  --code-bg: #222B36;
+  --border: #3B4757;
+  --text: #E7EBF2;
+  --text-muted: #9AA4B5;
   --accent: #FFC107;
-  --link: #816100;
-  --max-w: 720px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #19212B;
-    --bg-canvas: #10141C;
-    --surface-high: #273240;
-    --code-bg: #222B36;
-    --border: #3B4757;
-    --text: #E7EBF2;
-    --text-muted: #9AA4B5;
-    --link: #FFC107;
-  }
+  --link: #FFC107;
+  --max-w: 1040px;
 }
 @font-face {
   font-family: "Manrope";
@@ -59,7 +49,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 }
 .topbar img { border-radius: 8px; }
 
-main { max-width: var(--max-w); margin: 0 auto; padding: 40px 24px 8px; }
+/* The shell (top bar, sub-footer) runs to --max-w so it lines up with
+   the home page; the prose panel stays narrower so lines stay readable. */
+main { max-width: 820px; margin: 0 auto; padding: 40px 24px 8px; }
 .panel {
   background: var(--bg); border: 1px solid var(--border);
   border-radius: 16px; padding: 28px 28px 32px;
@@ -74,16 +66,27 @@ ul { padding-left: 22px; }
 li { margin: 6px 0; }
 
 footer { padding: 40px 24px 0; text-align: center; }
+footer .subfooter { text-align: left; }
 footer nav a { color: var(--text-muted); margin: 0 6px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; padding: 12px; min-width: 44px; min-height: 44px; }
 footer nav a:hover { color: var(--text); }
 
+/* Company details on the left, the five legal links pushed to the
+   right on the same row; both stack and left-align on a narrow screen. */
 .subfooter {
-  max-width: var(--max-w); margin: 0 auto; padding: 24px;
-  color: var(--text-muted); font-size: 16px; text-align: center;
+  max-width: var(--max-w); margin: 0 auto; padding: 24px 0 0;
+  color: var(--text-muted); font-size: 15px;
+  display: flex; flex-wrap: wrap; align-items: flex-end;
+  justify-content: space-between; gap: 8px 16px;
 }
-.subfooter p { margin: 0 0 8px; color: var(--text-muted); }
-.subfooter nav a { display: inline-flex; align-items: center; justify-content: center; margin: 0 4px; padding: 12px; min-width: 44px; min-height: 44px; color: var(--text-muted); }
+.subfooter .legal-text { flex: 1 1 320px; min-width: 0; }
+.subfooter p { margin: 0 0 4px; color: var(--text-muted); }
+.subfooter .legal-text p:last-child { margin-bottom: 0; }
+.subfooter nav { flex: 0 1 auto; max-width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-end; margin-right: -6px; }
+.subfooter nav a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 6px; min-width: 44px; min-height: 44px; color: var(--text-muted); font-size: 15px; }
 .subfooter nav a:hover { color: var(--text); }
+@media (max-width: 700px) {
+  .subfooter nav { justify-content: flex-start; margin-left: -6px; margin-right: 0; }
+}
 
 /* A list whose items are destinations rather than prose: each link needs a
    finger-sized target. Links inside a sentence are deliberately untouched. */

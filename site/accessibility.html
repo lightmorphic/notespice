@@ -67,18 +67,17 @@ is how we show the question was taken seriously.</p>
 <h2>What was checked, and when</h2>
 <p>On <time datetime="2026-09-06">6 September 2026</time> every page was run
 through an automated accessibility check and the colours were measured
-arithmetically rather than judged by eye. Five things were found and all five
+arithmetically rather than judged by eye. Four things were found and all four
 were fixed:</p>
 <ul>
   <li>The live editor on the home page had four controls with no name a screen reader could announce. They now have one each.</li>
   <li>The home page had no way to skip past the header and the editor to the writing below. It now has a skip link.</li>
   <li>The home page content was not inside a <code>main</code> landmark, so it could not be jumped to. It is now.</li>
-  <li>In the light theme, muted text on the page background measured 4.44 to 1 and links measured 3.99 to 1. Both were below the 4.5 to 1 minimum, and both colours were darkened until they cleared it.</li>
   <li>There was only one way to report a problem. There are now two, below.</li>
 </ul>
-<p>Every text and background pair the site paints now measures at least 4.51 to
-1 in the light theme and 5.17 to 1 in the dark theme, against a 4.5 to 1
-requirement.</p>
+<p>The site is dark throughout; there is no light theme and no theme switch.
+Every text and background pair it paints measures at least 5.17 to 1, against a
+4.5 to 1 requirement.</p>
 
 <h2>What has not been tested</h2>
 <p>This matters more than the list above. An automated check finds roughly half
@@ -100,7 +99,7 @@ that it is not, and saying otherwise would be a claim we cannot support.</p>
 <p>If something here shuts you out, please tell us. There are two routes, on
 purpose, because the thing you are reporting might be one of them:</p>
 <ul class="linklist">
-  <li>Email <a href="mailto:help@lightmorphic.com">help@lightmorphic.com</a></li>
+  <li>Email <a href="mailto:complaints@lightmorphic.com">complaints@lightmorphic.com</a></li>
   <li>Open an issue on <a href="https://github.com/lightmorphic/notespice/issues">the GitHub repository</a></li>
 </ul>
 <p>We aim to reply within five working days. Tell us what you were trying to
@@ -126,12 +125,13 @@ reviewed when the site next changes.</p>
     <a href="https://github.com/lightmorphic/notespice/blob/main/LICENSE">MIT licence</a>
   </nav>
   <div class="subfooter">
-    <p>&copy; Lightmorphic Ltd. Registered in England and Wales, company number
-      <a href="https://find-and-update.company-information.service.gov.uk/company/17423646">17423646</a>.
-      Registered office: 82A James Carter Road, Mildenhall, IP28 7DE.</p>
-    <p>Notespice is free software under the <a href="https://github.com/lightmorphic/notespice/blob/main/LICENSE">MIT licence</a>.</p>
-    <!-- Update this date whenever the page's wording changes. -->
-    <p>Page last updated <time datetime="2026-09-06">6 September 2026</time>.</p>
+    <div class="legal-text">
+      <p>&copy; Lightmorphic Ltd. Registered in England and Wales, company number
+        <a href="https://find-and-update.company-information.service.gov.uk/company/17423646">17423646</a>.</p>
+      <p>Registered office: 82A James Carter Road, Mildenhall, IP28 7DE.</p>
+      <!-- Update this date whenever this page's wording changes. -->
+      <p>Page last updated: <time datetime="2026-09-06">6 September 2026</time>.</p>
+    </div>
     <nav aria-label="Legal">
       <a href="/privacy.html">Privacy</a>
       <a href="/cookies.html">Cookies</a>

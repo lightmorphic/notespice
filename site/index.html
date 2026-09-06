@@ -76,56 +76,32 @@
    requests: served from this repo, never fetched from a font CDN. */
 @font-face { font-family: "Manrope"; font-style: normal; font-weight: 200 800; font-display: swap; src: url("fonts/manrope.woff2") format("woff2"); }
 
-/* Design tokens, lifted verbatim from the app's own
-   stylesheet: warm yellow-biased neutrals rather than flat grays, with
-   the brand yellow (#FFC107) as the one fixed point in both themes.
-   Like the app, the page follows the system color scheme. */
+/* Design tokens, lifted verbatim from the app's own stylesheet.
+   Notespice is dark only - one palette, no light variant and nothing
+   to switch between. Cool navy neutrals with the brand yellow
+   (#FFC107) as the one fixed point. */
 :root {
-  --bg: #FFFDF6;
-  --bg-sidebar: #F4F0E5;
-  --bg-canvas: #E8E4DA;
-  --surface-high: #ECE7D9;
-  --code-bg: #F0EBDC;
-  --border: #D8D2C4;
-  --text: #1D1B13;
-  --text-muted: #6B6659;
+  color-scheme: dark;
+  --bg: #19212B;
+  --bg-sidebar: #1E2733;
+  --bg-canvas: #10141C;
+  --surface-high: #273240;
+  --code-bg: #222B36;
+  --border: #3B4757;
+  --text: #E7EBF2;
+  --text-muted: #9AA4B5;
   --accent: #FFC107;
   --on-accent: #241A00;
-  --accent-tint: rgba(255, 193, 7, 0.22);
-  --link: #816100;
-  --danger: #BA1A1A;
-  --on-danger: #FFFFFF;
-  --hover-layer: rgba(29, 27, 19, 0.07);
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 3px 1px rgba(0, 0, 0, 0.06);
-  --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.14);
-  --yaml-key: #1554AD;
-  --yaml-str: #8A6A00;
+  --accent-tint: rgba(255, 193, 7, 0.16);
+  --link: #FFC107;
+  --danger: #FFB4AB;
+  --on-danger: #690005;
+  --hover-layer: rgba(231, 235, 242, 0.08);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px 1px rgba(0, 0, 0, 0.25);
+  --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --yaml-key: #7fb0ff;
+  --yaml-str: #ffd479;
   --max-w: 1200px; --max-w-narrow: 1040px; --measure: 68ch;
-}
-@media (prefers-color-scheme: dark) {
-  /* Dark theme: cool navy neutrals (owner's palette — #10141C canvas,
-     #19212B surfaces) rather than the app's warm tones. */
-  :root {
-    --bg: #19212B;
-    --bg-sidebar: #1E2733;
-    --bg-canvas: #10141C;
-    --surface-high: #273240;
-    --code-bg: #222B36;
-    --border: #3B4757;
-    --text: #E7EBF2;
-    --text-muted: #9AA4B5;
-    --accent: #FFC107;
-    --on-accent: #241A00;
-    --accent-tint: rgba(255, 193, 7, 0.16);
-    --link: #FFC107;
-    --danger: #FFB4AB;
-    --on-danger: #690005;
-    --hover-layer: rgba(231, 235, 242, 0.08);
-    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px 1px rgba(0, 0, 0, 0.25);
-    --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.4);
-    --yaml-key: #7fb0ff;
-    --yaml-str: #ffd479;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -357,15 +333,21 @@ ol.steps code { background: var(--code-bg); padding: 1px 6px; border-radius: 5px
 footer { padding: 40px 24px 56px; text-align: center; }
 footer nav a { color: var(--text-muted); margin: 0 6px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; padding: 12px; min-width: 44px; min-height: 44px; }
 footer nav a:hover { color: var(--text); }
-.subfooter { max-width: var(--max-w-narrow); margin: 28px auto 0; padding-top: 22px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 16px; }
-.subfooter p { margin: 0 0 8px; color: var(--text-muted); }
-.subfooter nav a { display: inline-flex; align-items: center; justify-content: center; margin: 0 4px; padding: 12px; min-width: 44px; min-height: 44px; color: var(--text-muted); font-size: 15px; }
+/* Company details on the left, the five legal links pushed to the
+   right on the same row; both stack and left-align on a narrow screen. */
+.subfooter { max-width: var(--max-w-narrow); margin: 28px auto 0; padding-top: 22px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 15px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; text-align: left; }
+.subfooter .legal-text { flex: 1 1 320px; min-width: 0; }
+.subfooter p { margin: 0 0 4px; color: var(--text-muted); }
+.subfooter .legal-text p:last-child { margin-bottom: 0; }
+.subfooter nav { flex: 0 1 auto; max-width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-end; margin-right: -6px; }
+.subfooter nav a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 6px; min-width: 44px; min-height: 44px; color: var(--text-muted); font-size: 15px; }
 .subfooter nav a:hover { color: var(--text); }
+@media (max-width: 700px) { .subfooter nav { justify-content: flex-start; margin-left: -6px; margin-right: 0; } }
 footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
 
 /* "Created by Lightmorphic" pill, same shape as the one in the app
-   itself. The logo file swaps for theme since the light-mode file's
-   wordmark is dark text that would disappear on the dark canvas. */
+   itself. The light-ink wordmark, which is the one that reads on the
+   dark canvas. */
 .lightmorphic-badge {
   display: flex;
   align-items: center;
@@ -387,12 +369,6 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
 .lightmorphic-badge img { display: block; height: 16px; width: auto; }
 .lightmorphic-badge .external-link-icon { display: block; width: 10px; height: 10px; opacity: 0.6; }
 .lightmorphic-badge .external-link-icon svg { width: 100%; height: 100%; }
-.lightmorphic-badge img.lightmorphic-badge-logo-dark { display: none; }
-.lightmorphic-badge img.lightmorphic-badge-logo-light { display: block; }
-@media (prefers-color-scheme: dark) {
-  .lightmorphic-badge img.lightmorphic-badge-logo-dark { display: block; }
-  .lightmorphic-badge img.lightmorphic-badge-logo-light { display: none; }
-}
 
 @media (max-width: 1023px) {
   .app-window { height: 520px; flex-direction: column; }
@@ -602,8 +578,7 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
   <p class="lead">There's no account system, no subscription, and no third-party server holding your notes. It's one container, one folder of <code>.md</code> files, and a GitHub Flavored Markdown editor that works the same on your phone and your laptop.</p>
   <a class="lightmorphic-badge" href="https://lightmorphic.com" target="_blank" rel="noopener noreferrer" translate="no">
     <span>Created by</span>
-    <img class="lightmorphic-badge-logo-dark" src="images/lightmorphic-dark-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
-    <img class="lightmorphic-badge-logo-light" src="images/lightmorphic-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
+    <img src="images/lightmorphic-dark-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
     <span class="external-link-icon" aria-hidden="true">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -641,7 +616,7 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
     </div>
     <div class="feature-row">
       <div class="feature-icon">&#9680;</div>
-      <div><h3>Dark mode</h3><p>Follows your system preference automatically. No setting to hunt for.</p></div>
+      <div><h3>Dark throughout</h3><p>One considered dark palette everywhere. No theme setting to hunt for.</p></div>
     </div>
     <div class="feature-row">
       <div class="feature-icon">&#8645;</div>
@@ -723,8 +698,7 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
   <p class="credit"><a href="https://github.com/lightmorphic/notespice">Notespice</a> - vibe-coded with Claude</p>
   <a class="lightmorphic-badge" href="https://lightmorphic.com" target="_blank" rel="noopener noreferrer" translate="no">
     <span>Created by</span>
-    <img class="lightmorphic-badge-logo-dark" src="images/lightmorphic-dark-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
-    <img class="lightmorphic-badge-logo-light" src="images/lightmorphic-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
+    <img src="images/lightmorphic-dark-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
     <span class="external-link-icon" aria-hidden="true">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -734,12 +708,13 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
     </span>
   </a>
   <div class="subfooter">
-    <p>&copy; Lightmorphic Ltd. Registered in England and Wales, company number
-      <a href="https://find-and-update.company-information.service.gov.uk/company/17423646">17423646</a>.
-      Registered office: 82A James Carter Road, Mildenhall, IP28 7DE.</p>
-    <p>Notespice is free software under the <a href="https://github.com/lightmorphic/notespice/blob/main/LICENSE">MIT licence</a>.</p>
-    <!-- Update this date whenever this page's wording changes. -->
-    <p>Page last updated <time datetime="2026-09-06">6 September 2026</time>.</p>
+    <div class="legal-text">
+      <p>&copy; Lightmorphic Ltd. Registered in England and Wales, company number
+        <a href="https://find-and-update.company-information.service.gov.uk/company/17423646">17423646</a>.</p>
+      <p>Registered office: 82A James Carter Road, Mildenhall, IP28 7DE.</p>
+      <!-- Update this date whenever this page's wording changes. -->
+      <p>Page last updated: <time datetime="2026-09-06">6 September 2026</time>.</p>
+    </div>
     <nav aria-label="Legal">
       <a href="privacy.html">Privacy</a>
       <a href="cookies.html">Cookies</a>

@@ -31,7 +31,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history.
   overwriting on a title collision
 - Installable PWA that works offline for the app shell, with "Add to
   Home Screen" on mobile or desktop
-- Dark/light mode, following system preference
+- Dark throughout, with no theme setting to configure
 - Argon2id password hashing, per-IP login rate limiting, and a
   handful of other deliberate security choices (see
   [Security notes](#security-notes))
