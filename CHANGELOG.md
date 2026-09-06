@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.8.25 — 2026-09-06
+
+- Notespice is now published under version 3 of the GNU General Public
+  Licence instead of the MIT licence. Anything you pass on, changed or
+  not, has to be offered on the same terms and with its source.
+  Releases up to and including 1.8.24 were MIT and stay that way: that
+  grant cannot be withdrawn. The website, the README and the terms page
+  all say GPL v3 now, and the copyright holder is named as Lightmorphic
+  Ltd rather than the old FOSSCharlie handle.
+- The "About us" paragraph has been taken off the home page. The same
+  company details are in the sub-footer on every page already.
+- The menu links in the top bar moved across to sit beside the app
+  grid on the right, instead of next to the Notespice name.
+
 ## 1.8.24 — 2026-09-06
 
 - Notespice is dark only now. The light palette and the automatic

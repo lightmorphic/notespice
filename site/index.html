@@ -125,7 +125,7 @@ body { margin: 0; background: var(--bg-canvas); color: var(--text); font-family:
 .sitebar .inner { display: flex; align-items: center; gap: 18px; min-height: 60px; }
 .sitebar .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text); text-decoration: none; min-height: 44px; }
 .sitebar .brand img { border-radius: 8px; }
-.sitebar nav { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
+.sitebar nav { display: flex; align-items: center; gap: 4px; }
 .sitebar nav a { color: var(--text-muted); font-size: 15px; text-decoration: none; padding: 12px 10px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 8px; }
 .sitebar nav a:hover { color: var(--text); background: var(--surface-high); }
 .sitebar .bar-end { margin-left: auto; display: flex; align-items: center; gap: 10px; }
@@ -291,7 +291,6 @@ code { font-family: inherit; font-weight: 600; }
 
 .faq h3 { font-size: 18px; margin: 26px 0 6px; text-wrap: balance; }
 .faq p { color: var(--text-muted); margin: 0; max-width: 62ch; }
-.about { color: var(--text-muted); max-width: 62ch; }
 .hero-caption { font-size: 16px; color: var(--text-muted); margin-top: 16px; text-align: center; }
 .hero-caption strong { color: var(--text); }
 
@@ -435,7 +434,7 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
       "name": "What does it cost?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Nothing. It is free software under the MIT licence, which lets you use, change and pass it on. There is no paid tier, no account and nothing held back."
+        "text": "Nothing. It is free software under version 3 of the GNU General Public Licence, which lets you use it, change it and pass it on, so long as what you pass on stays free in the same way. There is no paid tier, no account and nothing held back."
       }
     },
     {
@@ -491,13 +490,13 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
       <img src="images/notespice-icon-80.png" width="28" height="28" alt="" />
       Notespice
     </a>
-    <nav aria-label="Sections">
-      <a href="#why">Why</a>
-      <a href="#features">Features</a>
-      <a href="#faq">Questions</a>
-      <a href="#get-started">Get started</a>
-    </nav>
     <div class="bar-end">
+      <nav aria-label="Sections">
+        <a href="#why">Why</a>
+        <a href="#features">Features</a>
+        <a href="#faq">Questions</a>
+        <a href="#get-started">Get started</a>
+      </nav>
       <div id="all-apps"></div>
     </div>
   </div>
@@ -634,18 +633,13 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
 <section class="section" id="faq">
 
   <h2>Questions people ask</h2>
-  <h3>About us</h3>
-  <p class="about">Notespice is built and published by <a href="https://lightmorphic.com">Lightmorphic Ltd</a>,
-  a company registered in England and Wales, number
-  <a href="https://find-and-update.company-information.service.gov.uk/company/17423646">17423646</a>.
-  The source is public, so you can read every line before you run it.</p>
   <div class="faq">
     <h3>Where are my notes actually stored?</h3>
     <p>In a folder you choose on your own machine, one ordinary <code>.md</code> file per note. Nothing is held in a database and nothing is kept on anybody else's server. You can open that folder in any file manager and read the notes with any text editor.</p>
     <h3>Does Notespice send anything to you or to anyone else?</h3>
     <p>No. The software makes no outbound connections of its own. It does not check for updates, report errors, or load fonts, scripts or images from another company. Everything it needs ships inside the container.</p>
     <h3>What does it cost?</h3>
-    <p>Nothing. It is free software under the MIT licence, which lets you use, change and pass it on. There is no paid tier, no account and nothing held back.</p>
+    <p>Nothing. It is free software under version 3 of the GNU General Public Licence, which lets you use it, change it and pass it on, so long as what you pass on stays free in the same way. There is no paid tier, no account and nothing held back.</p>
     <h3>What do I need to run it?</h3>
     <p>A machine that runs Docker, and two folders on disk: one for your notes and one for the app's own small amount of state. It listens on port 8080 by default. There is nothing else to install.</p>
     <h3>Can I read my notes in another app?</h3>
@@ -692,7 +686,7 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
   <nav>
     <a href="https://github.com/lightmorphic/notespice">GitHub</a>
     <a href="https://github.com/lightmorphic/notespice/blob/main/README.md">Docs</a>
-    <a href="https://github.com/lightmorphic/notespice/blob/main/LICENSE">MIT License</a>
+    <a href="https://github.com/lightmorphic/notespice/blob/main/LICENSE">GPL v3 licence</a>
     <a href="https://github.com/lightmorphic/notespice/releases">Releases</a>
   </nav>
   <p class="credit"><a href="https://github.com/lightmorphic/notespice">Notespice</a> - vibe-coded with Claude</p>

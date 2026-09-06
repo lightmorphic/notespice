@@ -1,3 +1,11 @@
+// Notespice - a self-hosted, database-less markdown notes app.
+// Copyright (C) 2026 Lightmorphic Ltd.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License version 3, as
+// published by the Free Software Foundation. It is distributed WITHOUT
+// ANY WARRANTY; see the LICENSE file, or <https://www.gnu.org/licenses/>.
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").catch(() => {

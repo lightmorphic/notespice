@@ -368,8 +368,20 @@ the converter, or Enter/paste handling should keep that suite at
 
 ## License
 
-Notespice is free software, licensed under the MIT License. See the
-[LICENSE](./LICENSE) file for the full text.
+Copyright (C) 2026 Lightmorphic Ltd.
+
+Notespice is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License version 3, as
+published by the Free Software Foundation.
+
+It is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the [LICENSE](./LICENSE) file
+for the full text, or <https://www.gnu.org/licenses/>.
+
+Releases up to and including 1.8.24 were published under the MIT
+Licence. That grant is irrevocable, so those versions remain available
+on those terms; everything from the next release on is GPL v3.
 
 ## Disclaimer
 

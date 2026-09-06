@@ -2,7 +2,7 @@
 
 > A self-hosted notes application with no database. Every note is a plain
 > markdown file on the operator's own disk. Published by Lightmorphic Ltd
-> under the MIT licence.
+> under the GNU General Public Licence version 3.
 
 Notespice is a notes app you run yourself, usually as a single Docker
 container. It stores each note as an ordinary `.md` file in a folder you
@@ -24,7 +24,7 @@ that imports straight back in.
 - [Home](https://notespice.org/): what it is, a live editor to try, and how to run it
 - [Privacy](https://notespice.org/privacy.html): the site collects nothing; the host keeps ordinary server logs
 - [Cookies](https://notespice.org/cookies.html): none are set
-- [Terms](https://notespice.org/terms.html): MIT licence, no warranty, England and Wales
+- [Terms](https://notespice.org/terms.html): GPL v3, no warranty, England and Wales
 - [Accessibility](https://notespice.org/accessibility.html): what was tested and what was not
 - [Complaints](https://notespice.org/complaints.html): how to raise a problem
 
