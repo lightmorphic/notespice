@@ -1,0 +1,90 @@
+/* Styling for the legal and error pages. The tokens mirror the ones in
+   index.html, which keeps its CSS inline so the home page renders with
+   no extra request. Change a colour in one and change it in the other. */
+:root {
+  --bg: #FFFDF6;
+  --bg-canvas: #E8E4DA;
+  --surface-high: #ECE7D9;
+  --code-bg: #F0EBDC;
+  --border: #D8D2C4;
+  --text: #1D1B13;
+  --text-muted: #6B6659;
+  --accent: #FFC107;
+  --link: #816100;
+  --max-w: 720px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #19212B;
+    --bg-canvas: #10141C;
+    --surface-high: #273240;
+    --code-bg: #222B36;
+    --border: #3B4757;
+    --text: #E7EBF2;
+    --text-muted: #9AA4B5;
+    --link: #FFC107;
+  }
+}
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("../fonts/manrope.woff2") format("woff2");
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg-canvas);
+  color: var(--text);
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+}
+a { color: var(--link); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.skip-link {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--bg); color: var(--text);
+  padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; z-index: 10;
+}
+.skip-link:focus { left: 12px; top: 12px; }
+
+.topbar { padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--bg); }
+.topbar .inner { max-width: var(--max-w); margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+.topbar a.home {
+  display: inline-flex; align-items: center; gap: 10px;
+  color: var(--text); text-decoration: none; font-weight: 700;
+  min-height: 44px; padding: 4px 0;
+}
+.topbar img { border-radius: 8px; }
+
+main { max-width: var(--max-w); margin: 0 auto; padding: 40px 24px 8px; }
+.panel {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px 28px 32px;
+}
+h1 { font-size: 32px; line-height: 1.2; margin: 0 0 6px; text-wrap: balance; }
+h2 { font-size: 20px; margin: 32px 0 8px; text-wrap: balance; }
+p, li { color: var(--text); }
+.muted { color: var(--text-muted); }
+.updated { color: var(--text-muted); font-size: 16px; margin: 0 0 24px; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 6px; font-family: inherit; font-size: 0.92em; }
+ul { padding-left: 22px; }
+li { margin: 6px 0; }
+
+footer { padding: 40px 24px 0; text-align: center; }
+footer nav a { color: var(--text-muted); margin: 0 6px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; padding: 12px; min-width: 44px; min-height: 44px; }
+footer nav a:hover { color: var(--text); }
+
+.subfooter {
+  max-width: var(--max-w); margin: 0 auto; padding: 24px;
+  color: var(--text-muted); font-size: 16px; text-align: center;
+}
+.subfooter p { margin: 0 0 8px; color: var(--text-muted); }
+.subfooter nav a { display: inline-flex; align-items: center; justify-content: center; margin: 0 4px; padding: 12px; min-width: 44px; min-height: 44px; color: var(--text-muted); }
+.subfooter nav a:hover { color: var(--text); }
+
+/* A list whose items are destinations rather than prose: each link needs a
+   finger-sized target. Links inside a sentence are deliberately untouched. */
+.linklist li a { display: inline-flex; align-items: center; min-height: 44px; }
