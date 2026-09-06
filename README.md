@@ -6,8 +6,6 @@ A self-hosted, database-less notes app. Every note is a plain markdown
 file on disk (no database, ever) with a Rust backend, a full
 GitHub Flavored Markdown toolbar, and an installable PWA frontend.
 
-> ⚠️ Vibe coded with [Claude](https://claude.ai).
-
 See [CHANGELOG.md](./CHANGELOG.md) for version history.
 
 ## Features

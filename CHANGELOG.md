@@ -21,6 +21,9 @@
   link to the Companies House register. The law asks for the number,
   the registered name, where the company is registered and the office
   address, all of which are still there; it does not ask for a link.
+- Removed the line in the website footer and the note in the README
+  saying how the project was written. Neither the site nor any file in
+  the repository mentions it now.
 - Every page has a new source-code row in the footer, between the
   Lightmorphic credit and the legal details, with the same rule across
   the top. The GitHub and open-source marks on the left open those
