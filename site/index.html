@@ -122,7 +122,10 @@ body { margin: 0; background: var(--bg-canvas); color: var(--text); font-family:
   background: var(--bg-sidebar); border-bottom: 1px solid var(--border);
   padding: 0 24px;
 }
-.sitebar .inner { display: flex; align-items: center; gap: 18px; min-height: 60px; }
+/* Same column as the sections below, so the brand lines up with the
+   headings rather than floating out to the left of them. */
+.sitebar .inner { max-width: var(--max-w-narrow); margin: 0 auto;
+                  display: flex; align-items: center; gap: 18px; min-height: 60px; }
 .sitebar .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text); text-decoration: none; min-height: 44px; }
 .sitebar .brand img { border-radius: 8px; }
 .sitebar nav { display: flex; align-items: center; gap: 4px; }
@@ -289,30 +292,40 @@ code { font-family: inherit; font-weight: 600; }
 .footnotes ol { padding-left: 18px; }
 #demo-raw { display: none; width: 100%; height: 100%; min-height: 300px; border: none; outline: none; resize: none; padding: 14px 20px 70px; background: var(--bg); color: var(--text); font-family: inherit; font-size: 13px; line-height: 1.6; }
 
-.faq h3 { font-size: 18px; margin: 26px 0 6px; text-wrap: balance; }
-.faq p { color: var(--text-muted); margin: 0; max-width: 62ch; }
+/* Each question and its answer sit in one panel. They used to be two
+   plain columns - every question in the left, every answer in the
+   right - which drifted apart as soon as the answers ran to different
+   lengths. */
+.faq { display: grid; gap: 16px; margin-top: 28px; align-items: start;
+       grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); }
+.faq-item { background: var(--bg); border: 1px solid var(--border);
+            border-radius: 16px; padding: 20px 22px; box-shadow: var(--shadow-1); }
+.faq-item h3 { font-size: 16.5px; margin: 0 0 8px; text-wrap: balance; }
+.faq-item p { color: var(--text-muted); font-size: 15px; margin: 0; }
 .hero-caption { font-size: 16px; color: var(--text-muted); margin-top: 16px; text-align: center; }
 .hero-caption strong { color: var(--text); }
 
 /* ---- sections ---- */
-.section { max-width: var(--max-w-narrow); margin: 0 auto; padding: 60px 0; }
+/* The 24px is inside the max-width, so the text column stays exactly
+   --max-w-narrow on a wide screen and still clears the edge of a phone. */
+.section { max-width: calc(var(--max-w-narrow) + 48px); margin: 0 auto; padding: 60px 24px; }
 .section h2 { font-size: 27px; margin-bottom: 16px; }
-.section-prose { max-width: 780px; }
 .section-prose .lead { max-width: none; }
+@media (min-width: 900px) {
+  .section-prose { display: grid; align-items: start; column-gap: 64px;
+                   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); }
+  .section-prose > h2 { margin: 0; }
+  .section-prose > .lead { grid-column: 2; margin: 0; }
+  .section-prose > .lead + .lead { margin-top: 16px; }
+}
 .section p.lead { color: var(--text-muted); font-size: 16px; max-width: var(--measure); }
 .section p.lead strong { color: var(--text); }
 
-.feature-rows { margin-top: 30px; }
+.feature-rows { margin-top: 26px; }
 @media (min-width: 860px) {
-  .feature-rows { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; }
-  .feature-row:nth-child(2) { border-top: none; }
+  .feature-rows { display: grid; grid-template-columns: 1fr 1fr; column-gap: 52px; }
 }
-@media (min-width: 860px) {
-  .faq { display: grid; grid-template-columns: 1fr 1fr; column-gap: 44px; }
-  .faq h3:first-of-type { margin-top: 0; }
-}
-.feature-row { display: flex; gap: 20px; padding: 20px 0; border-top: 1px solid var(--border); }
-.feature-row:first-child { border-top: none; }
+.feature-row { display: flex; gap: 18px; padding: 16px 0; }
 .feature-icon { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: var(--surface-high); border: 1px solid var(--border); color: var(--link); font-size: 15px; }
 .feature-row h3 { font-size: 15.5px; margin-bottom: 4px; }
 .feature-row p { color: var(--text-muted); font-size: 14px; margin: 0; max-width: var(--measure); }
@@ -322,10 +335,24 @@ pre.code-block .comment { color: var(--text-muted); }
 pre.code-block .key { color: var(--yaml-key); }
 pre.code-block .str { color: var(--yaml-str); }
 
-ol.steps { padding-left: 22px; color: var(--text-muted); }
-ol.steps li { margin-bottom: 10px; }
-ol.steps strong { color: var(--text); }
-ol.steps code { background: var(--code-bg); padding: 1px 6px; border-radius: 5px; color: var(--text); font-size: 13px; }
+/* The marker is drawn by CSS, so the list keeps role="list" for the
+   screen readers that drop list semantics when list-style is none. */
+ol.steps { list-style: none; padding: 0; margin: 22px 0 0; counter-reset: step;
+           display: grid; gap: 14px;
+           grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); }
+ol.steps li { counter-increment: step; margin: 0; color: var(--text-muted);
+              font-size: 14.5px; background: var(--bg);
+              border: 1px solid var(--border); border-radius: 16px;
+              padding: 18px 20px; box-shadow: var(--shadow-1); }
+ol.steps li::before { content: counter(step); display: inline-flex;
+              align-items: center; justify-content: center;
+              width: 26px; height: 26px; margin-bottom: 12px;
+              border-radius: 8px; background: var(--accent-tint);
+              color: var(--accent); font-weight: 700; font-size: 13px; }
+ol.steps strong { display: block; color: var(--text); margin-bottom: 6px; }
+ol.steps code { background: var(--code-bg); padding: 2px 7px; border-radius: 6px;
+              color: var(--text); font-size: 13px; overflow-wrap: anywhere;
+              -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 
 .skip-link { position: absolute; left: -9999px; top: 0; background: var(--bg); color: var(--text); padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; z-index: 20; }
 .skip-link:focus { left: 12px; top: 12px; }
@@ -575,17 +602,6 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
   <h2>Your notes are just files. That's the whole idea.</h2>
   <p class="lead">Notespice keeps your notes as <strong>plain markdown files on disk</strong>. No database, no proprietary format, nothing you can't open in any other editor the moment you stop using this one.</p>
   <p class="lead">There's no account system, no subscription, and no third-party server holding your notes. It's one container, one folder of <code>.md</code> files, and a GitHub Flavored Markdown editor that works the same on your phone and your laptop.</p>
-  <a class="lightmorphic-badge" href="https://lightmorphic.com" target="_blank" rel="noopener noreferrer" translate="no">
-    <span>Created by</span>
-    <img src="images/lightmorphic-dark-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
-    <span class="external-link-icon" aria-hidden="true">
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-        <path d="M15 3h6v6"/>
-        <line x1="10" y1="14" x2="21" y2="3"/>
-      </svg>
-    </span>
-  </a>
 </section>
 
 <hr />
@@ -634,22 +650,38 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
 
   <h2>Questions people ask</h2>
   <div class="faq">
-    <h3>Where are my notes actually stored?</h3>
-    <p>In a folder you choose on your own machine, one ordinary <code>.md</code> file per note. Nothing is held in a database and nothing is kept on anybody else's server. You can open that folder in any file manager and read the notes with any text editor.</p>
-    <h3>Does Notespice send anything to you or to anyone else?</h3>
-    <p>No. The software makes no outbound connections of its own. It does not check for updates, report errors, or load fonts, scripts or images from another company. Everything it needs ships inside the container.</p>
-    <h3>What does it cost?</h3>
-    <p>Nothing. It is free software under version 3 of the GNU General Public Licence, which lets you use it, change it and pass it on, so long as what you pass on stays free in the same way. There is no paid tier, no account and nothing held back.</p>
-    <h3>What do I need to run it?</h3>
-    <p>A machine that runs Docker, and two folders on disk: one for your notes and one for the app's own small amount of state. It listens on port 8080 by default. There is nothing else to install.</p>
-    <h3>Can I read my notes in another app?</h3>
-    <p>Yes, and that is the point. They are plain markdown files, so any editor opens them. If you stop using Notespice tomorrow, the notes stay exactly where they are and nothing needs converting.</p>
-    <h3>How do I get everything out at once?</h3>
-    <p>One button exports every note and attachment as a dated zip file. The same zip imports straight back in, so it doubles as a backup you can check by opening it.</p>
-    <h3>Does it work on a phone?</h3>
-    <p>Yes. It installs to a phone or a desktop like an app, and the editor is built for a touch screen as well as a keyboard.</p>
-    <h3>Which parts of markdown does it support?</h3>
-    <p>The parts most people use: headings, bold and italic, lists, task lists, tables, footnotes, strikethrough, code blocks and GitHub-style callouts. It is not a complete implementation of the markdown specification. Reference links, indented code blocks and raw HTML blocks, for instance, are not supported.</p>
+    <div class="faq-item">
+      <h3>Where are my notes actually stored?</h3>
+      <p>In a folder you choose on your own machine, one ordinary <code>.md</code> file per note. Nothing is held in a database and nothing is kept on anybody else's server. You can open that folder in any file manager and read the notes with any text editor.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Does Notespice send anything to you or to anyone else?</h3>
+      <p>No. The software makes no outbound connections of its own. It does not check for updates, report errors, or load fonts, scripts or images from another company. Everything it needs ships inside the container.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What does it cost?</h3>
+      <p>Nothing. It is free software under version 3 of the GNU General Public Licence, which lets you use it, change it and pass it on, so long as what you pass on stays free in the same way. There is no paid tier, no account and nothing held back.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What do I need to run it?</h3>
+      <p>A machine that runs Docker, and two folders on disk: one for your notes and one for the app's own small amount of state. It listens on port 8080 by default. There is nothing else to install.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Can I read my notes in another app?</h3>
+      <p>Yes, and that is the point. They are plain markdown files, so any editor opens them. If you stop using Notespice tomorrow, the notes stay exactly where they are and nothing needs converting.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How do I get everything out at once?</h3>
+      <p>One button exports every note and attachment as a dated zip file. The same zip imports straight back in, so it doubles as a backup you can check by opening it.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Does it work on a phone?</h3>
+      <p>Yes. It installs to a phone or a desktop like an app, and the editor is built for a touch screen as well as a keyboard.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Which parts of markdown does it support?</h3>
+      <p>The parts most people use: headings, bold and italic, lists, task lists, tables, footnotes, strikethrough, code blocks and GitHub-style callouts. It is not a complete implementation of the markdown specification. Reference links, indented code blocks and raw HTML blocks, for instance, are not supported.</p>
+    </div>
   </div>
 </section>
 
@@ -672,10 +704,10 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
     <span class="key">ports</span>:
       - <span class="str">"8080:8080"</span></pre>
 
-  <ol class="steps">
-    <li><strong>Create the data folders</strong>: <code>sudo mkdir -p /opt/media/notes /opt/notespice</code></li>
-    <li><strong>Start the container</strong>: <code>docker compose up -d</code></li>
-    <li><strong>Open it</strong>: visit <code>http://your-server:8080</code> and write your first note</li>
+  <ol class="steps" role="list">
+    <li><strong>Create the data folders</strong><code>sudo mkdir -p /opt/media/notes /opt/notespice</code></li>
+    <li><strong>Start the container</strong><code>docker compose up -d</code></li>
+    <li><strong>Open it</strong>Visit <code>http://your-server:8080</code> and write your first note</li>
   </ol>
 </section>
 </main>

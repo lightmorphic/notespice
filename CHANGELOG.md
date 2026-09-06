@@ -21,6 +21,20 @@
   link to the Companies House register. The law asks for the number,
   the registered name, where the company is registered and the office
   address, all of which are still there; it does not ask for a link.
+- Fixed a broken layout in the questions section of the home page. It
+  put every question in one column and every answer in the other, so
+  as soon as the answers ran to different lengths they drifted away
+  from the question they belonged to. Each question and its answer now
+  sit together in their own panel.
+- The rest of the home page was tidied at the same time. The "Your
+  notes are just files" section had its text stranded on the left of a
+  much wider column, and now runs as a heading beside the argument.
+  The feature list lost the hairline rules that ran ragged between its
+  two columns. The three setup steps are numbered cards instead of an
+  indented list. The Lightmorphic badge appeared twice on the page and
+  now appears once, in the footer. The menu bar lines up with the text
+  below it. And every section had no side margin at all on a phone, so
+  the text ran into the edge of the screen; it now clears it.
 
 ## 1.8.24 — 2026-09-06
 
