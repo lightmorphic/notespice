@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#FFC107" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://apps.lightmorphic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://apps.lightmorphic.com; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>Notespice: self-hosted markdown notes, no database</title>
 <meta name="description" content="A self-hosted notes app with no database. Every note is a plain markdown file on your own disk, with full GitHub Flavored Markdown, an installable app, and nothing locking your notes in." />
@@ -100,7 +100,7 @@
   --shadow-3: 0 4px 8px 3px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.14);
   --yaml-key: #1554AD;
   --yaml-str: #8A6A00;
-  --max-w: 1060px; --max-w-narrow: 720px;
+  --max-w: 1200px; --max-w-narrow: 1040px; --measure: 68ch;
 }
 @media (prefers-color-scheme: dark) {
   /* Dark theme: cool navy neutrals (owner's palette — #10141C canvas,
@@ -141,6 +141,25 @@ body { margin: 0; background: var(--bg-canvas); color: var(--text); font-family:
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
+.sitebar {
+  position: sticky; top: 0; z-index: 30;
+  background: var(--bg-sidebar); border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+}
+.sitebar .inner { display: flex; align-items: center; gap: 18px; min-height: 60px; }
+.sitebar .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text); text-decoration: none; min-height: 44px; }
+.sitebar .brand img { border-radius: 8px; }
+.sitebar nav { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
+.sitebar nav a { color: var(--text-muted); font-size: 15px; text-decoration: none; padding: 12px 10px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 8px; }
+.sitebar nav a:hover { color: var(--text); background: var(--surface-high); }
+.sitebar .bar-end { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+/* The sticky bar would otherwise sit on top of whatever an anchor jumps to. */
+:target, section[id] { scroll-margin-top: 76px; }
+@media (max-width: 700px) {
+  .sitebar nav { display: none; }
+  .sitebar .inner { min-height: 56px; }
+}
+
 section, header, footer { padding: 0 24px; }
 .inner { max-width: var(--max-w); margin: 0 auto; }
 .inner-narrow { max-width: var(--max-w-narrow); margin: 0 auto; }
@@ -172,7 +191,7 @@ code { font-family: inherit; font-weight: 600; }
 
 /* ---- app-window demo: a scaled-down copy of the real app's
    chrome — drawer, app bar, segmented control, extended FAB ---- */
-.demo-wrap { width: 100%; max-width: var(--max-w-narrow); }
+.demo-wrap { width: 100%; max-width: var(--max-w); }
 .app-window {
   position: relative;
   background: var(--bg); border: 1px solid var(--border); border-radius: 24px;
@@ -303,15 +322,25 @@ code { font-family: inherit; font-weight: 600; }
 /* ---- sections ---- */
 .section { max-width: var(--max-w-narrow); margin: 0 auto; padding: 60px 0; }
 .section h2 { font-size: 27px; margin-bottom: 16px; }
-.section p.lead { color: var(--text-muted); font-size: 16px; }
+.section-prose { max-width: 780px; }
+.section-prose .lead { max-width: none; }
+.section p.lead { color: var(--text-muted); font-size: 16px; max-width: var(--measure); }
 .section p.lead strong { color: var(--text); }
 
 .feature-rows { margin-top: 30px; }
+@media (min-width: 860px) {
+  .feature-rows { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; }
+  .feature-row:nth-child(2) { border-top: none; }
+}
+@media (min-width: 860px) {
+  .faq { display: grid; grid-template-columns: 1fr 1fr; column-gap: 44px; }
+  .faq h3:first-of-type { margin-top: 0; }
+}
 .feature-row { display: flex; gap: 20px; padding: 20px 0; border-top: 1px solid var(--border); }
 .feature-row:first-child { border-top: none; }
 .feature-icon { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: var(--surface-high); border: 1px solid var(--border); color: var(--link); font-size: 15px; }
 .feature-row h3 { font-size: 15.5px; margin-bottom: 4px; }
-.feature-row p { color: var(--text-muted); font-size: 14px; margin: 0; }
+.feature-row p { color: var(--text-muted); font-size: 14px; margin: 0; max-width: var(--measure); }
 
 pre.code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; overflow-x: auto; font-family: inherit; font-size: 13.5px; font-weight: 500; line-height: 1.6; margin: 20px 0; }
 pre.code-block .comment { color: var(--text-muted); }
@@ -480,7 +509,24 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
 <body>
 
 <a class="skip-link" href="#content">Skip to content</a>
-<header class="hero">
+<header class="sitebar">
+  <div class="inner">
+    <a class="brand" href="#top">
+      <img src="images/notespice-icon-80.png" width="28" height="28" alt="" />
+      Notespice
+    </a>
+    <nav aria-label="Sections">
+      <a href="#why">Why</a>
+      <a href="#features">Features</a>
+      <a href="#faq">Questions</a>
+      <a href="#get-started">Get started</a>
+    </nav>
+    <div class="bar-end">
+      <div id="all-apps"></div>
+    </div>
+  </div>
+</header>
+<section class="hero" id="top">
   <div class="inner">
     <div class="hero-text">
       <div class="brand-row">
@@ -545,12 +591,12 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
       <p class="hero-caption"><strong>This is not a screenshot.</strong> It is the real interface, running live: create a note, switch between them, use the whole toolbar, toggle Writer and Markdown, even delete one. (A few core features only. Full-content search, import and export and the rest are in the real thing.)</p>
     </div>
   </div>
-</header>
+</section>
 
 <hr />
 
 <main id="content">
-<section class="section">
+<section class="section section-prose" id="why">
   <h2>Your notes are just files. That's the whole idea.</h2>
   <p class="lead">Notespice keeps your notes as <strong>plain markdown files on disk</strong>. No database, no proprietary format, nothing you can't open in any other editor the moment you stop using this one.</p>
   <p class="lead">There's no account system, no subscription, and no third-party server holding your notes. It's one container, one folder of <code>.md</code> files, and a GitHub Flavored Markdown editor that works the same on your phone and your laptop.</p>
@@ -570,7 +616,7 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
 
 <hr />
 
-<section class="section">
+<section class="section" id="features">
   <h2>A full markdown editor, without the baggage.</h2>
   <div class="feature-rows">
     <div class="feature-row">
@@ -1363,5 +1409,6 @@ footer .credit { color: var(--text-muted); font-size: 15px; margin-top: 16px; }
 })();
 </script>
 
+<script src="https://apps.lightmorphic.com/launcher.js" defer></script>
 </body>
 </html>
