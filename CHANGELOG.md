@@ -17,6 +17,10 @@
   complaints and 404 pages now looks exactly like the one on the home
   page: a rule across the top, the same spacing beneath it, and no
   underlines on the footer links.
+- The company number in the sub-footer is plain text rather than a
+  link to the Companies House register. The law asks for the number,
+  the registered name, where the company is registered and the office
+  address, all of which are still there; it does not ask for a link.
 
 ## 1.8.24 — 2026-09-06
 
