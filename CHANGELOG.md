@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.23 — 2026-09-06
+
+- The "Created by Lightmorphic" badge in the sidebar pointed at
+  lightmorphic.co.uk, which no longer exists. It now points at
+  lightmorphic.com.
+
 ## 1.8.22 — 2026-09-05
 
 - Blank lines above a code block are kept instead of being deleted.
