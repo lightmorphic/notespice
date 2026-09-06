@@ -65,21 +65,23 @@ code { background: var(--code-bg); padding: 1px 6px; border-radius: 6px; font-fa
 ul { padding-left: 22px; }
 li { margin: 6px 0; }
 
-footer { padding: 40px 24px 0; text-align: center; }
+footer { padding: 40px 24px 56px; text-align: center; }
 footer .subfooter { text-align: left; }
-footer nav a { color: var(--text-muted); margin: 0 6px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; padding: 12px; min-width: 44px; min-height: 44px; }
+footer nav a { color: var(--text-muted); text-decoration: none; margin: 0 6px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; padding: 12px; min-width: 44px; min-height: 44px; }
 footer nav a:hover { color: var(--text); }
 
 /* Company details on the left, the five legal links pushed to the
    right on the same row; both stack and left-align on a narrow screen. */
 .subfooter {
-  max-width: var(--max-w); margin: 0 auto; padding: 24px 0 0;
+  max-width: var(--max-w); margin: 28px auto 0; padding-top: 22px;
+  border-top: 1px solid var(--border);
   color: var(--text-muted); font-size: 15px;
   display: flex; flex-wrap: wrap; align-items: flex-end;
   justify-content: space-between; gap: 8px 16px;
 }
 .subfooter .legal-text { flex: 1 1 320px; min-width: 0; }
 .subfooter p { margin: 0 0 4px; color: var(--text-muted); }
+.subfooter a { text-decoration: none; }
 .subfooter .legal-text p:last-child { margin-bottom: 0; }
 .subfooter nav { flex: 0 1 auto; max-width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-end; margin-right: -6px; }
 .subfooter nav a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 6px; min-width: 44px; min-height: 44px; color: var(--text-muted); font-size: 15px; }

@@ -13,6 +13,10 @@
   company details are in the sub-footer on every page already.
 - The menu links in the top bar moved across to sit beside the app
   grid on the right, instead of next to the Notespice name.
+- The sub-footer on the privacy, cookies, terms, accessibility,
+  complaints and 404 pages now looks exactly like the one on the home
+  page: a rule across the top, the same spacing beneath it, and no
+  underlines on the footer links.
 
 ## 1.8.24 — 2026-09-06
 
