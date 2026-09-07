@@ -39,9 +39,8 @@
   printed twice over: once in the menu bar and again right underneath
   it. The second one has gone, the menu bar's mark now feeds the demo
   its logo, and what is left reads as a header rather than a stack -
-  a small badge above a larger, tighter headline, a wider line for the
-  sentence under it, and taller buttons. The demo is the same size it
-  was.
+  a larger, tighter headline, a wider line for the sentence under it,
+  and taller buttons. The demo is the same size it was.
 - The hero sells rather than describes: a plainer promise, three short
   facts under the buttons instead of a paragraph, and a closing
   paragraph after the setup steps.

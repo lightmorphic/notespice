@@ -142,12 +142,6 @@ body { margin: 0; background: var(--bg-canvas); color: var(--text); font-family:
 section, header, footer { padding: 0 24px; }
 .inner { max-width: var(--max-w); margin: 0 auto; }
 .inner-narrow { max-width: var(--max-w-narrow); margin: 0 auto; }
-.eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 26px;
-  padding: 7px 15px; border: 1px solid var(--border); border-radius: 100px;
-  background: var(--bg-sidebar); color: var(--text-muted);
-  font-size: 12.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
-.eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--accent); flex: none; }
 h1, h2, h3 { font-weight: 700; margin: 0; letter-spacing: -0.01em; }
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -156,7 +150,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 0; }
 code { font-family: inherit; font-weight: 600; }
 
 /* ---- hero: stacked, demo below the text block ---- */
-.hero { padding: 92px 24px 88px; }
+.hero { padding: 84px 24px 88px; }
 .hero .inner { display: flex; flex-direction: column; align-items: center; gap: 52px; text-align: center; }
 .hero-text { display: flex; flex-direction: column; align-items: center; max-width: 720px; }
 .hero-text h1 { font-size: clamp(38px, 5.4vw, 58px); line-height: 1.06; letter-spacing: -0.025em;
@@ -579,7 +573,6 @@ footer { padding: 40px 24px 56px; text-align: center; }
 <section class="hero" id="top">
   <div class="inner">
     <div class="hero-text">
-      <p class="eyebrow">Self-hosted &middot; Free &middot; No account</p>
       <h1>Notes without the nonsense</h1>
       <p class="tagline">Write in markdown. Keep the files. Notespice runs on your own machine and saves every note as an ordinary <code>.md</code> file you can open with anything, for as long as you like.</p>
       <div class="cta-row">
