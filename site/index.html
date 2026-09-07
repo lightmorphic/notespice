@@ -142,7 +142,12 @@ body { margin: 0; background: var(--bg-canvas); color: var(--text); font-family:
 section, header, footer { padding: 0 24px; }
 .inner { max-width: var(--max-w); margin: 0 auto; }
 .inner-narrow { max-width: var(--max-w-narrow); margin: 0 auto; }
-.eyebrow { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--link); font-weight: 700; margin: 0 0 12px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 26px;
+  padding: 7px 15px; border: 1px solid var(--border); border-radius: 100px;
+  background: var(--bg-sidebar); color: var(--text-muted);
+  font-size: 12.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+.eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); flex: none; }
 h1, h2, h3 { font-weight: 700; margin: 0; letter-spacing: -0.01em; }
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -151,16 +156,18 @@ hr { border: none; border-top: 1px solid var(--border); margin: 0; }
 code { font-family: inherit; font-weight: 600; }
 
 /* ---- hero: stacked, demo below the text block ---- */
-.hero { padding: 72px 24px 80px; }
-.hero .inner { display: flex; flex-direction: column; align-items: center; gap: 44px; text-align: center; }
-.hero-text { display: flex; flex-direction: column; align-items: center; }
-.hero-text .brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; justify-content: center; }
-.hero-text .brand-row img { width: 40px; height: 40px; border-radius: 10px; }
-.hero-text .brand-row span { font-weight: 700; font-size: 18px; }
-.hero-text h1 { font-size: 40px; text-wrap: balance; }
-.hero-text .tagline { font-size: 19px; color: var(--text-muted); margin: 14px 0 26px; max-width: 480px; }
+.hero { padding: 92px 24px 88px; }
+.hero .inner { display: flex; flex-direction: column; align-items: center; gap: 52px; text-align: center; }
+.hero-text { display: flex; flex-direction: column; align-items: center; max-width: 720px; }
+.hero-text h1 { font-size: clamp(38px, 5.4vw, 58px); line-height: 1.06; letter-spacing: -0.025em;
+  margin: 0; text-wrap: balance; }
+.hero-text .tagline { font-size: 18.5px; line-height: 1.62; color: var(--text-muted);
+  margin: 20px 0 32px; max-width: 34em; text-wrap: pretty; }
+.hero-text .tagline code { color: var(--text); }
 .cta-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.btn { display: inline-block; padding: 12px 24px; border-radius: 100px; font-weight: 700; font-size: 14.5px; border: 1px solid transparent; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px;
+  padding: 13px 28px; border-radius: 100px; font-weight: 700; font-size: 15px;
+  border: 1px solid transparent; transition: box-shadow 160ms ease, background 160ms ease, border-color 160ms ease; }
 .btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow-1); }
 .btn-primary:hover { text-decoration: none; box-shadow: var(--shadow-3); }
 .btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
@@ -555,7 +562,7 @@ footer { padding: 40px 24px 56px; text-align: center; }
 <header class="sitebar">
   <div class="inner">
     <a class="brand" href="#top">
-      <img src="images/notespice-icon-80.png" width="28" height="28" alt="" />
+      <img id="brand-logo" src="images/notespice-icon-80.png" width="28" height="28" alt="" />
       Notespice
     </a>
     <div class="bar-end">
@@ -572,13 +579,9 @@ footer { padding: 40px 24px 56px; text-align: center; }
 <section class="hero" id="top">
   <div class="inner">
     <div class="hero-text">
-      <div class="brand-row">
-        <img id="brand-logo" src="images/notespice-icon-80.png" width="40" height="40" alt="Notespice logo: a sheet of paper on a yellow tile" />
-        <span>Notespice</span>
-      </div>
+      <p class="eyebrow">Self-hosted &middot; Free &middot; No account</p>
       <h1>Notes without the nonsense</h1>
       <p class="tagline">Write in markdown. Keep the files. Notespice runs on your own machine and saves every note as an ordinary <code>.md</code> file you can open with anything, for as long as you like.</p>
-      <p class="eyebrow">SELF-HOSTED &middot; FREE &middot; NO ACCOUNT</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="#get-started">Get started</a>
         <a class="btn btn-secondary" href="#demo">Try the editor</a>
@@ -1481,8 +1484,8 @@ footer { padding: 40px 24px 56px; text-align: center; }
   });
 
   // Chrome: the drawer collapses from the app-bar menu button,
-  // and the brand mark (embedded once, in the hero) is reused for the
-  // drawer and app-bar logos.
+  // and the brand mark (embedded once, in the menu bar) is reused for
+  // the drawer and app-bar logos.
   var heroLogo = document.getElementById("brand-logo");
   el("demo-brand-logo").src = heroLogo.src;
   el("demo-appbar-logo").src = heroLogo.src;
