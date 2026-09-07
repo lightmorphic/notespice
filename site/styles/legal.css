@@ -87,9 +87,24 @@ li { margin: 6px 0; }
 
 footer { padding: 40px 24px 56px; text-align: center; }
 footer .subfooter { text-align: left; }
-footer nav a { color: var(--text-muted); text-decoration: none; margin: 0 6px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; padding: 12px; min-width: 44px; min-height: 44px; }
-footer nav a:hover { color: var(--text); }
 
+/* The site's own footer, above the source-code row and the legal
+   details: what Notespice is, who made it, and the way back into the
+   page. */
+.site-footer { max-width: var(--max-w); margin: 0 auto; text-align: left;
+  display: flex; flex-wrap: wrap; gap: 24px 64px; justify-content: space-between; }
+.site-footer .footer-brand { flex: 1 1 320px; max-width: 430px; }
+.site-footer .brand { display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 17px; color: var(--text); text-decoration: none; }
+.site-footer .brand img { border-radius: 8px; }
+.site-footer .footer-brand p { color: var(--text-muted); font-size: 15px; margin: 12px 0 18px; }
+.site-footer .lightmorphic-badge { margin: 0; }
+.site-footer .footer-nav { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.site-footer .footer-nav h2 { font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-muted); margin: 2px 0 2px; font-weight: 700; }
+.site-footer .footer-nav a { color: var(--text-muted); font-size: 15px; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: flex-end; min-height: 40px; }
+.site-footer .footer-nav a:hover { color: var(--text); }
 /* Source-code row: the two marks on the left, the repository links on
    the right. Same rule and rhythm as the legal sub-footer below it. */
 .oss-bar { max-width: var(--max-w); margin: 28px auto 0; padding-top: 22px;
@@ -110,6 +125,7 @@ footer nav a:hover { color: var(--text); }
 .oss-bar nav a:hover { color: var(--text); }
 @media (max-width: 700px) {
   .oss-bar nav { justify-content: flex-start; margin-left: -6px; margin-right: 0; }
+  .site-footer .footer-nav { align-items: flex-start; text-align: left; }
 }
 /* Company details on the left, the five legal links pushed to the
    right on the same row; both stack and left-align on a narrow screen. */

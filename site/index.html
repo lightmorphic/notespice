@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://apps.lightmorphic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://apps.lightmorphic.com; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>Notespice: self-hosted markdown notes, no database</title>
-<meta name="description" content="A self-hosted notes app with no database. Every note is a plain markdown file on your own disk, with full GitHub Flavored Markdown, an installable app, and nothing locking your notes in." />
+<meta name="description" content="A self-hosted notes app with no database. Every note is a plain markdown file on your own disk, written by an editor you can install like an app, with nothing locking your notes in." />
 <link rel="canonical" href="https://notespice.org/" />
 
 <link rel="icon" href="favicon.ico" sizes="32x32" />
@@ -19,7 +19,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Notespice" />
 <meta property="og:title" content="Notespice: self-hosted markdown notes, no database" />
-<meta property="og:description" content="Every note is a plain markdown file on your own disk. Full GitHub Flavored Markdown, installable, and nothing locking your notes in." />
+<meta property="og:description" content="Every note is a plain markdown file on your own disk. Installable like an app, and nothing locking your notes in." />
 <meta property="og:url" content="https://notespice.org/" />
 <meta property="og:image" content="https://notespice.org/images/notespice-share-card.png" />
 <meta property="og:image:width" content="1200" />
@@ -27,7 +27,7 @@
 <meta property="og:image:alt" content="Notespice: notes without the nonsense" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Notespice: self-hosted markdown notes, no database" />
-<meta name="twitter:description" content="Every note is a plain markdown file on your own disk. Full GitHub Flavored Markdown, installable, and nothing locking your notes in." />
+<meta name="twitter:description" content="Every note is a plain markdown file on your own disk. Installable like an app, and nothing locking your notes in." />
 <meta name="twitter:image" content="https://notespice.org/images/notespice-share-card.png" />
 
 <script type="application/ld+json">
@@ -41,7 +41,7 @@
       "url": "https://notespice.org/",
       "applicationCategory": "Productivity",
       "operatingSystem": "Any platform that runs Docker",
-      "description": "A self-hosted notes app with no database. Every note is a plain markdown file on disk, with full GitHub Flavored Markdown support.",
+      "description": "A self-hosted notes app with no database. Every note is a plain markdown file on disk.",
       "license": "https://github.com/lightmorphic/notespice/blob/main/LICENSE",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "GBP" },
@@ -165,8 +165,12 @@ code { font-family: inherit; font-weight: 600; }
 .btn-primary:hover { text-decoration: none; box-shadow: var(--shadow-3); }
 .btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
 .btn-secondary:hover { text-decoration: none; background: var(--hover-layer); }
-.hero-note { font-size: 16px; color: var(--text-muted); margin-top: 22px; max-width: 420px; }
-.hero-note strong { color: var(--text); }
+/* Three plain facts under the buttons, not a paragraph to read. */
+.hero-points { list-style: none; display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 8px 22px; padding: 0; margin: 24px 0 0; color: var(--text-muted); font-size: 15px; }
+.hero-points li { display: inline-flex; align-items: center; gap: 8px; }
+.hero-points li::before { content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); flex: none; }
 
 /* ---- app-window demo: a scaled-down copy of the real app's
    chrome — drawer, app bar, segmented control, extended FAB ---- */
@@ -350,6 +354,7 @@ ol.steps li::before { content: counter(step); display: inline-flex;
               border-radius: 8px; background: var(--accent-tint);
               color: var(--accent); font-weight: 700; font-size: 13px; }
 ol.steps strong { display: block; color: var(--text); margin-bottom: 6px; }
+.closer { color: var(--text-muted); font-size: 16px; max-width: var(--measure); margin: 26px 0 0; }
 ol.steps code { background: var(--code-bg); padding: 2px 7px; border-radius: 6px;
               color: var(--text); font-size: 13px; overflow-wrap: anywhere;
               -webkit-box-decoration-break: clone; box-decoration-break: clone; }
@@ -357,8 +362,23 @@ ol.steps code { background: var(--code-bg); padding: 2px 7px; border-radius: 6px
 .skip-link { position: absolute; left: -9999px; top: 0; background: var(--bg); color: var(--text); padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; z-index: 20; }
 .skip-link:focus { left: 12px; top: 12px; }
 footer { padding: 40px 24px 56px; text-align: center; }
-footer nav a { color: var(--text-muted); margin: 0 6px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; padding: 12px; min-width: 44px; min-height: 44px; }
-footer nav a:hover { color: var(--text); }
+/* The site's own footer, above the source-code row and the legal
+   details: what Notespice is, who made it, and the way back into the
+   page. */
+.site-footer { max-width: var(--max-w-narrow); margin: 0 auto; text-align: left;
+  display: flex; flex-wrap: wrap; gap: 24px 64px; justify-content: space-between; }
+.site-footer .footer-brand { flex: 1 1 320px; max-width: 430px; }
+.site-footer .brand { display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 17px; color: var(--text); text-decoration: none; }
+.site-footer .brand img { border-radius: 8px; }
+.site-footer .footer-brand p { color: var(--text-muted); font-size: 15px; margin: 12px 0 18px; }
+.site-footer .lightmorphic-badge { margin: 0; }
+.site-footer .footer-nav { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.site-footer .footer-nav h2 { font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-muted); margin: 2px 0 2px; font-weight: 700; }
+.site-footer .footer-nav a { color: var(--text-muted); font-size: 15px; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: flex-end; min-height: 40px; }
+.site-footer .footer-nav a:hover { color: var(--text); }
 /* Source-code row: the two marks on the left, the repository links on
    the right. Same rule and rhythm as the legal sub-footer below it. */
 .oss-bar { max-width: var(--max-w-narrow); margin: 28px auto 0; padding-top: 22px;
@@ -379,6 +399,7 @@ footer nav a:hover { color: var(--text); }
 .oss-bar nav a:hover { color: var(--text); }
 @media (max-width: 700px) {
   .oss-bar nav { justify-content: flex-start; margin-left: -6px; margin-right: 0; }
+  .site-footer .footer-nav { align-items: flex-start; text-align: left; }
 }
 /* Company details on the left, the five legal links pushed to the
    right on the same row; both stack and left-align on a narrow screen. */
@@ -521,7 +542,7 @@ footer nav a:hover { color: var(--text); }
       "name": "Which parts of markdown does it support?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The parts most people use: headings, bold and italic, lists, task lists, tables, footnotes, strikethrough, code blocks and GitHub-style callouts. It is not a complete implementation of the markdown specification. Reference links, indented code blocks and raw HTML blocks, for instance, are not supported."
+        "text": "The parts most people use: headings, bold and italic, lists, task lists, tables, footnotes, strikethrough, code blocks and coloured callouts. It is not a complete implementation of the markdown specification. Reference links, indented code blocks and raw HTML blocks, for instance, are not supported."
       }
     }
   ]
@@ -556,16 +577,20 @@ footer nav a:hover { color: var(--text); }
         <span>Notespice</span>
       </div>
       <h1>Notes without the nonsense</h1>
-      <p class="tagline">Every note is a plain markdown file on disk. No database, ever. GitHub Flavored Markdown, installable as an app, and nothing locking your notes in.</p>
-      <p class="eyebrow">SELF-HOSTED &middot; OPEN SOURCE</p>
+      <p class="tagline">Write in markdown. Keep the files. Notespice runs on your own machine and saves every note as an ordinary <code>.md</code> file you can open with anything, for as long as you like.</p>
+      <p class="eyebrow">SELF-HOSTED &middot; FREE &middot; NO ACCOUNT</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/lightmorphic/notespice">View on GitHub</a>
-        <a class="btn btn-secondary" href="#get-started">Get started</a>
+        <a class="btn btn-primary" href="#get-started">Get started</a>
+        <a class="btn btn-secondary" href="#demo">Try the editor</a>
       </div>
-      <p class="hero-note"><strong>Real database-less notes.</strong> Nothing you type here is sent anywhere. It all runs in your browser.</p>
+      <ul class="hero-points">
+        <li>One container to run</li>
+        <li>No database</li>
+        <li>Nothing to sign up for</li>
+      </ul>
     </div>
 
-    <div class="demo-wrap">
+    <div class="demo-wrap" id="demo">
       <div class="app-window">
         <aside class="demo-sidebar" id="demo-sidebar">
           <div class="demo-brand">
@@ -581,8 +606,7 @@ footer nav a:hover { color: var(--text); }
             <button type="button" class="demo-text-btn" title="Only in the real app">Export all</button>
             <button type="button" class="demo-text-btn" title="Only in the real app">Import</button>
           </div>
-          <a class="demo-version-link" href="https://github.com/lightmorphic/notespice"
-             target="_blank" rel="noopener" title="Notespice on GitHub">Notespice</a>
+          <span class="demo-version-link">Notespice</span>
         </aside>
         <div class="demo-main">
           <div class="demo-toolbar">
@@ -610,7 +634,7 @@ footer nav a:hover { color: var(--text); }
         </div>
         <button type="button" class="demo-fab" id="demo-newbtn" title="New note"><svg aria-hidden="true" viewBox="0 0 20 20" stroke-width="2" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg><span>New note</span></button>
       </div>
-      <p class="hero-caption"><strong>This is not a screenshot.</strong> It is the real interface, running live: create a note, switch between them, use the whole toolbar, toggle Writer and Markdown, even delete one. (A few core features only. Full-content search, import and export and the rest are in the real thing.)</p>
+      <p class="hero-caption"><strong>This is not a screenshot. Type in it.</strong> The real editor, running here in your browser: write a note, use the whole toolbar, flip to Markdown to see exactly what gets saved to disk. Nothing you type leaves this page. (Search inside notes, import and export and the rest are in the real thing.)</p>
     </div>
   </div>
 </section>
@@ -621,7 +645,7 @@ footer nav a:hover { color: var(--text); }
 <section class="section section-prose" id="why">
   <h2>Your notes are just files. That's the whole idea.</h2>
   <p class="lead">Notespice keeps your notes as <strong>plain markdown files on disk</strong>. No database, no proprietary format, nothing you can't open in any other editor the moment you stop using this one.</p>
-  <p class="lead">There's no account system, no subscription, and no third-party server holding your notes. It's one container, one folder of <code>.md</code> files, and a GitHub Flavored Markdown editor that works the same on your phone and your laptop.</p>
+  <p class="lead">There's no account system, no subscription, and no third-party server holding your notes. It's one container, one folder of <code>.md</code> files, and an editor that works the same on your phone and your laptop.</p>
 </section>
 
 <hr />
@@ -635,11 +659,11 @@ footer nav a:hover { color: var(--text); }
     </div>
     <div class="feature-row">
       <div class="feature-icon">&#9998;</div>
-      <div><h3>The markdown you actually use</h3><p>Tables, footnotes, task lists, strikethrough and GitHub-style callouts, all written back out as ordinary markdown any other editor can read.</p></div>
+      <div><h3>The markdown you actually use</h3><p>Tables, footnotes, task lists, strikethrough and coloured callouts, all written back out as ordinary markdown any other editor can read.</p></div>
     </div>
     <div class="feature-row">
       <div class="feature-icon">&#9166;</div>
-      <div><h3>Blank lines that stay</h3><p>Press Enter three times and the extra empty line is really there, saved as a literal <code>&lt;br&gt;</code> line in the markdown, so GitHub renders it the same way.</p></div>
+      <div><h3>Blank lines that stay</h3><p>Press Enter three times and the extra empty line is really there, saved as a literal <code>&lt;br&gt;</code> line in the markdown, so the gap is still there wherever you open the file next.</p></div>
     </div>
     <div class="feature-row">
       <div class="feature-icon">&#8855;</div>
@@ -700,7 +724,7 @@ footer nav a:hover { color: var(--text); }
     </div>
     <div class="faq-item">
       <h3>Which parts of markdown does it support?</h3>
-      <p>The parts most people use: headings, bold and italic, lists, task lists, tables, footnotes, strikethrough, code blocks and GitHub-style callouts. It is not a complete implementation of the markdown specification. Reference links, indented code blocks and raw HTML blocks, for instance, are not supported.</p>
+      <p>The parts most people use: headings, bold and italic, lists, task lists, tables, footnotes, strikethrough, code blocks and coloured callouts. It is not a complete implementation of the markdown specification. Reference links, indented code blocks and raw HTML blocks, for instance, are not supported.</p>
     </div>
   </div>
 </section>
@@ -729,23 +753,40 @@ footer nav a:hover { color: var(--text); }
     <li><strong>Start the container</strong><code>docker compose up -d</code></li>
     <li><strong>Open it</strong>Visit <code>http://your-server:8080</code> and write your first note</li>
   </ol>
+  <p class="closer">That is the whole thing. No account to create, no plan to
+  choose, and nothing to cancel later. If you stop using it tomorrow, your notes
+  are already sitting in a folder you own, in a format that outlives all of us.</p>
 </section>
 </main>
 
 <hr />
 
 <footer>
-  <a class="lightmorphic-badge" href="https://lightmorphic.com" target="_blank" rel="noopener noreferrer" translate="no">
-    <span>Created by</span>
-    <img src="images/lightmorphic-dark-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
-    <span class="external-link-icon" aria-hidden="true">
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-        <path d="M15 3h6v6"/>
-        <line x1="10" y1="14" x2="21" y2="3"/>
-      </svg>
-    </span>
-  </a>
+  <div class="site-footer">
+    <div class="footer-brand">
+      <a class="brand" href="/"><img src="images/notespice-icon-80.png" width="30" height="30" alt="" />Notespice</a>
+      <p>Plain markdown notes you host yourself. No database, no account, and
+      nothing holding your files hostage.</p>
+      <a class="lightmorphic-badge" href="https://lightmorphic.com" target="_blank" rel="noopener noreferrer" translate="no">
+        <span>Created by</span>
+        <img src="images/lightmorphic-dark-tb-250x50-sq.webp" alt="Lightmorphic" width="80" height="16" loading="lazy" />
+        <span class="external-link-icon" aria-hidden="true">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <path d="M15 3h6v6"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </span>
+      </a>
+    </div>
+    <nav class="footer-nav" aria-label="This site">
+      <h2>On this site</h2>
+      <a href="#why">Why</a>
+      <a href="#features">Features</a>
+      <a href="#faq">Questions</a>
+      <a href="#get-started">Get started</a>
+    </nav>
+  </div>
   <div class="oss-bar">
     <div class="marks">
       <a href="https://github.com" target="_blank" rel="noopener noreferrer"
@@ -800,7 +841,7 @@ footer nav a:hover { color: var(--text); }
 (function () {
   var mode = "write";
   var notes = {
-    "Try it out": "# Try it out\n\nType some **markdown** and watch it render, live. Use the full toolbar above, not just the basics.\n\n- No sign up\n- No database\n- Just files\n\n> [!TIP]\n> Switch to Markdown mode to see the raw text this actually produces.\n\nEven footnotes work[^1].\n\n[^1]: Yes, really — the full GFM spec, not a subset.",
+    "Try it out": "# Try it out\n\nType some **markdown** and watch it render, live. Use the full toolbar above, not just the basics.\n\n- No sign up\n- No database\n- Just files\n\n> [!TIP]\n> Switch to Markdown mode to see the raw text this actually produces.\n\nEven footnotes work[^1].\n\n[^1]: And they survive the round trip to disk and back.",
     "Grocery List": "Milk, eggs, and coffee.\n\n- [ ] Stop by the market\n- [x] Order more coffee\n- [ ] Don't forget the coffee (again)",
     "Feature Tour": "## A quick tour\n\n| Feature | Supported |\n| --- | --- |\n| Tables | Yes |\n| Footnotes | Yes |\n| Callouts | Yes |\n\n> [!WARNING]\n> This table is not a screenshot either.\n\n```\ndocker compose up -d\n```"
   };
@@ -1148,7 +1189,7 @@ footer nav a:hover { color: var(--text); }
 
     var alertSelect = document.createElement("select");
     alertSelect.id = "demo-alert-select";
-    alertSelect.title = "GitHub-style callout";
+    alertSelect.title = "Callout";
     ["Callout", "Note", "Tip", "Important", "Warning", "Caution"].forEach(function (label, i) {
       var opt = document.createElement("option");
       opt.value = i === 0 ? "" : label.toUpperCase();

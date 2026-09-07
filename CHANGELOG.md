@@ -21,6 +21,23 @@
   link to the Companies House register. The law asks for the number,
   the registered name, where the company is registered and the office
   address, all of which are still there; it does not ask for a link.
+- Website review. GitHub is now named only in the source-code row at
+  the bottom: the hero's first button was "View on GitHub" and is now
+  "Get started", with "Try the editor" beside it jumping to the live
+  demo; the demo's own footer link no longer goes off to the
+  repository; and the feature and question wording no longer leans on
+  GitHub to explain itself.
+- Corrected a claim the page made against itself. The demo note said
+  Notespice supported "the full GFM spec, not a subset" while the
+  questions below said plainly that it does not. The page description
+  and its share cards said the same thing. All of them now match the
+  honest answer that was already there.
+- The site now has a footer of its own, above the source-code row and
+  the legal details: what Notespice is, who made it, and the way back
+  into the page. The GitHub row and the legal row are untouched.
+- The hero sells rather than describes: a plainer promise, three short
+  facts under the buttons instead of a paragraph, and a closing
+  paragraph after the setup steps.
 - Removed the line in the website footer and the note in the README
   saying how the project was written. Neither the site nor any file in
   the repository mentions it now.
